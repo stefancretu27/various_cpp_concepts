@@ -11,7 +11,7 @@ using namespace std;
 //use std::function as param type for a function which calls a lambda, as auto cannot be used for functions' parameters
 void func(const function<const char* (bool)> &fn, bool arg)
 {
-	cout<<"lambda called fom function whose arg is std::function "<<fn(arg)<<endl;
+	cout<<"lambda called from function whose arg is std::function "<<fn(arg)<<endl;
 }
 
 //apply some math on input a
@@ -85,13 +85,13 @@ int main()
 	const char* (*msg)(int) = [](int i){ return (i>0)?"positive":"negative";};
 	cout<<msg(42)<<endl;
 	
-	//std::function
-	function<int(char)> func_ascii = [](char c){return c;};
+	//std::function with copy construction
+	function<int(char)> func_ascii( [](char c){return c;} );
 	cout<<func_ascii('a')<<" "<<func_ascii('A')<<endl;
 	
 	//call function whose arg is a lambda defined previously
 	func(boolToWord, true);
-	//call function with a lambda freated as an anonymous object
+	//call function with a lambda treated as an anonymous object
 	func([](bool in){return (in)?"T":"F";}, false);
 	
 	

@@ -26,7 +26,7 @@ class MyArray
 			mBuffer = new T[mLength];
 			
 			//deep copy
-			for(int i = 0; i < mLength; i++)
+			for(size_t i{0}; i < mLength; i++)
 				mBuffer[i] = obj.mBuffer[i];
 			
 		};
@@ -41,7 +41,7 @@ class MyArray
 			mBuffer = new T[mLength];
 			
 			//deep copy
-			for(int i = 0; i < mLength; i++)
+			for(size_t i{0}; i < mLength; i++)
 				mBuffer[i] = obj.mBuffer[i];
 				
 			return *this;
@@ -75,7 +75,7 @@ class MyArray
 			return *this;
 		}
 		
-		int getLength(){return mLength;};
+		size_t getLength(){return mLength;};
 		void setlength(size_t length){mLength = length;};
 		T& operator[](size_t index){return mBuffer[index];};
 };
@@ -87,22 +87,22 @@ int main()
 	arr[1] = 1;
 	arr[2] = 2;
 	
-	cout<<"create copy_arr using move c-tor. arr length: "<<arr.getLength()<<" copy_arr length: "<<copy_arr.getLength()<<endl;
 	MyArray<int> copy_arr(move(arr));
-	for(int x{0}; x<copy_arr.getLength(); x++)
+	cout<<"create copy_arr using move c-tor. arr length: "<<arr.getLength()<<" copy_arr length: "<<copy_arr.getLength()<<endl;
+	for(size_t x{0}; x<copy_arr.getLength(); x++)
 		cout<<copy_arr[x]<<" ";
 	cout<<endl;
 	
 	cout<<"recreate arr using move assignment. arr length: "<<arr.getLength()<<" copy_arr length: "<<copy_arr.getLength()<<endl;
 	arr = std::move(copy_arr);
-	for(int x{0}; x<arr.getLength(); x++)
+	for(size_t x{0}; x<arr.getLength(); x++)
 		cout<<arr[x]<<" ";
 	cout<<endl;
 	
 	//use copy semantics
-	cout<<"recreate copy_arr using copy semantics. arr length: "<<arr.getLength()<<" copy_arr length: "<<copy_arr.getLength()<<endl;
+	cout<<"recreate copy_arr using copy assignment. arr length: "<<arr.getLength()<<" copy_arr length: "<<copy_arr.getLength()<<endl;
 	copy_arr = arr;
-	for(int x{0}; x<copy_arr.getLength(); x++)
+	for(size_t x{0}; x<copy_arr.getLength(); x++)
 		cout<<copy_arr[x]<<" ";
 	cout<<endl;
 	

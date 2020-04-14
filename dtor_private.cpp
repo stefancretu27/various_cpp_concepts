@@ -121,10 +121,6 @@ class Derived1:public Base
 			//call private virtual method
 			dtor();
 		}
-		void method(int i)
-		{
-			std::cout<<"Derived method"<<std::endl;
-		};
 };
 
 int main()

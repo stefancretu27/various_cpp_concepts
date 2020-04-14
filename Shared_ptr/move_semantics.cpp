@@ -20,7 +20,7 @@ class MyArray
 		}
 		~MyArray(){delete mBuffer;};
 		
-		//disable copy semantics
+		//implement copy semantics
 		MyArray(MyArray &obj):mLength(obj.mLength)
 		{
 			mBuffer = new T[mLength];
@@ -87,25 +87,21 @@ int main()
 	arr[1] = 1;
 	arr[2] = 2;
 	
-	MyArray<int> copy_arr(move(arr));
-	
 	cout<<"create copy_arr using move c-tor. arr length: "<<arr.getLength()<<" copy_arr length: "<<copy_arr.getLength()<<endl;
-	
+	MyArray<int> copy_arr(move(arr));
 	for(int x{0}; x<copy_arr.getLength(); x++)
 		cout<<copy_arr[x]<<" ";
 	cout<<endl;
 	
+	cout<<"recreate arr using move assignment. arr length: "<<arr.getLength()<<" copy_arr length: "<<copy_arr.getLength()<<endl;
 	arr = std::move(copy_arr);
-	
-	cout<<"recreate arr using copy assignment. arr length: "<<arr.getLength()<<" copy_arr length: "<<copy_arr.getLength()<<endl;
-	
 	for(int x{0}; x<arr.getLength(); x++)
 		cout<<arr[x]<<" ";
 	cout<<endl;
 	
 	//use copy semantics
-	copy_arr = arr;
 	cout<<"recreate copy_arr using copy semantics. arr length: "<<arr.getLength()<<" copy_arr length: "<<copy_arr.getLength()<<endl;
+	copy_arr = arr;
 	for(int x{0}; x<copy_arr.getLength(); x++)
 		cout<<copy_arr[x]<<" ";
 	cout<<endl;

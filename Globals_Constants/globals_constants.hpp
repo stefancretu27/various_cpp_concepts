@@ -38,8 +38,11 @@ namespace globals_constants
     //c-style symbolic constant
     extern const char* symb;
 
-    //Thus, both globals and const globals should be forward declared in .hpp file using extern and initialized in .cpp file.
-    //This way, each .cpp file that includes the .hpp file will get same copy of the global/const global variable
+    /*
+    * Conclusion:
+    * Thus, both globals and const globals should be forward declared in .hpp file using extern and initialized in .cpp file.
+    * This way, each .cpp file that includes the .hpp file will get same copy of the global/const global variable.
+    */
 }
 
 #endif

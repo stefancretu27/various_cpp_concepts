@@ -19,7 +19,7 @@
 namespace globals_constants
 {
 	//declare global const in hpp => it has internal linkage and each file gets its own definition
-    const double d{3.14151};
+    const double d{2.7182};
     
     //In order to get one copy of the global constant in the entire project: forward declare using extern to change their linkage to external. 
     //Thus, their definitions shall occur in another file.
@@ -34,6 +34,12 @@ namespace globals_constants
     //float f; =>error multiple definitions 
     //solution is to define it in cpp file and forward declare it in hpp file
     extern float f;
+
+    //c-style symbolic constant
+    extern const char* symb;
+
+    //Thus, both globals and const globals should be forward declared in .hpp file using extern and initialized in .cpp file.
+    //This way, each .cpp file that includes the .hpp file will get same copy of the global/const global variable
 }
 
 #endif

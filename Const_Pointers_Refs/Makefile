@@ -1,8 +1,9 @@
 CFLAGS = -std=c++11 -Wall -g
 CC = g++
+SOURCES = main.cpp PointersAndConst.cpp
 
 all:
-	$(CC) $(CFLAGS) main.cpp -o const_pointer_refs.bin
+	$(CC) $(CFLAGS) $(SOURCES) -o const_pointer_refs.bin
 	
 clean:
-	rm *.exe; rm *.o; rm *.bin
+	rm *.bin

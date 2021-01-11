@@ -7,5 +7,6 @@
 #include <memory>
 
 void PointersAndConst();
+void ReferencesAndConst();
 
 #endif

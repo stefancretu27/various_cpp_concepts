@@ -45,14 +45,16 @@ void PointersAndConst()
     //declare const ptr to int -> int val
     int* const constPtr_IntVal{&intVal};
     cout<<"int variable: "<<intVal<<" dereferenced const pointer to int: "<<*constPtr_IntVal<<" increment value via const pointer: "<<++(*constPtr_IntVal)<<endl;
+    //declare const ptr to int -> const int val
     //int* const constPtr_IntValPtr{&constIntVal}; -> a const int cannot be pointed to by a const pointer to non-const => needs const pointer to const
     
     //declare pointer to int -> the above-declared const pointer
     int* ptrInt{constPtr_IntVal};
+    //value changed via pointer obtained from const pointer
     *ptrInt = 17;
     cout<<"int variable: "<<intVal<<" dereferenced pointer to int copy constructed from const pointer used to modify the value: "<<*ptrInt<<endl;
-    int* const constPtrIntPtr{ptr_IntVal};
-    cout<<"dereferenced const ptr constructed from ptr to int: "<<*constPtrIntPtr<<endl;
+    int* const constPtr_IntPtr{ptr_IntVal};
+    cout<<"dereferenced const ptr constructed from ptr to int: "<<*constPtr_IntPtr<<endl;
 
     const shared_ptr<HelperClass> constSPtr_Inst = make_shared<HelperClass>(2.7182, 'w');
     cout<<"const shared_ptr to non-const object: "<<constSPtr_Inst->getD()<<" "<<constSPtr_Inst->getC()<<endl;

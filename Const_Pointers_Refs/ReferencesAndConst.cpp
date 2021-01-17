@@ -5,13 +5,13 @@ void ReferencesAndConst()
 {
     using namespace std;
 
-    float f{0.05f}, pi{3.14159};
-    const float e{2.7182};
-    float& fRef{f};
-    fRef = pi; //it is like performing f = pi;
-    cout<<"By assigning a new object to a reference => only updates the value of the referred object. Ref: "<<fRef<<" Aliased obj: "<<f<<endl;
-    fRef += 1.1f;
-    cout<<"Update the value via the ref. Ref: "<<fRef<<" Aliased obj: "<<f<<" previously <<assigned>> object"<<pi<<endl;
+    float floatVal{0.05f}, pi{3.14159};
+    const float constFloatVal{2.7182};
+    float& ref_Float{floatVal};
+    ref_Float = pi; //it is like performing f = pi;
+    cout<<"By assigning a new object to a reference => only updates the value of the referred object. Ref: "<<ref_Float<<" Aliased obj: "<<floatVal<<endl;
+    ref_Float += 1.1f;
+    cout<<"Update the value via the ref. Ref: "<<ref_Float<<" Aliased obj: "<<floatVal<<" previously <<assigned>> object"<<pi<<endl;
 
     cout<<endl<<"Conclusions on references: "<<endl;
     cout<<"     1. References act like aliases to ojects. They must have the same type as the aliased variable, otherwise error is thrown."<<endl;
@@ -22,14 +22,19 @@ void ReferencesAndConst()
     cout<<"     6. Once set to refer to an object, they cannot be reassigned to point to other object.Thus, they act like a const pointer. \
                 That said, when assigning a new object to a reference, it actually updates the value of the refered to variable, not the reference itself."<<endl<<endl;
 
-    //double& dRef{pi}; -> cannot bind non-const lvalue reference of type ‘double&’ to an rvalue of type ‘double’, as a r-value seems to be constructed from 'pi'
-    const short int& siRef{pi};
-    cout<<"float value: "<<pi<<" short int reference: "<<siRef<<endl; 
-    //float& fRef2{e}; -> error const qualifier discared =>const reference to be used
-    const float& cfRef{e}; //alias const l-value
-    //cfRef = pi; -> error: const reference so the value cannot be modified
-    const char& ccRef{'q'}; //alias r-value
-    const char& ccRef2{ccRef};
+    //cannot bind non-const lvalue reference of type ‘double&’ to an rvalue of type ‘double’, as a r-value seems to be constructed from 'pi'
+    //double& dRef{pi}; 
+    const short int& ref_ConstShort{pi}; // => warning thrown, but not error
+    cout<<"float value: "<<pi<<" short int reference: "<<ref_ConstShort<<endl; 
+    
+    //error const qualifier discared =>const reference to be used
+    //float& ref_Float2{e}; 
+    const float& ref_ConstFloat{constFloatVal}; //alias const l-value
+    
+    //error: reference to const so the value cannot be modified
+    //ref_ConstFloat = pi; 
+    const char& ref_ConstChar{'q'}; //alias r-value
+    const char& ref_ConstChar2{ref_ConstChar};
 
     cout<<endl<<"Conclusions for references to const: "<<endl;
     cout<<"     1. References to const can alias const and non-const l-values, but also r-values. "<<endl;

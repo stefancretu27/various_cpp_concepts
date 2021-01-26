@@ -9,9 +9,12 @@ void ReferencesAndConst()
     const float constFloatVal{2.7182};
     float& ref_Float{floatVal};
     ref_Float = pi; //it is like performing f = pi;
-    cout<<"By assigning a new object to a reference => only updates the value of the referred object. Ref: "<<ref_Float<<" Aliased obj: "<<floatVal<<endl;
+    cout<<"Assign a new value: "<<pi<<"to a reference => only updates the value of the referred object. Ref: "<<ref_Float<<" Aliased obj: "<<floatVal<<endl;
     ref_Float += 1.1f;
     cout<<"Update the value via the ref. Ref: "<<ref_Float<<" Aliased obj: "<<floatVal<<" previously <<assigned>> object"<<pi<<endl;
+    float& ref_FloatFromRef{ref_Float};
+    cout<<"ref: "<<ref_FloatFromRef<<" created from ref: "<<ref_Float<<endl;
+
 
     cout<<endl<<"Conclusions on references: "<<endl;
     cout<<"     1. References act like aliases to ojects. They must have the same type as the aliased variable, otherwise error is thrown."<<endl;
@@ -111,6 +114,46 @@ void ReferencesAndConst()
     cout<<"        With containers, it leaves the moved from object in a well defined state, setting its capacity to 0 and pointer to NULL, as"<<endl;
     cout<<"        all its content is moved from it to the new object (the move to object). This happens by calling move c-tor or move = operator"<<endl;
     cout<<"     2. It is exactly equivalent to a static_cast to an rvalue reference type and can be used to retrieve ravlues from lvalues"<<endl<<endl;
+
+    //-----------------------------------------------------------------------------------------------------------------------------
+
+    //error: direct-list-initialization of ‘auto’ requires exactly one element
+    //auto obj{1,2,3};
+    auto obj{"auto text"};
+    cout<<typeid(obj).name()<<endl;
+    string str{"new"};
+    auto obj2{str};
+    cout<<typeid(obj2).name()<<endl;
+    auto obj3{HelperClass()};
+    cout<<typeid(obj3).name()<<endl;
+
+    HelperClass inst{3.14151, 'c'};
+    const HelperClass cInst{2.7182, 'd'};
+
+    //auto& rval {inst.getD()}; => error: cannot bind non-const lvalue reference of type ‘double&’ to an rvalue of type ‘double’
+    auto& copyInst{inst};
+    auto& copyCInst{cInst};
+    cout<<typeid(copyInst).name()<<" "<<typeid(copyCInst).name()<<endl;
+    copyInst.setC('p');
+    //copyCInst.setC('p'); =>cannot modify reference to const object. Though it is specified as auto&, the constness is preserved
+
+    //get r-value and non-const l-value in const auto&
+    const auto& cCopyInst{inst};
+    const auto& crval {inst.getD()};
+    cout<<typeid(cCopyInst).name()<<" "<<typeid(crval).name()<<endl;
+
+    auto&& rrval{inst.getC()};
+    const auto&& crrInst{HelperClass{6.78, 'l'}};
+    cout<<typeid(rrval).name()<<" "<<typeid(crrInst).name()<<endl;
+    //crrInst.setC('k'); =>cannot modify reference to const object. Though it is specified as auto&, the constness is preserved
+
+    cout<<endl<<"Conclusions on auto"<<endl;
+    cout<<"     1. [C++11] For variables, specifies that the type of the variable that is being declared will be automatically deduced from its initializer."<<endl;
+    cout<<"     2. auto = gets a copy of the assigned value"<<endl;
+    cout<<"     2. auto& = non-const l-value reference. If the value is const, then the deducted type will be const"<<endl;
+    cout<<"     3. const auto& = gets a reference to const of the assigned value. If constness is not there, it adds it, otherwise is redundant"<<endl;
+    cout<<"     4. auto&& = gets a universal reference, regardless its type. If it is const, the constness is preserved."<<endl;
+    cout<<"     4. const auto&& = only binds to r-values and does not allow to modify them."<<endl;
 
 
 }

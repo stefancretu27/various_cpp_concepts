@@ -7,6 +7,8 @@
 #include <memory>
 #include <set>
 
+#include <type_traits>
+
 void PointersAndConst();
 void ReferencesAndConst();
 

@@ -1,9 +1,6 @@
-#include <memory>
-#include <iostream>
+#include "shared_ptr.hpp"
 
 using namespace std;
-
-#define bool_to_word(x) ((x) ? "true" : "false")
 
 typedef struct node
 {
@@ -17,7 +14,7 @@ typedef struct w_node
 	weak_ptr<struct w_node> next;
 }w_node;
 
-int main()
+void create_shared_ptr_list()
 {
 	s_node n1, n3;
 	//create shared ptr from a previously declared object, using make-shared and copy assignment
@@ -45,10 +42,11 @@ int main()
 	}
 
 	cout<<"count in outer scope: "<<s2->next.use_count()<<" data: "<<s2->next->data<<std::endl;
-	
-	/*
-	 * -----------------------------------------------------------------use weak pointers
-	 */
+}
+
+
+void create_weak_ptr_list()
+{
 	w_node w1,w2,w3;
 	
 	shared_ptr<w_node> ws1 = make_shared<w_node>(w1);
@@ -74,5 +72,4 @@ int main()
 	//weak ptr cannot be directly assigned to nullptr, but can be reset
 	ws2->next.reset();
 	
-	return 0;
 }

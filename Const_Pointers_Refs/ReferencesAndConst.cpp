@@ -8,7 +8,7 @@ void ReferencesAndConst()
     float floatVal{0.05f}, pi{3.14159};
     const float constFloatVal{2.7182};
     float& ref_Float{floatVal};
-    ref_Float = pi; //it is like performing f = pi;
+    ref_Float = pi; //it is like performing floatVal = pi;
     cout<<"Assign a new value: "<<pi<<"to a reference => only updates the value of the referred object. Ref: "<<ref_Float<<" Aliased obj: "<<floatVal<<endl;
     ref_Float += 1.1f;
     cout<<"Update the value via the ref. Ref: "<<ref_Float<<" Aliased obj: "<<floatVal<<" previously <<assigned>> object"<<pi<<endl;
@@ -109,10 +109,10 @@ void ReferencesAndConst()
     cout<<mySet.size()<<" "<<newSet.size()<<endl;
 
     cout<<endl<<"Conclusions on std::move "<<endl;
-    cout<<"     1. It indicates that an object t may be <<moved from>>."<<endl;
-    cout<<"        With basic data types, it leaves the moved from object in the initial state, and the move to object will get a copy of its value."<<endl;
-    cout<<"        With containers, it leaves the moved from object in a well defined state, setting its capacity to 0 and pointer to NULL, as"<<endl;
-    cout<<"        all its content is moved from it to the new object (the move to object). This happens by calling move c-tor or move = operator"<<endl;
+    cout<<"     1. It indicates that an object may be <<moved from>>."<<endl;
+    cout<<"        With basic data types, it leaves the move-from object in the initial state, and the move-to object will get a copy of its value."<<endl;
+    cout<<"        With containers, it leaves the move-from object in a well defined state, setting its capacity to 0 and pointer to NULL, as"<<endl;
+    cout<<"        all its content is moved from it to the new object (the move to object). This happens by calling move c-tor or move operator"<<endl;
     cout<<"     2. It is exactly equivalent to a static_cast to an rvalue reference type and can be used to retrieve ravlues from lvalues"<<endl<<endl;
 
     //-----------------------------------------------------------------------------------------------------------------------------

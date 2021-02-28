@@ -8,8 +8,7 @@
 void func(const int& i)
 {
     std::cout<<"-------------------------------------------------------------------------------------------------------------------"<<std::endl;
-	std::cout<<"Function accepting const int parameter and receiving constexpr arg. A parameter cannot be constexpr because it must be defined \
-    upon declaration"<<std::endl;
+	std::cout<<"Function accepting const int parameter and receiving constexpr arg. A parameter cannot be constexpr because it must be defined upon declaration"<<std::endl;
     std::cout<<i<<std::endl;
     std::cout<<globals_constants::d<<std::endl;
 }

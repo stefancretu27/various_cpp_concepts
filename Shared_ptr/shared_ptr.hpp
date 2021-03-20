@@ -1,5 +1,3 @@
-#include <memory>
-#include <iostream>
 
 #define bool_to_word(x) ((x) ? "true" : "false")
 

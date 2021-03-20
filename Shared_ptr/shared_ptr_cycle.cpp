@@ -1,4 +1,6 @@
 #include "shared_ptr.hpp"
+#include <memory>
+#include <iostream>
 
 using namespace std;
 

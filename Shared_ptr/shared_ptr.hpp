@@ -1,4 +1,3 @@
-
 #define bool_to_word(x) ((x) ? "true" : "false")
 
 void shared_ptr_calls();

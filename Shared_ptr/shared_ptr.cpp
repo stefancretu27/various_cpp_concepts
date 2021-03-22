@@ -1,6 +1,8 @@
 #include "HelperClass.hpp"
 #include "shared_ptr.hpp"
 
+#define check_nullptr(sp) (sp)?cout<<"shared_ptr was not set to null. Its value is: "<<*sp<<endl: cout<<"shared_ptr was set to nullptr"<<endl
+
 void func(const std::weak_ptr<HelperClass>& wp)
 {
     std::cout<<"obtain shared_ptr from weak_ptr using lock() creates a new shared_ptr =>use_count is increased. ";
@@ -29,10 +31,26 @@ void shared_ptr_calls()
 {
     using namespace std;
 
-    HelperClass helperInst{2.7182, 'k'}, secondInst{-13.13, 'q'};
+    //manners of reseting a shared_ptr
+    shared_ptr<int> spi{make_shared<int>(8)};
+    spi = nullptr;
+    check_nullptr(spi);
+    spi = make_shared<int>(9);
+    spi.reset();
+    check_nullptr(spi);
+
+    // int i{7};
+    // spi = static_cast<shared_ptr<int>>(&i);
+    // shared_ptr<int> spinst{spi};
+    // cout<<spinst.use_count()<<endl;
+    // spi = nullptr;
+    // check_nullptr(spi);
+    cout<<"create shared_ptr to stack allocated object via its address => d-tor attempt to free memory allocated on stack when shared_ptr is reset or destroyed => free() inavlid pointer error"<<endl;
 
     //create shared_ptr from existent instance using make shared, respectively new. 
     //In both cases the copy c-tor of the pointed to object is called when passed to make_shared as a copy of the object allocated on stack is created on heap.
+    HelperClass helperInst{2.7182, 'k'}, secondInst{-13.13, 'q'}; 
+
     shared_ptr<HelperClass> spMakeShared_Inst{make_shared<HelperClass>(helperInst)};
     shared_ptr<HelperClass> spNew_Inst{new HelperClass{helperInst}};
     cout<<spMakeShared_Inst->getD()<<" "<<spMakeShared_Inst->getC()<<" "<<spNew_Inst->getD()<<" "<<spNew_Inst->getC()<<endl;
@@ -45,12 +63,6 @@ void shared_ptr_calls()
     helperInst.setC('F');
     helperInst.setD(73.658);
     cout<<"The changes not visible via shared_ptr dereference as they point to copies of the instance, which were made on heap: "<<spMakeShared_Inst->getD()<<" "<<spNew_Inst->getD()<<endl;
-
-    cout<<"take a shared_ptr to stack allocated object via its address => d-tor called twice causing double free memory corruption, even if shared_ptr is nulled/redirected"<<endl;
-    // shared_ptr<HelperClass> spAddr_Inst{&secondInst};
-    // cout<<spAddr_Inst->getC()<<" "<<spAddr_Inst->getD()<<endl;
-    // spAddr_Inst = make_shared<HelperClass>(44.4, 'y');
-
 
     //create shared_ptr using make shared, respectively new, for anonymous object.  Copy c-tor is ellided for anonymous objects. 
     //Instead the object is constructed in place, so the c-tor is called when make_shared is invoked.

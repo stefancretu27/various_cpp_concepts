@@ -63,7 +63,7 @@ void create_weak_ptr_list()
 	ws3->next = ws1;
 	cout<<"count before setting ws3 to null: "<<ws3.use_count()<<std::endl;
 	
-	//reset the shared pointer to nullptr. The d-tor is called to decrement the shared counter and delete the managed object, as s2->next is weak ptr and only points to the manager object
+	//reset the pointer to nullptr. The d-tor is called to decrement the shared counter and delete the managed object, as s2->next is weak ptr and only points to the manager object
 	ws3.reset();
 	
 	//use_count can also be used on weak_ptr and returns the # of shared_ptr

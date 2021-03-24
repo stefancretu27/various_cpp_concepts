@@ -105,6 +105,29 @@ void shared_ptr_calls()
     std::cout<<"use count after creating ref to const shared_ptr from existing shared_ptr: "<<spRefConst.use_count()<<std::endl;
     spFunc(make_shared<HelperClass>(19.19, 'v'));
 
+    auto spRefR_Copy = std::move(spNew_Inst);
+    if(!spNew_Inst)
+    {
+        cout<<"shared_ptr was std::moved in a copy and consequently nulled"<<endl;
+        cout<<"values from copy: "<<spRefR_Copy->getD()<<" "<<spRefR_Copy->getC()<<endl; 
+    }
+    else
+    {
+        cout<<spNew_Inst->getD()<<" "<<spNew_Inst->getC()<<endl;
+    }
+    
+    auto&& spRefR_RefR = std::move(spRefR_Copy);
+    if(!spRefR_Copy)
+    {
+        cout<<"shared_ptr was std::moved in a ref to r-value and consequently nulled"<<endl; 
+    }
+    else
+    {
+        cout<<"values from copy: "<<spRefR_Copy->getD()<<" "<<spRefR_Copy->getC()<<endl; 
+        cout<<"values from ref to r value: "<<spRefR_RefR->getD()<<" "<<spRefR_RefR->getC()<<endl; 
+    }
+    
+
     cout<<endl<<"Conclusions on shared_ptr"<<endl;
     cout<<"     1. Implements shared ownership on a resource: there can be multiple shared_ptr instances pointing to the same (dynamically allocated) object"<<endl;
     cout<<"     If two/more shared_ptrs are created to point to the same object via make_shared/new, but not via copy constructing, each will allocate a different object on heap"<<endl;
@@ -131,7 +154,7 @@ void shared_ptr_calls()
     cout<<"     memory allocations are done as no copy is made. Passing the shared_ptr by ref to const denotes there is no intention to modify the shared_ptr inside the function."<<endl<<endl;
 
     //------------------------------------------------------------------------------------------------------------------------
-    weak_ptr<HelperClass> wp{spNew_Inst};
+    weak_ptr<HelperClass> wp{spNew_Obj};
     //cout<<wp->getC()<<endl;
     weak_ptr<HelperClass> wpCopy{wp};
     cout<<"weak_ptr use_count() actually returns the number of shared_ptr that point to the object: "<<wpCopy.use_count()<<endl;

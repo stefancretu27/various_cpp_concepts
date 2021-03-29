@@ -3,6 +3,7 @@
 //for move
 #include <utility>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -80,6 +81,39 @@ class MyArray
 		T& operator[](size_t index){return mBuffer[index];};
 };
 
+class MoveClass
+{
+    public:
+    std::vector<int> intVec;
+
+    public:
+    MoveClass()
+    {
+        intVec.push_back(1);
+        intVec.push_back(2);
+        intVec.push_back(3);
+        std::cout<<"C-tor"<<std::endl;
+    };
+    MoveClass(const MoveClass& inst)
+    {
+        intVec = inst.intVec;
+        std::cout<<"Copy c-tor"<<std::endl;
+    };
+    MoveClass(MoveClass&& inst)
+    {
+        intVec = std::move(inst.intVec);
+        std::cout<<"Move c-tor"<<std::endl;
+    };
+    MoveClass& operator=(const MoveClass& inst){std::cout<<"Copy assignment"<<std::endl; return *this;};
+    MoveClass& operator=(MoveClass&& inst){std::cout<<"Move assignment"<<std::endl; return *this;};
+
+};
+
+void func(std::vector<int>&& vec)
+{
+	cout<<"In function moved vec size(): "<<vec.size()<<endl;
+}
+
 int main()
 {
 	MyArray<int> arr(3);
@@ -105,6 +139,28 @@ int main()
 	for(size_t x{0}; x<copy_arr.getLength(); x++)
 		cout<<copy_arr[x]<<" ";
 	cout<<endl;
+
+	MyArray<int>&& rref_arr{move(arr)};
+	cout<<"create ref to r-value arr using move arr length: "<<arr.getLength()<<" copy_arr length: "<<rref_arr.getLength()<<endl;
+
+	MoveClass up_MoveClass{};
+	//MoveClass& refInst_MoveClass{up_MoveClass};
+	
+    auto copy_MoveClass{up_MoveClass};
+    cout<<"Create a copy from existing instance => copy c-tor call "<<up_MoveClass.intVec.size()<<" "<<copy_MoveClass.intVec.size()<<endl;
+
+	auto& ref_MoveClass{up_MoveClass};
+    cout<<"Create ref to existing instance => no copy c-tor call:  "<<up_MoveClass.intVec.size()<<" "<<ref_MoveClass.intVec.size()<<endl;
+
+    auto copyMove_MoveClass{move(up_MoveClass)};
+    cout<<"Create copy to ref to r-value =>  move c-tor call "<<up_MoveClass.intVec.size()<<" "<<copyMove_MoveClass.intVec.size()<<endl;
+
+    auto&& rref_MoveClass{move(copyMove_MoveClass)};
+    cout<<"Create copy to ref to r-value => no move c-tor call "<<copyMove_MoveClass.intVec.size()<<" "<<rref_MoveClass.intVec.size()<<endl;
+
+	vector<int> vec{1,2,3,4};
+	func(move(vec));
+	cout<<"After func call vec size(): "<<vec.size()<<endl;
 	
 	
 	return 0;

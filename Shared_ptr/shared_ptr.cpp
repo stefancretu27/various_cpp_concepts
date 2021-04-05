@@ -149,9 +149,12 @@ void shared_ptr_calls()
     cout<<"     8. A shared_ptr that is local variable of a function can only be returned via copy. Otherwise, pointer/ref to local variable would be returned, causing error,"<<endl;
     cout<<"     as the shared_ptr itself is a stack allocated object, as it is any pointer. It just points to heap allocated memory."<<endl;
     cout<<"     9. Passing a shared_ptr by value as function argument denotes intention to share ownership to the heap data with other existing shared_ptr (at least with the one,"<<endl;
-    cout<<"     that it is copied from). Also the pointer can be changed/redirected inside the function. Passing by const value denotes that the pointer will not be changed/redirected"<<endl;
+    cout<<"     that it is copied from) as shared_ptr copy c-tor is called and the shared count is incremented. Also the pointer can be changed/redirected inside the function."<<endl; 
+    cout<<"     Passing by const value denotes that the pointer will not be changed/redirected"<<endl;
     cout<<"     10. Passing a shared_ptr by ref as function argument denotes possibility of modifying the pointer inside the function. The exsiting ownership is reused and no extra"<<endl;
-    cout<<"     memory allocations are done as no copy is made. Passing the shared_ptr by ref to const denotes there is no intention to modify the shared_ptr inside the function."<<endl<<endl;
+    cout<<"     memory allocations are done as copy c-tor is not called. Passing the shared_ptr by ref to const denotes there is no intention to modify the shared_ptr inside the function."<<endl;
+    cout<<"     11. Passing a shared_ptr by ref to r-value as function argument denotes possibility of modifying the pointer inside the function and to created a shared_ptr in place "<<endl;
+    cout<<"     that can be modified inside the function. A move call is required. The exsiting ownership is reused and no extra memory allocations are done as copy c-tor is not called. "<<endl<<endl;
 
     //------------------------------------------------------------------------------------------------------------------------
     weak_ptr<HelperClass> wp{spNew_Obj};

@@ -157,13 +157,13 @@ int main()
 	cout<<endl<<"Conclusions on move semantics implementation + inheritance + composition"<<endl;
 	cout<<"     1. Move c-tor and move assignment operator are not implicitly generated, so they must be implemented. Their implementation involves assigning/passing/moving"<<endl;
     cout<<"     the resources from the argument object to the newly created or assigned to object. This means, the object received as argument does not hold these resources anymore."<<endl;
-    cout<<"     In other words, the old object is left in a well defined state, with all its attributes and resources reset to default or null, either deallocated or closed"<<endl;
+    cout<<"     In other words, the old object is left in a well defined state, with all its attributes and resources reset to default or null, either deallocated or closed"<<endl<<endl;
 	cout<<"     2. When dealing with move semantics for a class that is composed of other types, its move semantics implementation will simply call std::move for "<<endl;
     cout<<"     the attributes it is composed of. This means the classes that it is composed from must implement their own move semantics which is invoked by a std::move call"<<endl;
-	cout<<"     on their instances."<<endl;
-	cout<<"     3. When dealing with move semantics and inheritance, the move c-tor and move assignment from the Base class must be explicitly called in Derived class"<<endl;
-	cout<<"     move semantics implementation, with the passed argument being a std::move call on the Derived argument passed to Derived move c-tor or assignment operator."<<endl;
-	cout<<"     Derived(Derived&& d):Base{std::move(d)} and Base::operator=(move(d)) or baseAttribute = std::move(d.baseAttribute)."<<endl;
+	cout<<"     on their instances."<<endl<<endl;
+	cout<<"     3. When dealing with move semantics and inheritance, the move c-tor and move assignment from the Base class must be explicitly called in Derived's' class"<<endl;
+	cout<<"     move semantics implementation, with the passed argument being a std::move call on the argument passed to Derived move c-tor or move assignment operator."<<endl;
+	cout<<"     Derived(Derived&& d):Base{std::move(d)} and Base::operator=(move(d)) or baseAttribute = std::move(d.baseAttribute)."<<endl<<endl;
 
 	cout<<endl<<"---------------auto, auto& and auto&& + move-------------------"<<endl;
 	MoveClass up_MoveClass{};

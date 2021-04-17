@@ -61,15 +61,15 @@ void unique_ptr_calls()
 
     cout<<endl<<"Conclusions on unique_ptr"<<endl;
     cout<<"     1. unique_ptr has unique ownership on a resource, so only one unique_ptr can point to that heap memory. Thus copy assignment and copy construction are not implemented"<<endl;
-    cout<<"     2. Likewise shared_ptr, creating an unique_ptr from a stack allocated object (by taking its address) leads to SIGSEGV when unique_ptr d-tor calls free()."<<endl;
-    cout<<"     3. A class member unique_ptr can be initialized either in member initialization list, using new or make_unique, either later, only using move semantics."<<endl;
+    cout<<"     2. Likewise shared_ptr, creating an unique_ptr from a stack allocated object (by taking its address) leads to SIGSEGV when unique_ptr d-tor calls free()."<<endl<<endl;
+    cout<<"     3. A class member unique_ptr can be initialized either in member initialization list, using new or make_unique, either later, only using move semantics."<<endl<<endl;
     cout<<"     4. Returning unique_ptr from function/method can be done either by reference, with the returned value stored in a reference variable, thus avoid copy c-tor calls,"<<endl;
-    cout<<"     either using move semantics, with the returned value stored in a reference to r-value."<<endl;
+    cout<<"     either using move semantics, with the returned value stored in a reference to r-value."<<endl<<endl;
     cout<<"     5. A unique_ptr can be passed as argument to a function by reference, showing the intention to use an existing unique_ptr and the possibilty to change/redirect it"<<endl;
-    cout<<"     Also it can be passed by reference to const, showing the intention to use an existing unique_ptr, but not to change it."<<endl;
+    cout<<"     Also it can be passed by reference to const, showing the intention to use an existing unique_ptr, but not to change it."<<endl<<endl;
     cout<<"     6. Having a reference to r-value to a unique_ptr, means that an existing unique_ptr can be 'moved' to it. However, the existing pointer is not left in a stable/null"<<endl;
     cout<<"     state by the move call, but rather the move call only returnes r-value ref to it. Thus, the ref to r-value still points to the same object as unique_ptr."<<endl;
-    cout<<"     The only notable difference between passing unique_ptr by reference or by reference to r-value, is that in the latter case an unique_ptr can be created in place."<<endl;
+    cout<<"     The only notable difference between passing unique_ptr by reference or by reference to r-value, is that in the latter case an unique_ptr can be created in place."<<endl<<endl;
     cout<<"     7. A unique_ptr can be passed by value as argument to a function. This implies moving the unique_ptr as copy c-tor cannot be called. As a result, the resource"<<endl;
     cout<<"     pointed to by the unique_ptr is moved to the newly created unique_ptr on the function's stack. This means sink, as the callee owns the object and is responisble for it"<<endl;
     cout<<"     8.Likewise having a reference to unqiue_ptr, it does not entail creating a new object, so it happens when having reference to r-value unqiue_ptr. It just creates a"<<endl;

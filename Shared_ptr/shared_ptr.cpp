@@ -130,27 +130,27 @@ void shared_ptr_calls()
 
     cout<<endl<<"Conclusions on shared_ptr"<<endl;
     cout<<"     1. Implements shared ownership on a resource: there can be multiple shared_ptr instances pointing to the same (dynamically allocated) object"<<endl;
-    cout<<"     If two/more shared_ptrs are created to point to the same object via make_shared/new, but not via copy constructing, each will allocate a different object on heap"<<endl;
-    cout<<"     and each will have a distinct manager object that is allocated each time. Thus two/more sahred_ptrs can point to the same memory location via copy construction."<<endl;
+    cout<<"     If two/more shared_ptrs are created to point to the same object via make_shared/new, but not via copy constructing, each will allocate a different objects on heap"<<endl;
+    cout<<"     and each will have a distinct manager object, that is allocated each time. Thus, two/more shared_ptrs can point to the same memory location via copy construction."<<endl<<endl;
     cout<<"     2. Upon creation, there are dynamically allocated 2 objects: the manager object and the managed object"<<endl;
     cout<<"     The managed object is the object being pointed to whereas the manager object is created by the shared_ptr c-tor and holds"<<endl;
     cout<<"     shared counter (# of existing shared_ptrs to the manager object), weak counter (# of weak_ptr to the manager object) and a raw pointer to the managed object."<<endl;
     cout<<"     3. When creating a shared_ptr, in order to alleviate the double memory allocation, make_shared<> template method is used. It merges the two allocations into one."<<endl;
-    cout<<"     4. Also, a shared_ptr can be created by passing a explicit call to new to it's c-tor. This approaches lead to 2 separate memory allocations."<<endl;
-    cout<<"     5. Regardless new or make_shared are used, the argument passed to these methods can be an existing object (on stack). This would call the object's copy c-tor."<<endl;
+    cout<<"     Also, a shared_ptr can be created by passing a explicit call to new to it's c-tor. This approache leads to 2 separate memory allocations."<<endl<<endl;
+    cout<<"     4. Regardless new or make_shared are used, the argument passed to these methods can be an existing object (on stack). This would call the object's copy c-tor."<<endl;
     cout<<"     as a copy of the stack allocated object is created on heap. That said, the newly created shared_ptr will not point to the stack allocated object, but to its copy on heap."<<endl;
-    cout<<"     6. Also, regardless new or make_shared are used, the argument passed to these methods can be an anonymous object. In this case, only its c-tor would be called."<<endl;
-    cout<<"     That is because the pointed to object is constructed on heap."<<endl;
-    cout<<"     7. A shared_ptr can be created from a raw pointer, with the latter passed as arg to the former's c-tor. This approach is to be avoided, as it can lead to invalid"<<endl;
+    cout<<"     5. Also, regardless new or make_shared are used, the argument passed to these methods can be an anonymous object. In this case, only its c-tor would be called."<<endl;
+    cout<<"     That is because the pointed to object is constructed on heap."<<endl<<endl;
+    cout<<"     6. A shared_ptr can be created from a raw pointer, with the latter passed as arg to the former's c-tor. This approach is to be avoided, as it can lead to invalid"<<endl;
     cout<<"     memory allocation or double free attempt, as the raw pointer is directly managed by the programmer, whereas shared_ptr is managed by the class RAII concept."<<endl;
-    cout<<"     Also, a shared_ptr can be created from the address of a stack allocated object, but upon destruction the object's d-tor is called twice resulting in double free"<<endl;
+    cout<<"     Also, a shared_ptr can be created from the address of a stack allocated object, but upon destruction the object's d-tor is called twice resulting in double free"<<endl<<endl;
     cout<<"     7. A shared_ptr member variable to a class can be gotten via copy or reference, as an appropriate getter can be implemented for each of these cases"<<endl;
     cout<<"     If the returned ref to shared_ptr is not stored in a reference variable (either & or &&), but in a normal variable, a copy of the shared_ptr will be created anyway."<<endl;
     cout<<"     8. A shared_ptr that is local variable of a function can only be returned via copy. Otherwise, pointer/ref to local variable would be returned, causing error,"<<endl;
-    cout<<"     as the shared_ptr itself is a stack allocated object, as it is any pointer. It just points to heap allocated memory."<<endl;
+    cout<<"     as the shared_ptr itself is a stack allocated object, as it is any pointer. It just points to heap allocated memory."<<endl<<endl;
     cout<<"     9. Passing a shared_ptr by value as function argument denotes intention to share ownership to the heap data with other existing shared_ptr (at least with the one,"<<endl;
     cout<<"     that it is copied from) as shared_ptr copy c-tor is called and the shared count is incremented. Also the pointer can be changed/redirected inside the function."<<endl; 
-    cout<<"     Passing by const value denotes that the pointer will not be changed/redirected"<<endl;
+    cout<<"     Passing by const value denotes that the pointer will not be changed/redirected"<<endl<<endl;
     cout<<"     10. Passing a shared_ptr by ref as function argument denotes possibility of modifying the pointer inside the function. The exsiting ownership is reused and no extra"<<endl;
     cout<<"     memory allocations are done as copy c-tor is not called. Passing the shared_ptr by ref to const denotes there is no intention to modify the shared_ptr inside the function."<<endl;
     cout<<"     11. Passing a shared_ptr by ref to r-value as function argument denotes possibility of modifying the pointer inside the function and to created a shared_ptr in place "<<endl;
@@ -182,12 +182,12 @@ void shared_ptr_calls()
     cout<<"use count of shared_ptr member retrieved via weak_ptr constructed from getter: "<<wpd.use_count()<<endl;
 
     cout<<endl<<"Conclusions on weak_ptr"<<endl;
-    cout<<"     1. It is used in conjunction with shared_ptr and acts like an observer to the manager object."<<endl;
-    cout<<"     2. It cannot be used for dereferencing. There can be more weak_ptrs to the same manager object."<<endl;
-    cout<<"     3. Weak_ptr can be created via copy constructing or copy assignment from existing shared_ptr or weak_ptr. The weak count is increased accordingly. "<<endl;
+    cout<<"     1. It is used in conjunction with shared_ptr and acts like an observer to the manager object."<<endl<<endl;
+    cout<<"     2. It cannot be used for dereferencing. There can be more weak_ptrs to the same manager object."<<endl<<endl;
+    cout<<"     3. Weak_ptr can be created via copy constructing or copy assignment from existing shared_ptr or weak_ptr. The weak count is increased accordingly. "<<endl<<endl;
     cout<<"     4. Also, a shared_ptr can be created from a weak_ptr. The preferred approach is to use the lock() method on an existing weak_ptr, this returning a new shared_ptr."<<endl;
     cout<<"     The returned pointer should be checked against null. This also can be used to pass shared_ptr as argument to function whose parameter is a weak_ptr."<<endl;
     cout<<"     Here, firstly the weak_ptr is created on the function's stack from the passed shared_ptr. Inside the function, lock() is used to get a new shared_ptr."<<endl;
-    cout<<"     If there is another shared_ptr in existence, a new one is created, often this representing a downside from memory allocation perspective."<<endl;
+    cout<<"     If there is another shared_ptr in existence, a new one is created, often this representing a downside from memory allocation perspective."<<endl<<endl;
     cout<<"     5. If the shared_ptr is created via copy c-tor from a weak_ptr, if the inital shared_ptr had been deallocated, the creation would fail with SIGSEGV."<<endl<<endl;
 }

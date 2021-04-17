@@ -1,7 +1,7 @@
 #ifndef DERIVEDIMPL_HPP
 #define DERIVEDIMPL_HPP
 
-#include <iostream>
+#include <tuple>
 #include "Base.hpp"
 using namespace std;
 
@@ -13,9 +13,14 @@ class DerivedImpl:public Base
 	public:
 	DerivedImpl() = default;
 
-	DerivedImpl(const std::string str, const double& _data):Base{str}, data{_data}
+	DerivedImpl(const std::string& str, const double& _data):Base{str}, data{_data}
 	{
-		cout<<"DerivedImpl c-tor"<<endl;
+		cout<<"DerivedImpl c-tor that explicitly calls Base c-tor"<<endl;
+	};
+
+	DerivedImpl(const std::string& str, const double& _data, const bool& _x):data{_data}
+	{
+		cout<<"DerivedImpl c-tor that does not call Base c-tor"<<endl;
 	};
 
 	//overoad copy c-tor
@@ -71,6 +76,7 @@ class DerivedImpl:public Base
 	}
 
 	double getData() const {return data;};
+	tuple<int, string, double> getAttributes() const { return make_tuple(this->getID(), label, data);};
 };
 
 #endif

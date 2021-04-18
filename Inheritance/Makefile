@@ -1,10 +1,10 @@
 CFLAGS = -std=c++14 -Wall -g
 CC = g++
 
-all: inheritance
+all:inheritance 
 
 inheritance: 
-	$(CC) $(CFLAGS) inheritance.cpp -o inheritace.bin
+	$(CC) $(CFLAGS) inheritance.cpp -o inheritance.bin
 
 clean:
 	rm *.bin

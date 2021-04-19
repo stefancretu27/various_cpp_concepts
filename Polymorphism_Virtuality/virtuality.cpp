@@ -22,6 +22,7 @@ int main()
 	rootBaseRef.pureVirtualMethod();
 	rootBaseRef.virtualMethod();
 	rootBaseRef.method();
+	rootBaseRef.Root::pureVirtualMethod();
 
 	cout<<endl<<"Create Derived object that overrides inherited pure virtual, virtual and normal methods from Base  class"<<endl;
 	DerivedImpl derivedInst{};
@@ -40,6 +41,24 @@ int main()
 	rootDerivedRef.pureVirtualMethod();
 	rootDerivedRef.virtualMethod();
 	rootDerivedRef.method();
+	//rootDerivedRef.Base::pureVirtualMethod();  //error: ‘Base’ is not a base of ‘Root’
+	rootDerivedRef.Root::pureVirtualMethod();
+
+	cout<<endl<<"reference to Base class refering Derived object calls pure virtual method, then uses scoep resolution to access the pure virtual methods from Base and Root"<<endl;
+	Base& baseDerivedRef = derivedInst;
+	baseDerivedRef.pureVirtualMethod();
+	baseDerivedRef.Base::pureVirtualMethod();
+	baseDerivedRef.Root::pureVirtualMethod();
+
+	cout<<endl<<"dynamic cast Derived references from references to Root and Base that refer to Derived"<<endl;
+	DerivedImpl& dynamicCastDerivedFromRoot = dynamic_cast<DerivedImpl&>(rootDerivedRef);
+	dynamicCastDerivedFromRoot.method();
+	DerivedImpl& dynamicCastDerivedFromBase = dynamic_cast<DerivedImpl&>(baseDerivedRef);
+	dynamicCastDerivedFromBase.method();
+
+	cout<<endl<<"dynamic cast Base reference from reference to Root that refer to Derived"<<endl;
+	Base& dynamicCastBaseFromRoot = dynamic_cast<Base&>(rootDerivedRef);
+	dynamicCastBaseFromRoot.method();
 
 	cout<<endl<<"Polymorphism and virtuality"<<endl;
 	cout<<"     1. Overriding: The method must keep same signature as it is defined in the most Base class it appears:"<<endl;
@@ -52,7 +71,7 @@ int main()
     cout<<"     	- the method is declared as <<virtual>> in the most Base class"<<endl;
 	cout<<"     	- the method is overriden in Derived classes, so it has different implementations in the inheritance chain. "<<endl;
 	cout<<"     	- a pointer or reference to Base class points/refer to a Derived class and the virtual method is invoked via this pointer/ref. Thus, it is leveraged the pointer"<<endl;
-	cout<<"     type compatibility between Base and Derived, that does not imply object slicing If Derived is assigned to a Base instance,  object slicing takes place and all methods"<<endl;
+	cout<<"     type compatibility between Base and Derived, that does not imply object slicing. If Derived is assigned to a Base instance, object slicing takes place and all methods"<<endl;
 	cout<<"     from Derived, including the virtual ones, would not become accessible via this Base instance, as Derived instance is rescoped to Base type, hence no polymorphism."<<endl;
 	cout<<"     	- late binding is used to resolve method call at runtime. It is achieved through pointers to methods, as a class that declares a virtaul method, gets"<<endl;
 	cout<<"     a public virtual pointer that points to a static array of pointers to functions declared as virtual. The Derived classes inherrit the vptr and the vtable."<<endl;
@@ -83,6 +102,10 @@ int main()
 
 	cout<<"     6. The final qualifier can be specified after method's name, in Derived classes that override virtual methods inherited from Base class, in order to ensure"<<endl;
 	cout<<"     that virtual method will not be overriden further, down in the inheritance chain."<<endl<<endl;
+
+	cout<<"     7. Dynamic_cast<DerivedImpl*/&>(rootPtr) can be used to rebuild a Derived object from a pointer/ref to Base which points/refers to Derived instance. It is usefull "<<endl;
+	cout<<"     to rebuild Derived instance in order to access methods particular to it, and not worth to be subject of inheritance from Base, but only a pointer to Base is available"<<endl;
+	cout<<"     It can rebuild to intermediary types in the inheritance chain: A>B>C with A& = cInst, it can reconstruct instance of B and C type"<<endl<<endl;
 
     
 	return 0;

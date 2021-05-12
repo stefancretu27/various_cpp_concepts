@@ -1,10 +1,13 @@
 CFLAGS = -std=c++14 -Wall -g
 CC = g++
 
-all: smart_ptrs
+all: shared_ptr
 
-smart_ptrs:
-	$(CC) $(CFLAGS) shared_ptr_cycle.cpp shared_ptr.cpp unique_ptr.cpp main.cpp -o smart_ptrs.bin
+shared_ptr: unique_ptr
+	$(CC) $(CFLAGS) shared_ptr_cycle.cpp shared_ptr.cpp main.cpp -o shared_ptr.bin
+
+unique_ptr:
+	$(CC) $(CFLAGS) unique_ptr.cpp -o unique_ptr.bin
 
 clean:
 	rm *.bin

@@ -31,6 +31,25 @@ void shared_ptr_calls()
 {
     using namespace std;
 
+    shared_ptr<double> sp_default_created;
+
+    if(sp_default_created)
+    {
+        cout<<"Default created shared_ptr is NOT null. Use count: "<<sp_default_created.use_count()<<endl;
+    }
+    else
+    {
+        cout<<"Default created shared_ptr is null. Use count: "<<sp_default_created.use_count()<<endl;
+    }
+
+    sp_default_created = make_shared<double>(3.1415);
+    cout<<"call shared_ptr c-tor and store the created anonymous object into the previously default created shared_ptr. This calls chared_ptr move c-tor: "<<*sp_default_created;
+    cout<<" use count: "<<sp_default_created.use_count()<<endl;
+
+    sp_default_created = make_shared<double>(2.7182);
+    cout<<"call shared_ptr c-tor and store the created anonymous object into a shared_ptr pointing to existing object. This calls chared_ptr move c-tor: "<<*sp_default_created;
+    cout<<" use count: "<<sp_default_created.use_count()<<endl;
+
     //manners of reseting a shared_ptr
     shared_ptr<int> spi{make_shared<int>(8)};
     spi = nullptr;

@@ -26,8 +26,10 @@ int main()
 	
 	cout<<"		4. Derived class d-tor automatically calls the Base d-tor, as the destruction also takes place in phases: first is destroyed the Derived part, then the Base part."<<endl<<endl;
 	
-	cout<<"     5. Derived class own implemented c-tor and copy c-tor automatically call Base class default c-tor, as a new object must be created. However, they can explicitly "<<endl;
-	cout<<"		call, in their member initializer list, the c-tors which are implemented in Base class, as Derived implemented c-tors do not automatically call c-tors overloads from Base."<<endl<<endl;
+	cout<<"     5. Derived class implemented c-tor and copy c-tor automatically call Base class default c-tor, as a new object must be created. If no c-tor is implemented"<<endl;
+        cout<<"         the implicitly generated one is called. If a c-tor is implemented, then the default one must be provided, if it is envisaged to be automatically called by Derived c-tors."<<endl;
+	cout<<"		However, Derived c-tors can explicitly call, in their member initializer list, the c-tors which are implemented in Base class, that are overloads of the default c-tor."<<endl;
+        court<<"        To be noted that Derived implemented c-tors do not automatically call c-tors overloads from Base, hence the need for explicit call in the member initializer list."<<endl<<endl;
 	cout<<"     6. Derived implemented copy assignment has to explicitly invoke Base copy assignment, otherwise none will be called. Also, default c-tor of Base class is not"<<endl;
 	cout<<"		called, as the object assigned to has already been constructed."<<endl<<endl;
 	

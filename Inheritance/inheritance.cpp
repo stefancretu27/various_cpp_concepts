@@ -16,7 +16,7 @@ int main()
     cout<<"     2. A Derived class inherits the following from the Base class:"<<endl;
     cout<<"     	- Constructors, including Copy C-tor"<<endl;
 	cout<<"     	- Destructor"<<endl;
-	cout<<"     	- Copy asignment operator"<<endl;
+	cout<<"     	- Copy assignment operator"<<endl;
 	cout<<"     	- all public and protected methods"<<endl;
 	cout<<"     	- all members. The private ones are only accessible via setters and getters, whiel the protected and public ones are accessible in Derived scope."<<endl<<endl;
 	
@@ -26,7 +26,7 @@ int main()
 	
 	cout<<"		4. Derived class d-tor automatically calls the Base d-tor, as the destruction also takes place in phases: first is destroyed the Derived part, then the Base part."<<endl<<endl;
 	
-	cout<<"     5. Derived class own implemented c-tor and copy c-tor automatically call Base class default c-tor, as a new object msut eb freated somehow. However, they can explicitly "<<endl;
+	cout<<"     5. Derived class own implemented c-tor and copy c-tor automatically call Base class default c-tor, as a new object must be created. However, they can explicitly "<<endl;
 	cout<<"		call, in their member initializer list, the c-tors which are implemented in Base class, as Derived implemented c-tors do not automatically call c-tors overloads from Base."<<endl<<endl;
 	cout<<"     6. Derived implemented copy assignment has to explicitly invoke Base copy assignment, otherwise none will be called. Also, default c-tor of Base class is not"<<endl;
 	cout<<"		called, as the object assigned to has already been constructed."<<endl<<endl;
@@ -34,7 +34,7 @@ int main()
 	cout<<"     7. Constructors, including copy c-tor, can use member initializer list for initializing const and reference members. However, a Derived class can only initialize"<<endl;
 	cout<<"     its members in its initializer list, but not the members inherited from the Base class. This makes sense as Derived c-tor automatically calls Base implicit c-tor"<<endl;
 	cout<<"     which performs initialization on Base members. If Derived would have initialized Base members in Derived member initializer list, this would lead to double"<<endl; 
-	cout<<"     initialization, which would be an error for const and references data. However, Derived c-tors can invoke, in their member initializer list, Base c-tors to perform"<<endl;
+	cout<<"     initialization, which would be an error for const and references data. However, Derived c-tors can invoke, in their member initializer list, appropriate Base c-tors to perform"<<endl;
 	cout<<"     initialization of members inherited from Base."<<endl<<endl;
 	
 	cout<<"     8. Override: in Derived class, for the methods from the Base class, the signature stays the same (name, number and types of parameters and the return type)"<<endl;

@@ -195,12 +195,18 @@ int main()
 
 	cout<<endl<<"Conclusions on auto and move semantics"<<endl;
     cout<<"     1. only auto and auto&& can be used to store the output of std::move"<<endl;
-    cout<<"     2. auto&& does not involve creating a new object. Thus, inspite calling move when storing an object in auto&&, the object is not moved, but a ref to rvalue"<<endl;
-    cout<<"     for it is returned using the move call. When refering to an object without calling move, also no copy c-tor or move c-tor is involved"<<endl;
-	cout<<"     3. auto involves creating a new object. Therefore, it always involves calling either move c-tor or copy c-tor Thus, when calling move to store an object in auto,"<<endl;
+    cout<<"     2. auto&& or T&& do not involve creating a new object, as the goal of creating a reference to r-value is to avoid the move of the resources. Instead, they are used"<<endl;
+    cout<<"     to retain r-values, which can be literals or returned by calls to std::move. No copy or move c-tor is involved when creating such references to r-values. "<<endl;
+	cout<<"     Otherwise, if we recall signature of a move c-tor, it would mean that the move c-tor has to call itself when it is defined."<<endl;
+
+	cout<<"     3. auto& and T& do not involve creating a new object, nor they can store the output of move, as they do not retain references to r-values. Thus, no call copy c-tor"<<endl;
+	cout<<"     is involved when refering to an object, as the goal of creating a reference is to avoid copy of the resources. Likewise the move c-tor case, if the copy ct-or would "<<endl;
+	cout<<"     have been called when creating a reference it would need to call itself when it is defined - recall here the copy c-tor signature taking reference to const input. "<<endl;
+	
+	cout<<"     4. auto involves creating a new object. Therefore, it always involves calling either move c-tor or copy c-tor Thus, when calling move to store an object in auto,"<<endl;
     cout<<"     the object is moved, with all its resources assigned to the newly created object. Thereafter, its resources are left in a well defined state (reset to null, "<<endl;
-	cout<<"     closed, deallocated). When refring to an object that is not moved, then the copy c-tor is called"<<endl;
-	cout<<"     4. auto& does not involve creating a new object, nor it can store the output of move. Thus, it doe snot call copy c-tor or move c-tor when refering to an object"<<endl;
+	cout<<"     closed, deallocated). When refring to an object that is not moved, then the copy c-tor is called."<<endl;
+
 	cout<<"     5. MyType&& can only refer to r-values, so a move call is required. It cannot be created from l-values, even if they are stored in references to const, as"<<endl;
 	cout<<"     the ref to const is an l-value itself, witht he ability to store r-value."<<endl;
 	

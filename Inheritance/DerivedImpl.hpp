@@ -77,6 +77,12 @@ class DerivedImpl:public Base
 
 	double getData() const {return data;};
 	tuple<int, string, double> getAttributes() const { return make_tuple(this->getID(), label, data);};
+
+	static void setAnotherName(const std::string& _name) 
+	{
+		cout<<"Override static method from Base class in Derived class"<<endl;
+		another_name = _name;
+	};
 };
 
 #endif

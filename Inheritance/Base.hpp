@@ -19,6 +19,8 @@ class Base:public Root
 {
 	protected:
 	string label;
+	static const string name;
+	static  string another_name;
 
 	private:
 	int id{8};
@@ -67,6 +69,9 @@ class Base:public Root
 	string getLabel() const {return label;};
 	int getID() const {return id;};
 	pair<int, string> getAttributes() const { return make_pair(id, label);};
+	static string getName() {return name;};
+	static string getAnotherName() {return another_name;};
+	static void setAnotherName(const std::string& _name) {another_name = _name;};
 };
 
 #endif

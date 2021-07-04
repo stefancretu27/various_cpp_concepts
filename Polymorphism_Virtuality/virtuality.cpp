@@ -116,6 +116,12 @@ int main()
 	cout<<"     It can rebuild to intermediary types in the inheritance chain: A>B>C with A& = cInst, it can reconstruct instance of B and C type. This is a cast that takes place"<<endl;
 	cout<<"     at runtime, which is why it is used with polymorphic classes, otherwise cast fails, unlike static cast which casts at compile time, only between related classes."<<endl<<endl;
 
-    
+    cout<<"     10. Static methods can not be virtual, as static methods belong to class and cannot be bound to an object. Even if invoking a static method using a class instance "<<endl;
+	cout<<"     is an accepted syntax, it is counter intuitive. If it had been posisble to have static virtual methods, it would mean that a call to such method should access"<<endl;
+	cout<<"     the vptr, in order to iterate through vtable and resolve the call. It is known that static methods can only work with static members, as they lack *this poiner."<<endl;
+	cout<<"     That said, a static virtual method would require a static vptr. But if vptr would be static would mean that all classes in the inheritance chain will have the same"<<endl;
+	cout<<"     vptr, thus the same vtable, which cannot be true, as polymophism is achieved via a vptr and a vtable proper to each class in the inheritance chain, accessible in the"<<endl;
+	cout<<"     public Base part of each instance of such a class."<<endl;
+
 	return 0;
 }

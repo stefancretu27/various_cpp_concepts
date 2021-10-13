@@ -51,7 +51,7 @@ void atomicInsights()
     cout<<"     4. atomic<T> is not copyable or movable => its copy and move semantics are deleted. If copy semantics would have been allowed, it would lead to the situation that 2 threads"<<endl;
     cout<<"		could perform operations on such copies of the atomic variable, that might imply attempts to access same memory location (if the atomic instances would point to same memory) => race condition. "<<endl<<endl;
 
-	cout<<"     5. When default constructing an atomic variable, the default ctor of class T should not perform any initialization. In other words it should be implicit o default, in order to follow"<<endl;
+	cout<<"     5. When default constructing an atomic variable, the default ctor of class T should not perform any initialization. In other words it should be implicit or default, in order to follow"<<endl;
 	cout<<"     the trivial approach of the overall class design."<<endl<<endl;
 
     cout<<"     6. Since the underlying data type must be trivial, it means atomic<T> cannot be instantiated for complex classes/structs. However, if there is needed an atomic access for such a complex"<<endl;
@@ -67,7 +67,7 @@ void atomicInsights()
     cout<<"      - pre/post increment and decrement, that work only with integral types and pointers"<<endl;
     cout<<"      - T old = fetch_add(val)/fetch_sub(val) - returns the existing value and adds/substracts val from it."<<endl<<endl;
     
-    cout<<"     8. The atomic operations are completed by default using the sequential consistent memory model for operations ordering (memory_order_seq_cst). This implies the aall tomic operations"<<endl;
+    cout<<"     8. The atomic operations are completed by default using the sequential consistent memory model for operations ordering (memory_order_seq_cst). This implies the all atomic operations"<<endl;
     cout<<"     on a given atomic variable are executed wtih a global ordering (such as a sequence of operations)."<<endl;
     cout<<"     - memory_order_release - used in conjunction with store, performs a release after writting the value to the atomic variable, such that all preeceding store operations on the same variable"<<endl;
     cout<<"     are performed before the current one."<<endl;

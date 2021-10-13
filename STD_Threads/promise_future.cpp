@@ -50,8 +50,8 @@ void promise_futureInsights()
 	cout<<"     1. #include<future> header is used for accessing both promise and future"<<endl<<endl;
 	
 	cout<<"     2. promise<T> is a template class that can store a value/exception within a thread context. The stored value can be asynchronously retrieved"<<endl;
-	cout<<"     by the calling thread using future<T>. The future variable is built from the promise variable and is used to get the value set by the promise, "<<endl;
-	cout<<"     even if the callee thread hasn't joined yet. "<<endl;
+	cout<<"     by the calling thread using future<T>, instance of another template class. The future variable is built from the promise variable and is used to get the value set "<<endl;
+	cout<<"     by the promise, even if the callee thread hasn't joined yet. "<<endl;
 	cout<<"     That said, the {promise, future} objects can be used in conjunction for providing an async communication channel between 2 threads, "<<endl;
 	cout<<"		that can allow for passing along a value, such as a push-pull system. Additionally, {promise, future} can be used for signaling state between"<<endl;
 	cout<<"		2 threads, thus behaving like a barrier that allows for synchronization amongst the two."<<endl<<endl;
@@ -111,7 +111,7 @@ void promise_futureInsights()
 	
 	cout<<"     2. packaged_task<T> is a template class that wraps a callable target (std::function, regular functions, std::bind, lambdas) in order "<<endl;
 	cout<<"     to call it asynchronously. The callbale target's returned value or exception is stored in a shared state that is accessed via a future object. "<<endl;
-	cout<<"     The future object is obtained via a call to get_future() from the packaged_task object"<<endl<<endl;
+	cout<<"     The future object is obtained via a call to get_future() from the packaged_task instance => {packaged_task, future}, as a packaged_task has a shared state."<<endl<<endl;
 
 	cout<<"     3.That said, packaged_task allows to move some logic of execution (functions, in a nutshell) to other threads. The logic has to be"<<endl;
 	cout<<"		explicitly invoked using the calling operator ()."<<endl;
@@ -120,8 +120,8 @@ void promise_futureInsights()
 	cout<<"		4. A packaged_task can be moved to a thread or passed by reference using ref() "<<endl<<endl;
 
 	cout<<"		5. As an alternative to {promise, future}, with  the promise being argument to a thread's entry point function, the thread's invokable "<<endl;
-	cout<<"		target can be a packaged_task that can wrap a function that retrun a value. Furthermore, a packaged_task can wrap a function that takes"<<endl;
-	cout<<"		a promise argument, each having its own future, such that 2 values can be retrieved from a callee thread {packaged_task, promise, future}"<<endl<<endl;
+	cout<<"		target can be a packaged_task that can wrap a function that return a value. Furthermore, a packaged_task can wrap a function that takes"<<endl;
+	cout<<"		a promise argument, each having its own future, such that 2 values can be retrieved from a callee thread = {packaged_task = {promise, future}, future}"<<endl<<endl;
 
 	Functor f{};
 	//packaged_task with functor target, with the argument being passed when the packaged_task is invoked, instead of explicit specifying it at binding
@@ -177,4 +177,90 @@ void promise_futureInsights()
 		packTaskThread.join();
 	}
 
+	cout<<"------------------------------------------------------------------------------------------------";
+	cout<<endl<<"Insights on std::async"<<endl;
+	cout<<"     1. std::async implementation also resides in the <future> header"<<endl<<endl;
+	
+	cout<<"     2. async<T> is a template function that wraps a callable target (std::function, regular functions, std::bind, lambdas) in order "<<endl;
+	cout<<"     to call it asynchronously, possibly in a separate thread, with the function's retruned value or exception being stored in a future<T> instance."<<endl;
+	cout<<"     The future object is obtained via a call to get_future() from the async<T> instance => {async, future}, as an async call creates a shared state."<<endl<<endl;
+
+	cout<<"		3. async function template takes as argument the target function followed by the arguments of the target function, one by one, as in the case of std::bind."<<endl;
+
+	cout<<"     4.That function template provides an overload implementation that allows the specification of the launching policy, as the 1st parameter. If no launching policy"<<endl;
+	cout<<"		is specified, the default one is applied, that is launch::async | launch::deferred, which means that the target may be executed either in another thread, either"<<endl;
+	cout<<"		synchronously. Nevertheless, one fo the below policies can be explicitly specified."<<endl;
+	cout<<"			- launch::async - is a policy of launching the target function of async on a separate thread, as if it was spawned using a call to thread c-tor. However, "<<endl;
+	cout<<"		the difference from the case when spawned with thread() is that the returned value of the target function can be retrieved from the future associated with async."<<endl;
+	cout<<"			- launch::deferred - is a policy of launching the target function using lazy evaluation: the execution occurs on the current thread, when future associated with"<<endl;
+	cout<<"		async is invoked for getting the result."<<endl<<endl;
+
+	cout<<"		5. The async function template retruns a future<T>, where T is the data type of the returned value from the target function."<<endl<<endl;
+
+	cout<<"		6. Is it possible to specify a packaged_task as target of async, although it does not make much sense. Howeevr, in this case, the returned value is stored in the "<<endl;
+	cout<<"		shared state of the packaged task. Thus, the future associated with the async will be future<void> and will hold no result."<<endl<<endl;
+
+	//launch Functor using async and get the retruned future
+	future<double> futureAsyncDeferred = async(launch::deferred, Functor(), 1.0f);
+	//get the value from the returned future
+	cout<<"get result from future returned by async launch::deferred: "<<futureAsyncDeferred.get()<<endl;
+
+	auto resultFuture = async(launch::async, [&spi](char randomChar)
+											{
+												if(spi)
+												{
+													cout<<"inside async thread: captured shared_ptr value: "<<*spi<<" and random char: "<<randomChar<<endl;
+												}
+												return spi.use_count();
+											},
+											'/'
+							 );
+	//wait for the thread to make the result available. Otherwise, the below cout would be called before the result is ready
+	resultFuture.wait();
+	cout<<"get result from future returned from async launch::async: "<<resultFuture.get()<<endl;
+
+	//declare a promise and the associated future
+	promise<int> promiseIntPackedTask;
+	future<int> futurepromiseIntPackedTask = promiseIntPackedTask.get_future();
+	//define a packaged_task whose target function receives a promise argument and declare the associated future
+	packaged_task<int(promise<int>&)> packedTask{[&spi](promise<int>& promiseIntPackedTask)
+														{
+															if(spi)
+															{
+																cout<<"		[packaged_task] inside async thread: captured shared_ptr value: "<<*spi<<endl;
+																promiseIntPackedTask.set_value(++*spi);
+															}
+															return static_cast<int>(spi.use_count());
+														}
+													};
+	auto futurePackedTask = packedTask.get_future();
+
+	//use ref as it would be used in thread c-tor for arguments passed by reference to the target function. The packaged_task target can only be passed by reference or moved
+	future<void> res = async(launch::async, ref(packedTask), ref(promiseIntPackedTask));
+	res.wait();
+	cout<<"future value from target packaged_task: "<<futurePackedTask.get()<<" future value from promise arg: "<<futurepromiseIntPackedTask.get()<<endl;
+
+	//same as above but use function instead of packaged_task
+	//declare a promise and the associated future
+	promise<int> promiseIntFunction;
+	future<int> futurePromiseIntFunction = promiseIntFunction.get_future();
+	function<int(promise<int>&)> functionAsync{[&spi](promise<int>& promiseIntFunction)
+														{
+															if(spi)
+															{
+																cout<<"		[function] inside async thread: captured shared_ptr value: "<<*spi<<endl;
+																promiseIntFunction.set_value(++*spi);
+															}
+															return static_cast<int>(spi.use_count());
+														}
+													};
+
+	//use ref as it would be used in thread c-tor for arguments passed by reference to the target function. The packaged_task target can only be passed by reference or moved
+	future<int> futureAsync = async(functionAsync, ref(promiseIntFunction));
+	futureAsync.wait();
+	cout<<"future value from async with target=function: "<<futureAsync.get()<<" future value from promise arg: "<<futurePromiseIntFunction.get()<<endl;
+
+	//a bind can be sent as argument to async, or thread, as long as all args are specified => no placeholders
+	auto result = async(launch::async, bind(&Functor::operator=, &f, f2));
+	cout<<result.get().getD()<<endl;
 }

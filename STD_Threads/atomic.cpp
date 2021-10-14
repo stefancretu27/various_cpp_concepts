@@ -37,41 +37,48 @@ void atomicInsights()
 	cout<<endl<<"Insights on std atomic"<<endl;
 	cout<<"     1. #include<atomic> header is used for accessing atomic operations(functions) and the atomic template class"<<endl<<endl;
 	
-	cout<<"     2. atomic<T> is a template class that allows for creating objects which can be accessed by multiple threads, for read-modify-write operations, without leading to race condition"<<endl;
-	cout<<"		This is called atomical access and it involves a well defined (sequential) access of multiple threads to a given atomic variable. That said, another thread cannot access the atomic variable"<<endl;
-	cout<<"		whilst another thread is accessing it, as the atomic operation is indivisible. Therefore, no locking mechanism is required when an atomic variable is accessed, as the atomic operations"<<endl;
-	cout<<"		are thread safe by default."<<endl<<endl;
+	cout<<"     2. atomic<T> is a template class that allows for creating objects which can be accessed by multiple threads, for read-modify-write "<<endl;
+	cout<<"		operations, without leading to race condition. This is called atomical access and it involves a well defined (sequential) access "<<endl;
+	cout<<"		of multiple threads to a given atomic variable. That said, a thread cannot access the atomic variable whilst another thread is accessing it, "<<endl;
+	cout<<"		as the atomic operation is indivisible. Therefore, no locking mechanism is required when an atomic variable is accessed, as the atomic"<<endl;
+	cout<<" 	operations are thread safe by default."<<endl<<endl; 
 	
 	cout<<"     3. The underlying data type can be:"<<endl;
 	cout<<"     	i) any scalar type "<<endl;
-	cout<<"     	ii) trivially copyable classes/structs. A class is trivially copyable if its dtor, copy and move semantics are default or implicitly generated => they are not user provided. Additionally,"<<endl;
-	cout<<"			the class should not contain any virtual members, or to virtually inherrit (diamond problem). That said, basic operations on such objects can be completed in an indivisible manner."<<endl;
-	cout<<"		On top of that, atomic<T> cannot be instantiated with tuples, pairs and containers. Such classes are not trivially copyable."<<endl<<endl;
+	cout<<"     	ii) trivially copyable classes/structs. A class is trivially copyable if its dtor, copy and move semantics are default or implicitly "<<endl;
+	cout<<"		generated => they are not user provided. Additionally, the class should not contain any virtual members, or to virtually inherrit ."<<endl;
+	cout<<"		(diamond problem). That said, basic operations on such objects can be completed in an indivisible manner. On top of that, atomic<T>"<<endl;
+	cout<<"		cannot be instantiated with tuples, pairs and containers. Such classes are not trivially copyable."<<endl<<endl; 
 
-    cout<<"     4. atomic<T> is not copyable or movable => its copy and move semantics are deleted. If copy semantics would have been allowed, it would lead to the situation that 2 threads"<<endl;
-    cout<<"		could perform operations on such copies of the atomic variable, that might imply attempts to access same memory location (if the atomic instances would point to same memory) => race condition. "<<endl<<endl;
+    cout<<"     4. atomic<T> is NOT COPYABLE or MOVABlE => its copy and move semantics are deleted. If copy semantics would have been allowed, "<<endl;
+    cout<<"		it would lead to the situation that 2 threads could perform operations on such copies of the atomic variable, that might imply attempts "<<endl;
+	cout<<"		to access same memory location (if the atomic instances would point to same memory) => race condition. "<<endl<<endl;
 
-	cout<<"     5. When default constructing an atomic variable, the default ctor of class T should not perform any initialization. In other words it should be implicit or default, in order to follow"<<endl;
-	cout<<"     the trivial approach of the overall class design."<<endl<<endl;
+	cout<<"     5. When default constructing an atomic variable, the default ctor of class T should not perform any initialization. In other words, "<<endl;
+	cout<<"     it should be implicit or default, in order to follow the trivial approach of the overall class design."<<endl<<endl;
 
-    cout<<"     6. Since the underlying data type must be trivial, it means atomic<T> cannot be instantiated for complex classes/structs. However, if there is needed an atomic access for such a complex"<<endl;
-    cout<<"     class/struct, the preferred approach is to make some memebrs atomic, after a proper identification on which ones are suitable and require atomic operations"<<endl<<endl;
+    cout<<"     6. Since the underlying data type must be trivial, it means atomic<T> cannot be instantiated for complex classes/structs. However, "<<endl;
+    cout<<"     if there is needed an atomic access for such a complex class/struct, the preferred approach is to make some members atomic, after "<<endl;
+	cout<<"		a proper identification on which ones are suitable and require atomic operations"<<endl<<endl;
     
     cout<<"     7. Methods: "<<endl;
     cout<<"      - default ctor - calls the default ctor of T class, which must be default or implicit."<<endl;
-    cout<<"      - ctor with one parameter - it performs initialization of the underlying data, non atomically. For classes/structs with more fields, it takes as argument anonymous or existing objects."<<endl;
-    cout<<"      - operator=(val)- assigns the new value to the underlying data. It does not perform assignment between atomic variables and the rhs operator must eb a value, not another atomic variable"<<endl;
-    cout<<"      - T val = load() - returns the underlying value"<<endl;
+    cout<<"      - ctor with one parameter - it performs initialization of the underlying data, non atomically."<<endl;
+	cout<<"		For classes/structs with more fields, it takes as argument anonymous or existing objects."<<endl;
+    cout<<"      - operator=(val)- assigns the new value to the underlying data. It does not perform assignment between atomic variables and "<<endl;
+    cout<<"		the rhs operator must be a value, not another atomic variable"<<endl;
+	cout<<"      - T val = load() - returns the underlying value"<<endl;
     cout<<"      - T old = exchange(T new) - returns old value and replaces it with the new one"<<endl;
     cout<<"      - store(T val) - stores the val in the atomic variable, discarding the old one"<<endl;
     cout<<"      - pre/post increment and decrement, that work only with integral types and pointers"<<endl;
     cout<<"      - T old = fetch_add(val)/fetch_sub(val) - returns the existing value and adds/substracts val from it."<<endl<<endl;
     
-    cout<<"     8. The atomic operations are completed by default using the sequential consistent memory model for operations ordering (memory_order_seq_cst). This implies the all atomic operations"<<endl;
-    cout<<"     on a given atomic variable are executed wtih a global ordering (such as a sequence of operations)."<<endl;
-    cout<<"     - memory_order_release - used in conjunction with store, performs a release after writting the value to the atomic variable, such that all preeceding store operations on the same variable"<<endl;
-    cout<<"     are performed before the current one."<<endl;
-    cout<<"     - memoy_order_acquire - used in conjucntion with load, performs a lock before retrieving the data value, such that all subsequent load on the same atomic variable are executed after the current one"<<endl<<endl;
+    cout<<"     8. The atomic operations are completed by default using the sequential consistent memory model for operations ordering (memory_order_seq_cst)."<<endl;
+    cout<<"     This implies the all atomic operations on a given atomic variable are executed wtih a global ordering (such as a sequence of operations)."<<endl;
+    cout<<"     - memory_order_release - used in conjunction with store, performs a release after writting the value to the atomic variable, such that"<<endl;
+    cout<<"     all preeceding store operations on the same variable are performed before the current one."<<endl;
+    cout<<"     - memory_order_acquire - used in conjunction with load, performs a lock before retrieving the data value, such that all subsequent"<<endl;
+	cout<<"		load on the same atomic variable are executed after the current one"<<endl<<endl;
 
 	//declare atomic variable with initialization upon creation
 	atomic<uint_least16_t> aUInt16{33};

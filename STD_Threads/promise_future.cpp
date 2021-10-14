@@ -50,17 +50,23 @@ void promise_futureInsights()
 	cout<<"     1. #include<future> header is used for accessing both promise and future"<<endl<<endl;
 	
 	cout<<"     2. promise<T> is a template class that can store a value/exception within a thread context. The stored value can be asynchronously retrieved"<<endl;
-	cout<<"     by the calling thread using future<T>, instance of another template class. The future variable is built from the promise variable and is used to get the value set "<<endl;
-	cout<<"     by the promise, even if the callee thread hasn't joined yet. "<<endl;
+	cout<<"     by the calling thread using future<T>, instance of another template class. The future variable is built from the promise variable and is "<<endl;
+	cout<<"     used to get the value set by the promise, even if the callee thread hasn't joined yet. "<<endl;
 	cout<<"     That said, the {promise, future} objects can be used in conjunction for providing an async communication channel between 2 threads, "<<endl;
 	cout<<"		that can allow for passing along a value, such as a push-pull system. Additionally, {promise, future} can be used for signaling state between"<<endl;
 	cout<<"		2 threads, thus behaving like a barrier that allows for synchronization amongst the two."<<endl<<endl;
 
-    cout<<"     3. Both future and promise are NOT COPYABLE => their copy semantics is deleted, so they can be passed as arguments using move semantics or references."<<endl<<endl;
+    cout<<"     3. Both future and promise are NOT COPYABLE => their copy semantics is deleted, so they can be passed as arguments using move semantics or references."<<endl;
+	cout<<"		As the promise is the writting end of the communication channel, it makes sense to have an unique writting instance to the shared state, "<<endl;
+	cout<<"		as it would require a synch mechanism, which is not embedded in the implementation. The future is implemented as not copiable, "<<endl;
+	cout<<"		but since it is the reading end of the communication channel, it would make sense to have copies of it. For this reason, a future can "<<endl<<endl;
+	cout<<"		transfer its state using future.share() to a shared_future<t>, with the latter being able to be duplicated. After ownsership is transferred"<<endl;
+	cout<<"		from a future to a shared_future, the future object no longer has a shared state associated with it"<<endl;
 
 	cout<<"     4. Both future and promise are usable only once. That is because {promise, future} share a given state, which is released after the result is "<<endl;
-	cout<<"     retrieved from future or when the wait is over. When no state is associated, a std::future_error is thrown signaling no asscoiated state."<<endl;
-	cout<<"     The shared state represents a neutral location where the value is actually stored (set by the promise, then retrieved by the future)."<<endl<<endl;
+	cout<<"     retrieved from future or when the wait is over, only if the future hasn't shared its state. If so, the shared state is destroyed when the last"<<endl;
+	cout<<"     reference to it is destroyed. When no state is associated, a std::future_error is thrown signaling no associated state."<<endl;
+	cout<<" 	The shared state represents a neutral location where the value is actually stored (set by the promise, then retrieved by the future)."<<endl<<endl;
 
     cout<<"     5. The barrier-like mechanism for 2 threads leverages the shared state between promise and future. Concretely, promise<void> is used by "<<endl;
     cout<<"     the callee thread which has to call set_value() with no argument, such that the associated future's state becomes valid."<<endl;
@@ -84,13 +90,19 @@ void promise_futureInsights()
 	future<int16_t> retrieveFuture = storePromise.get_future(); 
 	promise<Garbage> promiseGarbage;
 	future<Garbage> futureGarbage{promiseGarbage.get_future()};
+	//the above future is moved to the one below
+	shared_future<Garbage> sharedFutureGarbage = futureGarbage.share();
+	//share the same state using shared_future, with duplicated instances being created using copy c-tor of shared_future
+	shared_future<Garbage> sharedFutureGarbageCopy{sharedFutureGarbage};
 	
 	//start thread. The pass by reference promise is passed to thread ctor also by reference
 	thread tPromiseFuture(doPromiseFuture, ref(storePromise), move(promiseGarbage));
 	//retrieve the values from the associated futures
-	cout<<" gotten promises: "<<retrieveFuture.get()<<" "<<futureGarbage.get().getD()<<endl;
+	cout<<" gotten promises retrieved from the associated futures: "<<retrieveFuture.get()<<" "<<sharedFutureGarbage.get().getD()<<endl;
+	cout<<"get value from copy of shared future: "<<sharedFutureGarbageCopy.get().getD()<<" value from shared future: "<<sharedFutureGarbage.get().getD()<<endl;
 	//join thread after asynchronously getting the value from the futures associated with the promise arguments 
 	joinThread(tPromiseFuture);
+	cout<<"get value from copy of shared future: "<<sharedFutureGarbageCopy.get().getD()<<" value from shared future: "<<sharedFutureGarbage.get().getD()<<endl;
 	
 	//use {promise, future} async communication channel as a barrier to sync the calling and the callee thread
 	promise<void> barrierFor2Threads;
@@ -110,14 +122,18 @@ void promise_futureInsights()
 	cout<<"     1. std::packaged_task implementation also resides in the <future> header"<<endl<<endl;
 	
 	cout<<"     2. packaged_task<T> is a template class that wraps a callable target (std::function, regular functions, std::bind, lambdas) in order "<<endl;
-	cout<<"     to call it asynchronously. The callbale target's returned value or exception is stored in a shared state that is accessed via a future object. "<<endl;
-	cout<<"     The future object is obtained via a call to get_future() from the packaged_task instance => {packaged_task, future}, as a packaged_task has a shared state."<<endl<<endl;
+	cout<<"     to call it asynchronously. The callable target's returned value or exception is stored in a shared state that is accessed via a future object. "<<endl;
+	cout<<"     The future object is obtained via a call to get_future() from the packaged_task instance => {packaged_task, future}, as a packaged_task"<<endl;
+	cout<<"		has a shared state."<<endl<<endl;
 
-	cout<<"     3.That said, packaged_task allows to move some logic of execution (functions, in a nutshell) to other threads. The logic has to be"<<endl;
+	cout<<"     3. That said, packaged_task allows to move some logic of execution (functions, in a nutshell) to other threads. The logic has to be"<<endl;
 	cout<<"		explicitly invoked using the calling operator ()."<<endl;
-	cout<<"		A way to perceive packaged_task is that it consists of a std::function linked to a std::future."<<endl<<endl;
+	cout<<"		A way to perceive packaged_task is that it consists of a std::function linked to a std::future => packaged_task = {function, future}"<<endl<<endl;
 
-	cout<<"		4. A packaged_task can be moved to a thread or passed by reference using ref() "<<endl<<endl;
+	cout<<"		4. A packaged_task can be moved to a thread or passed by reference using ref(), but it is NOT COPYABLE, as its copy semantics is deleted."<<endl;
+	cout<<"		A possible reason for why promise, future and packaged_task are not copiable might lie in the fact that a shared state must have unique"<<endl;
+	cout<<"		ends. If the writting end (promise or packaged_task) would be copiable (duplicated), then comcurrent writting can occur on the shared "<<endl;
+	cout<<"		state, which would require a synch mechanism, that is not part of the implementation."<<endl<<endl;
 
 	cout<<"		5. As an alternative to {promise, future}, with  the promise being argument to a thread's entry point function, the thread's invokable "<<endl;
 	cout<<"		target can be a packaged_task that can wrap a function that return a value. Furthermore, a packaged_task can wrap a function that takes"<<endl;
@@ -162,6 +178,9 @@ void promise_futureInsights()
 																				return result;
 																			}
 																		};
+	//a packaged_task cannot be copied
+	//auto packTaskCopy{packTask};
+
 	//future associated with packaged task
 	future<int> futureTask = packTask.get_future();
 	
@@ -182,23 +201,28 @@ void promise_futureInsights()
 	cout<<"     1. std::async implementation also resides in the <future> header"<<endl<<endl;
 	
 	cout<<"     2. async<T> is a template function that wraps a callable target (std::function, regular functions, std::bind, lambdas) in order "<<endl;
-	cout<<"     to call it asynchronously, possibly in a separate thread, with the function's retruned value or exception being stored in a future<T> instance."<<endl;
-	cout<<"     The future object is obtained via a call to get_future() from the async<T> instance => {async, future}, as an async call creates a shared state."<<endl<<endl;
+	cout<<"     to call it asynchronously, possibly in a separate thread, with the function's retruned value or exception being stored in a future<T>"<<endl;
+	cout<<"		instance.The future object is obtained via a call to get_future() from the async<T> instance => {async, future}, as a call to async"<<endl;
+	cout<<"     leads to the creation of a shared state where the target's return value is to be stored."<<endl<<endl;
 
-	cout<<"		3. async function template takes as argument the target function followed by the arguments of the target function, one by one, as in the case of std::bind."<<endl;
+	cout<<"		3. async function template takes as argument the target function followed by the arguments of the target function, one by one, "<<endl;
+	cout<<" 	as in the case of std::bind. Since an async is a function wrapper, such as bind, there is not possible to copy it, nor it makes sense"<<endl<<endl;
 
-	cout<<"     4.That function template provides an overload implementation that allows the specification of the launching policy, as the 1st parameter. If no launching policy"<<endl;
-	cout<<"		is specified, the default one is applied, that is launch::async | launch::deferred, which means that the target may be executed either in another thread, either"<<endl;
-	cout<<"		synchronously. Nevertheless, one fo the below policies can be explicitly specified."<<endl;
-	cout<<"			- launch::async - is a policy of launching the target function of async on a separate thread, as if it was spawned using a call to thread c-tor. However, "<<endl;
-	cout<<"		the difference from the case when spawned with thread() is that the returned value of the target function can be retrieved from the future associated with async."<<endl;
-	cout<<"			- launch::deferred - is a policy of launching the target function using lazy evaluation: the execution occurs on the current thread, when future associated with"<<endl;
-	cout<<"		async is invoked for getting the result."<<endl<<endl;
+	cout<<"     4. An overload implementation of the async template function allows for the specification of the launching policy, as the 1st parameter."<<endl;
+	cout<<"		If no launching policy is specified, the default one is applied, that is launch::async | launch::deferred, which means that the target "<<endl;
+	cout<<"		may be executed either in another thread, either synchronously. Nevertheless, one fo the below policies can be explicitly specified:"<<endl;
+	cout<<"			- launch::async - is a policy of launching the target function of async on a separate thread, as if it was spawned using a call "<<endl;
+	cout<<"		to thread c-tor. However,  the difference from the case when spawned with thread() is that the returned value of the target function "<<endl;
+	cout<<"		can be retrieved from the future associated with async."<<endl;
+	cout<<"			- launch::deferred - is a policy of launching the target function using lazy evaluation: the execution occurs on the current thread,"<<endl;
+	cout<<"		when future associated with async is invoked for getting the result."<<endl<<endl;
 
-	cout<<"		5. The async function template retruns a future<T>, where T is the data type of the returned value from the target function."<<endl<<endl;
+	cout<<"		5. The async function template returns a future<T>, where T is the data type of the returned value from the target function."<<endl<<endl;
 
-	cout<<"		6. Is it possible to specify a packaged_task as target of async, although it does not make much sense. Howeevr, in this case, the returned value is stored in the "<<endl;
-	cout<<"		shared state of the packaged task. Thus, the future associated with the async will be future<void> and will hold no result."<<endl<<endl;
+	cout<<"		6. A way to perceive std::async is that in consists of a thread with an associated future => async = {thread, future}"<<endl<<endl;
+
+	cout<<"		7. Is it possible to specify a packaged_task as target of async, although it does not make much sense. However, in this case, the returned "<<endl;
+	cout<<"		value is stored in the packaged_task's shared state. Thus, the future associated with the async will be void, holding no result."<<endl<<endl;
 
 	//launch Functor using async and get the retruned future
 	future<double> futureAsyncDeferred = async(launch::deferred, Functor(), 1.0f);

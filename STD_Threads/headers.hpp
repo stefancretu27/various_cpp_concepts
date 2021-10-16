@@ -8,6 +8,7 @@
 #include <functional>
 #include <mutex>
 #include <tuple>
+#include <algorithm>
 
 void mutexInsights();
 void atomicInsights();

@@ -11,7 +11,7 @@ void thread_entry_point(const shared_ptr<int>& spi, atomic<uint_least16_t>& aUIn
 		cout<<"value pointed to: "<<*spi<<" shared_ptr.use_count: "<<spi.use_count()<<" "<<this_thread::get_id()<<endl;
 	}
 	
-	//use default mmeory model that ensures sequential consistency
+	//use default memory model that ensures sequential consistency
 	//get the previous value then atomically increment by 12. Quite similar to exchange, but it does an extra add
 	uint_least16_t result = aUInt16.fetch_add(12, memory_order_seq_cst);
 	cout<<"value from atomic int after fetch_add was called: "<<aUInt16.load()<<" previous value stored in atomic variable: "<<result<<endl;
@@ -38,7 +38,7 @@ void atomicInsights()
 	cout<<"     1. #include<atomic> header is used for accessing atomic operations(functions) and the atomic template class"<<endl<<endl;
 	
 	cout<<"     2. atomic<T> is a template class that allows for creating objects which can be accessed by multiple threads, for read-modify-write "<<endl;
-	cout<<"		operations, without leading to race condition. This is called atomical access and it involves a well defined (sequential) access "<<endl;
+	cout<<"		operations, without leading to race condition. This is called atomic access and it involves a well defined (sequential) access "<<endl;
 	cout<<"		of multiple threads to a given atomic variable. That said, a thread cannot access the atomic variable whilst another thread is accessing it, "<<endl;
 	cout<<"		as the atomic operation is indivisible. Therefore, no locking mechanism is required when an atomic variable is accessed, as the atomic"<<endl;
 	cout<<" 	operations are thread safe by default."<<endl<<endl; 

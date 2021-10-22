@@ -45,7 +45,7 @@ int main()
     cout<<"     4. A thread object is NOT COPYABLE, as its copy semantics is deleted, thus there is impossible to have 2 or more objects representing "<<endl;
     cout<<"     the same execution thread, as to each thread is assigned an unique id. Nonetheless, a thread object is movable."<<endl<<endl;
 
-    cout<<"     5. Attributes specific to each threa are:"<<endl;
+    cout<<"     5. Attributes specific to each thread are:"<<endl;
     cout<<"         - thread ID = useful to identify on which thread a certain action occurs: join, detach (both in pthread and <thread>), kill, cancel"<<endl;
     cout<<"         - signal mask"<<endl;
     cout<<"         - stack frame"<<endl;
@@ -120,6 +120,8 @@ int main()
 	promise_futureInsights();
     cout<<"----------------------------------------------------------------------------------------------------------"<<endl;
     mutexInsights();
+    cout<<"----------------------------------------------------------------------------------------------------------"<<endl;
+    conditionVariableInsights();
 
     return 0;
 }

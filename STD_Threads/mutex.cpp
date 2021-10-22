@@ -37,8 +37,9 @@ void mutexInsights()
     cout<<"     1. mutex is a template class implemented in header <mutex>"<<endl;
 
 	cout<<"     2. Mutex is a synchronization primitive that ensures exclusive access (atomic access) to a shared resource amongst multiple threads "<<endl;
-	cout<<"     attempting to access it. When a thread acquires a mutex, it becomes the owner of that mutex and is the only  responsible for unlocking it."<<endl;
-    cout<<"     A thread attempting to acquire a mutex must not own already the same mutex, otherwise it leads to undefined behavior, possibly deadlock."<<endl<<endl;
+	cout<<"     attempting to access it. When a thread acquires a mutex, it becomes the owner of that mutex and is the only responsible for unlocking it."<<endl;
+    cout<<"     A thread attempting to acquire a mutex must not own already the same mutex, otherwise it leads to undefined behavior, possibly deadlock."<<endl;
+    cout<<"     While a thread successfully acquired a mutex, the other threads attempting to lock the mutex are blocked until the mutex is unlocked"<<endl<<endl;
 
     cout<<"     3. Since a mutex provide exclusive access to a given shared resource, when dealing with multiple shared resources, the approach is to"<<endl;
 	cout<<"     have a mutex for each shared resource on which atomic access is required. Using a given mutex for more shared variables would be"<<endl;
@@ -74,6 +75,10 @@ void mutexInsights()
     cout<<"      - adopt_lock - it assumes the calling thread already owns the mutex. Mainly used as an option to lock_guard, in order to bind the ownership "<<endl;
     cout<<"     of mutexes previously acquired using deadlock avoidance algorithm, by a lock() call. Thereafter, the lock ownership is bound to (adopted) "<<endl;
     cout<<"     lock_guard objects, in order to ensure RAII unlocking.It can also be used with unique_lock, but it assumes the mutex is already locked."<<endl<<endl;
+
+    cout<<"     9. scoped_lock<std::mutex> lg(mutex) - it is a template class which wraps over mutex, allowing for ;pcking multiple mutexes simultaneously,"<<endl;
+    cout<<"     RAII fashion, using deadlock avoidance algorithm. It was introduced in c++17."<<endl;
+    cout<<"     A scoped_lock is NOT COPYABLE."<<endl;
     
     cout<<endl<<">>>    lock_guard stuff   <<<"<<endl;
 
@@ -230,4 +235,35 @@ void mutexInsights()
     q1.printElements();
     q2.printElements();
 
+    //--------------scoped_lock---------------
+    cout<<endl<<">>>    scoped_lock stuff   <<<"<<endl;
+
+    auto swapQueuesLambda_ScopedLock{ [&mtx_q1, &mtx_q2](Queue& q1, Queue& q2)
+                                        {
+                                            //use scoped_lock lock the mutexes using deadlock avoidance algorithm whilst acquiring them in RAII fashion
+                                            //Prior to c++17, this could only have been possible by using std::lock and lock_guard(adopt_lock) or unique_lock(deferred_lock)
+                                            scoped_lock scopedLock(mtx_q1, mtx_q2);
+                                            
+                                            //swap the two queues in a thread safe manner
+                                            q1.queueSwap(q2); 
+                                            cout<<" [   thread] q1 length: "<<q1.getLength()<<" q2 length: "<<q2.getLength()<<endl;
+                                            q1.printElements();
+                                            q2.printElements();
+                                        }
+                                    };
+
+    thread swapQueuesScopedLock{swapQueuesLambda_ScopedLock, ref(q1), ref(q2)};
+    {
+        scoped_lock scopedLock(mtx_q1, mtx_q2);
+        q1.queueSwap(q2);
+        cout<<" [before thread joined] q1 length: "<<q1.getLength()<<" q2 length: "<<q2.getLength()<<endl;
+        q1.printElements();
+        q2.printElements();
+    }
+
+    joinThread(swapQueuesScopedLock);
+
+    cout<<" [after thread joined] q1 length: "<<q1.getLength()<<" q2 length: "<<q2.getLength()<<endl;
+    q1.printElements();
+    q2.printElements();
 }

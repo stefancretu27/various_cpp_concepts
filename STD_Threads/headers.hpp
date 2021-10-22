@@ -13,5 +13,6 @@
 void mutexInsights();
 void atomicInsights();
 void promise_futureInsights();
+void conditionVariableInsights();
 
 void joinThread(std::thread& threadInst);

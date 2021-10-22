@@ -1,6 +1,6 @@
 CFLAGS = -std=c++17 -g -Wall -pthread
 CC = g++
-SRCS = main.cpp mutex.cpp atomic.cpp promise_future.cpp
+SRCS = main.cpp mutex.cpp atomic.cpp promise_future.cpp condition_variable.cpp
 BIN = std_threads.bin
 
 all:

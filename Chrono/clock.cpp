@@ -15,7 +15,7 @@ void clock_insights()
     cout<<"     The above listed types of clocks meet the requirements of TrivialClock."<<endl<<endl;
 
     cout<<"     2. system_clock represents the system real time clock and it is the only c++ clock that can map its time points to C-style time."<<endl;
-    cout<<"     However, it is not a monotonic clock, as the time can be adjusted at any moment. In detail, this clock can be the subject of variations"<<endl;
+    cout<<"     However, it is not a monotonic clock, as the time can be adjusted at any moment. In detail, this clock can be the subject of variations,"<<endl;
     cout<<"     thus it can jump backward or forward. For instance, this can happen when it is synchronized with other clocks (via NTP: Network Time Protocol)"<<endl;
     cout<<"     or when DST is set on/off. The epoch of a system_clock usually is set to Unix time: 1st of January 1970."<<endl;
     cout<<"     The class implementing the system_clock has several static methods:"<<endl;
@@ -62,7 +62,7 @@ void clock_insights()
     cout<<"     time points cannot decrease. In addition, the time between ticks is constant, hence the monotony. That said, this clock is more suitable"<<endl;
     cout<<"     for measuring time intervals, as it is more accurate and it is not bound to an epoch becuase is not related to a wall clock."<<endl;
     cout<<"     Nevertheless, it can suffer adjustments if it detects that the local quartz is ticking slower/faster then the server's (via NTP) and"<<endl;
-    cout<<"     consequently it adjusts the time intervals (bigger/smaller) but it does not entail jumps back in time."<<endl;
+    cout<<"     consequently it adjusts the time intervals (bigger/smaller) but the adjustment does not entail jumps back in time."<<endl;
     cout<<"     The steady clock can be related to some system time, in the sense that it can represent the time elapse since boot, for instance."<<endl;
     cout<<"     The class implementing the steady_clock has only one static method: now. It is used to retrieve the current time point"<<endl<<endl;
 
@@ -87,7 +87,7 @@ void clock_insights()
     cout<<"is high_resolution_clock steady: "<<chrono::high_resolution_clock::is_steady<<" False => On this config it is aliased to system_clock"<<endl;
 
     cout<<"     4. As (private) members, both system_clock and steady_clock non-template classes encapsulate the follwing:"<<endl;
-    cout<<"      - rep = which is the number of ticks in the clock's duration"<<endl;
+    cout<<"      - rep = which is the number of ticks in the clock's duration, it is a data type such as int64_t or double"<<endl;
     cout<<"      - period = it is a std::ratio type, representing the tick period of the clock, in seconds (interval between consecutive ticks)"<<endl;
     cout<<"      - duration = chrono::duration<rep, period>, capable of representing negative duration in case of system_clock"<<endl;
     cout<<"      - time_point = chrono::time_point<chrono::system_clock> which stores the measurement retruned by now()"<<endl<<endl;

@@ -1,127 +1,240 @@
-//for size_t
-#include <cstdio>
-//for move
-#include <utility>
-#include <iostream>
-#include <vector>
+#include "headers.hpp"
 
-#include "DerivedImpl.hpp"
-
-//using namespace std;
-
-int main()
+void virtualityUnderTheHood()
 {
-	cout<<"Create Base object that overrides inherited pure virtual, virtual and normal methods from Root abstract class"<<endl;
-	Base baseInst{"Base instance"};
-	baseInst.pureVirtualMethod();
-	baseInst.virtualMethod();
-	baseInst.method();
+    using namespace std;
 
-	cout<<endl<<"Create reference to Root that refers to Base instance"<<endl;
-	Root& rootBaseRef{baseInst};
-	rootBaseRef.pureVirtualMethod();
-	rootBaseRef.virtualMethod();
-	rootBaseRef.method();
-	rootBaseRef.Root::pureVirtualMethod();
-
-	cout<<endl<<"Create Derived object that overrides inherited pure virtual, virtual and normal methods from Base  class"<<endl;
-	DerivedImpl derivedInst{};
-	derivedInst.pureVirtualMethod();
-	derivedInst.virtualMethod();
-	derivedInst.method();
-
-	cout<<endl<<"Copy assign Derived instance to Base instance"<<endl;
-	baseInst = derivedInst;
-	baseInst.pureVirtualMethod();
-	baseInst.virtualMethod();
-	baseInst.method();
-
-	cout<<endl<<"Create reference to Root that refers to DerivedImpl instance"<<endl;
-	Root& rootDerivedRef = derivedInst;
-	rootDerivedRef.pureVirtualMethod();
-	rootDerivedRef.virtualMethod();
-	rootDerivedRef.method();
-	//rootDerivedRef.Base::pureVirtualMethod();  //error: ‘Base’ is not a base of ‘Root’
-	rootDerivedRef.Root::pureVirtualMethod();
-
-	cout<<endl<<"reference to Base class refering Derived object calls pure virtual method, then uses scoep resolution to access the pure virtual methods from Base and Root"<<endl;
-	Base& baseDerivedRef = derivedInst;
-	baseDerivedRef.pureVirtualMethod();
-	baseDerivedRef.Base::pureVirtualMethod();
-	baseDerivedRef.Root::pureVirtualMethod();
-
-	cout<<endl<<"dynamic cast Derived references from references to Root and Base that refer to Derived"<<endl;
-	DerivedImpl& dynamicCastDerivedFromRoot = dynamic_cast<DerivedImpl&>(rootDerivedRef);
-	dynamicCastDerivedFromRoot.method();
-	DerivedImpl& dynamicCastDerivedFromBase = dynamic_cast<DerivedImpl&>(baseDerivedRef);
-	dynamicCastDerivedFromBase.method();
-
-	cout<<endl<<"dynamic cast Base reference from reference to Root that refer to Derived"<<endl;
-	Base& dynamicCastBaseFromRoot = dynamic_cast<Base&>(rootDerivedRef);
-	dynamicCastBaseFromRoot.method();
-
-	cout<<endl<<"Polymorphism and virtuality"<<endl;
-	cout<<"     1. Overriding: The method must keep same signature as it is defined in the most Base class it appears:"<<endl;
-	cout<<"     	- same name,"<<endl;
-	cout<<"     	- same return type,"<<endl;
-	cout<<"     	- same parameters types and same number of parameters"<<endl;
-	cout<<"     	- same constness."<<endl<<endl;
-
-	cout<<"     2. Polymorphism is the ability of a method call to be resolved to the most Derived implementation of that method. Polymorphism is achieved as follows"<<endl;
-    cout<<"     	- the method is declared as <<virtual>> in the most Base class"<<endl;
-	cout<<"     	- the method is overriden in Derived classes, so it has different implementations in the inheritance chain. "<<endl;
-	cout<<"     	- a pointer or reference to Base class points/refer to a Derived class and the virtual method is invoked via this pointer/ref. Thus, it is leveraged the pointer"<<endl;
-	cout<<"     type compatibility between Base and Derived, that does not imply object slicing. If Derived is assigned to a Base instance, object slicing takes place and all methods"<<endl;
-	cout<<"     from Derived, including the virtual ones, would not become accessible via this Base instance, as the vptr is not subject of assignment or copy, hence no polymorphism"<<endl<<endl;
+    cout<<"How virtuality works under the hood: Vptr and vtable"<<endl;
+	cout<<"     1.  A class that declares a virtual function, for the first time in the inheritance chain, gets a public non-static pointer referred to "<<endl;
+	cout<<" 	as vptr, thus becoming larger  by a pointer. That said, the vptr is allocated per object. Thereafter, the vptr points to a static array of "<<endl;
+	cout<<" 	pointers to the functions declared as virtual. This array is referred to as the vtable. As all class instances require access to the same "<<endl;
+	cout<<" 	methods, the vtable is generated one per class at compile time, as it is known how many virtual methods a class has when it is compiled."<<endl;
+	cout<<" 	When a class that derives from a Base that has at least one virtual method, it inherits the vptr and the vtable. If an inherited virtual "<<endl;
+	cout<<" 	method is overriden in  the Derived class, its entry in the Derived class vtable is updated. Otherwise, the entries remain the same. Thus,"<<endl;
+	cout<<" 	at runtime, when a virtual method is invoked,  the vptr is dereferenced to access the vtable and the apropriate entry for the virtual"<<endl;
+    cout<<" 	method is found and the call is resolved to it."<<endl<<endl; 
 	
-	cout<<"     3. Late binding is used to resolve method call at runtime. A class that declares a virtual function, for the first time in the inheritance chain, gets a public pointer"<<endl;
-	cout<<"     referred to as vptr. Vptr points to a static array of pointers to functions declared as virtual. The Derived classes inherrit the vptr and the vtable."<<endl;
-	cout<<"     If an inherited virtual method is overriden in the Derived class, its entry in the Derived vtable is updated. Thus, at runtime, when a virtual method is invoked"<<endl;
-	cout<<"     the vptr is dereferenced to access the vtable and the apropriate entry for the virtual method is found and the call is resolved to it. Binding is the process"<<endl;
-	cout<<"     that converts variables and functions into addresses. For pointers, it always takes place at runtime, referred to as late/dynamic binding"<<endl<<endl;
+	cout<<" 	2. Late binding is used to resolve method call at runtime. Binding is the process that converts variables and functions into addresses. "<<endl;
+	cout<<" 	For pointers, it always  takes place at runtime, and is referred to as late/dynamic binding. So, even though the vtable is generated at "<<endl;
+	cout<<" 	compile time, the addresses of the functions are only known at runtime."<<endl;
+	cout<<" 	Concretely, at each compilation, a distinct address is generated in the process' virtual memory space for each function (generally speaking),"<<endl;
+	cout<<" 	such that an entry in the vtable gets is assigned to a new value whenever the code is recompiled. Nevertheless, a mapping between each virtual"<<endl;
+	cout<<" 	method's signature and an index in the vtable is done at compile time because there is known the number of virtual methods the given class "<<endl;
+	cout<<" 	has (namely, the length of the statically allocated array of pointers to  functions), but it cannot be distinguished to which implementation"<<endl;
+	cout<<" 	a mapping is done, because it is performed at runtime, via late binding. The index is fixed in the inheritance chain."<<endl<<endl;
 
-	cout<<"     4. Even though a Derived class overrides virtual methods inherrited from Base, the Base implementtaions of those virtual methods are available via scope resolution,"<<endl;
-	cout<<"     as it happens with any other public or protected method from Base. This is possible because, when a Derived object is constructed in phases, the Base part comes"<<endl;
-	cout<<"     with all its protected and public methods, no matter they are virtual. Additionally, when a pointer/reference to Base points/refers to a Derived instance, it can"<<endl;
-	cout<<"     only call virtual methods from Derived, via vptr and vtable, and virtual methods from Base, via scope resolution. If there is an intermediary class in this"<<endl;
-	cout<<"     inheritance chain, that Base pointer/ref cannot call any of its methods via scope resolution. It can only call virtual methods from intermediary class that are not"<<endl;
-	cout<<"     overriden in Derived class."<<endl<<endl;
+	cout<<"     3.  When a pointer/reference to Base class points/refers to a Derived object, it can only access the methods and members from the Base part"<<endl;
+	cout<<" 	of the Derived object. In detail, it is known each class defines a namespace within the encapsulation takes place. If a class inherritance"<<endl;
+	cout<<" 	tree is regarded as a nesting of namespaces, the outmost namespace, associated with the most Base class, cannot access data and functions"<<endl;
+	cout<<" 	in the namespaces it nests. Moreover, the assignment of a Derived objectto a Base pointer/reference is augmented by the compiler as a "<<endl;
+	cout<<" 	static cast: Base* bPtr = static_cast<Base*>(new Derived()). "<<endl;
+	cout<<" 	Next to that, it is also known that each method's name is mangled at compile time such that its first parameter is the *this pointer, which"<<endl;
+	cout<<" 	is inferred from the calling object, so it is known for which object the given method is called and which values do the members bear in the"<<endl;
+    cout<<"     invoked method. So it happens with virtual methods, only that the pointer/reference to Base class needs to be casted to the Derived"<<endl;
+    cout<<"     pointer/reference."<<endl<<endl;
 
-	cout<<"     5. Constructors cannot be declared as virtual (error is thrown otherwise). Anyway, if it had been possible, when the c-tor is called, the vptr is set to point"<<endl;
-	cout<<"     to current's class vtable, so the c-tor of the current class couldn't be called via vptr, but the one of its Base class, as the Derived part is not built yet."<<endl;
-	cout<<"     Steps executed by constructor:"<<endl;
-	cout<<"     	1. call parent's class c-tor, to construct the Base part"<<endl;
-	cout<<"     	2. sets vptr inherited from parent to point to current class vtable. Thus, virtual methods called within c-tor ca resolve to current class versions."<<endl;
-	cout<<"     	3. executes member initializer list"<<endl;
-	cout<<"     	4. executes instructions specified in c-tors body implementation"<<endl<<endl;
+	cout<<"     Having said that, given the vptr is placed in the public part, it can by directly accessed by the pointer/reference to Base. Next to that,"<<endl;
+	cout<<" 	if the pointer/reference is used to invoke a virtual method, the call takes places via the vptr, which directly accesses the pointers to"<<endl;
+	cout<<"     the virtual methods (No pointer indirection vptr->vtable occurrs due to efficiency reasons). With the corresponding index for the given"<<endl;
+	cout<<"     method's signature being known, a virtual method call would look like below"<<endl; 
+    cout<<" 	Derived d; "<<endl;
+	cout<<" 	Base& refBase{d);"<<endl;
+	cout<<" 	refBase.virtualMethod()    ---> at compile time might look like:  (*refBase.vptr[index])(static_cast<Derived&>()refBase)"<<endl;
 
-	cout<<"     6. Destructors must be declared as virtual whean dealing with polymorphism. This was is ensured the resources pointed to by Base pointer or ref are properly"<<endl;
-	cout<<"     deallocated."<<endl;
-	cout<<"     Steps executed by destructor:"<<endl;
-	cout<<"     	1. sets vptr inherited from parent to point to current caller class vtable. This means all virtual methods called in d-tor will call Base versions."<<endl;
-	cout<<"     	2. executes instructions specified in d-tor body implementation"<<endl;
-	cout<<"     	2. calls members' destructors to deallocate them."<<endl;
-	cout<<"     	4. call parent's class d-tor, to destory the Base part"<<endl<<endl;
+	cout<<"Vtables for class hierarchy Root->Base->DerivedImpl obtained with 'g++ -fdump-lang-class file.cpp'"<<endl;
+	cout<<"Class Root"<<endl;
+   	cout<<"size=8 align=8"<<endl;
+   	cout<<"base size=8 base align=8"<<endl;
+	cout<<"Root (0x0x7f814a5319c0) 0 nearly-empty"<<endl;
+    cout<<"vptr=((& Root::_ZTV4Root) + 16)"<<endl;
+	cout<<"Root::_ZTV4Root: 4 entries"<<endl;
+	cout<<"0     (int (*)(...))0"<<endl;
+	cout<<"8     (int (*)(...))(& _ZTI4Root)"<<endl;
+	cout<<"16    0"<<endl;
+	cout<<"24    0"<<endl;
+	cout<<"32    (int (*)(...))__cxa_pure_virtual"<<endl;
+	cout<<"40    (int (*)(...))Root::virtualMethod"<<endl;
+	cout<<" "<<endl;
 
-	cout<<"     7. The override qualifier can be specified after method's name, in Derived classes that override virtual methods inherited from Base class, in order to enforce"<<endl;
-	cout<<"     a correct overriding, such that one of the four criteria above is not violated. Otheriwse, error is thrown at compile time. This way is ensured that when a"<<endl;
-	cout<<"     Derived instance is passed to a Base ref/pointer which would call the virtual the virtual method, no ambiguous call or no matching call is issued, as the"<<endl;
-	cout<<"     incompatiblity is detected when the class is implemented, not when the class is used."<<endl<<endl;
+	cout<<"Class Base"<<endl;
+   	cout<<"size=48 align=8"<<endl;
+   	cout<<"base size=44 base align=8"<<endl;
+	cout<<"Base (0x0x7f814a7f99c0) 0"<<endl;
+    cout<<"	vptr=((& Base::_ZTV4Base) + 16)"<<endl;
+ 	cout<<"		Root (0x0x7f814a574060) 0 nearly-empty"<<endl;
+    cout<<"			primary-for Base (0x0x7f814a7f99c0)"<<endl;
+	cout<<"Base::_ZTV4Base: 4 entries"<<endl;
+	cout<<"0     (int (*)(...))0"<<endl;
+	cout<<"8     (int (*)(...))(& _ZTI4Base)"<<endl;
+	cout<<"16    (int (*)(...))Base::~Base"<<endl;
+	cout<<"24    (int (*)(...))Base::~Base"<<endl;
+	cout<<"32    (int (*)(...))Base::pureVirtualMethod"<<endl;
+	cout<<"40    (int (*)(...))Base::virtualMethod"<<endl;
+	cout<<" "<<endl;
 
-	cout<<"     8. The final qualifier can be specified after method's name, in Derived classes that override virtual methods inherited from Base class, in order to ensure"<<endl;
-	cout<<"     that virtual method will not be overriden further, down in the inheritance chain."<<endl<<endl;
+	cout<<"Class DerivedImpl"<<endl;
+  	cout<<"size=56 align=8"<<endl;
+   	cout<<"base size=56 base align=8"<<endl;
+	cout<<"DerivedImpl (0x0x7f814a604b60) 0"<<endl;
+    cout<<"		vptr=((& DerivedImpl::_ZTV11DerivedImpl) + 16)"<<endl;
+  	cout<<"	 Base (0x0x7f814a604bc8) 0"<<endl;
+    cout<<"			primary-for DerivedImpl (0x0x7f814a604b60)"<<endl;
+    cout<<"		Root (0x0x7f814a61df00) 0 nearly-empty"<<endl;
+    cout<<"				primary-for Base (0x0x7f814a604bc8)"<<endl;
+	cout<<"DerivedImpl::_ZTV11DerivedImpl: 4 entries"<<endl;
+	cout<<"0     (int (*)(...))0"<<endl;
+	cout<<"8     (int (*)(...))(& _ZTI11DerivedImpl)"<<endl;
+	cout<<"16    (int (*)(...))DerivedImpl::~DerivedImpl"<<endl;
+	cout<<"24    (int (*)(...))DerivedImpl::~DerivedImpl"<<endl;
+	cout<<"32    (int (*)(...))DerivedImpl::pureVirtualMethod"<<endl;
+	cout<<"40    (int (*)(...))DerivedImpl::virtualMethod"<<endl;
 
-	cout<<"     9. Dynamic_cast<DerivedImpl*/&>(rootPtr) can be used to rebuild a Derived object from a pointer/ref to Base which points/refers to Derived instance. It is usefull "<<endl;
-	cout<<"     to rebuild Derived instance in order to access methods particular to it, and not worth to be subject of inheritance from Base, but only a pointer to Base is available"<<endl;
-	cout<<"     It can rebuild to intermediary types in the inheritance chain: A>B>C with A& = cInst, it can reconstruct instance of B and C type. This is a cast that takes place"<<endl;
-	cout<<"     at runtime, which is why it is used with polymorphic classes, otherwise cast fails, unlike static cast which casts at compile time, only between related classes."<<endl<<endl;
 
-    cout<<"     10. Static methods can not be virtual, as static methods belong to class and cannot be bound to an object. Even if invoking a static method using a class instance "<<endl;
-	cout<<"     is an accepted syntax, it is counter intuitive. If it had been posisble to have static virtual methods, it would mean that a call to such method should access"<<endl;
-	cout<<"     the vptr, in order to iterate through vtable and resolve the call. It is known that static methods can only work with static members, as they lack *this poiner."<<endl;
-	cout<<"     That said, a static virtual method would require a static vptr. But if vptr would be static would mean that all classes in the inheritance chain will have the same"<<endl;
-	cout<<"     vptr, thus the same vtable, which cannot be true, as polymophism is achieved via a vptr and a vtable proper to each class in the inheritance chain, accessible in the"<<endl;
-	cout<<"     public Base part of each instance of such a class."<<endl;
+	cout<<"     4. As it can be seen above, each vtable starts with an empty entry. It is called offset-to-top and is an entry in the table reserved."<<endl;
+	cout<<"     This entry is indexed with negative index -2."<<endl;
+	cout<<" 	to store the offset to the corresponding Base class. In a liniar class hierarchy, that does not involve multiple inheritance, the offset is 0."<<endl;
+	cout<<" 	This offset is non zero for Derived classes that have multiple Base classes. (more details below)"<<endl;
+	cout<<"     This entry is indexed with negative index -1. Hence, the pointers to virtual functions are indexed from 0 onwards."<<endl;
+	cout<<" 	Next entry in vtable holds type info pointer to the RTTI: run-time type information, which is  mainly accessed by 3 operators: type_info,"<<endl;
+	cout<<" 	type_id, dynamic_cast."<<endl;
+	cout<<" 	Then, if the dtor is virtual, it gets two entries. In an abstract class, its entries are 0, as the dtor does not require implementation,"<<endl;
+	cout<<" 	because the class cannot be instantiated. In non-abstarct class, the 2 entries have the same signature. The first one is called complete"<<endl;
+	cout<<" 	object dtor and is called for statically allocated objects' destruction, whereas the second one is called deleting destructor and it "<<endl;
+	cout<<" 	performs delete on the dynamically allocated object, by internally invoking delete(). The selection of which dtor is called is done via a"<<endl;
+	cout<<" 	hidden boolean parameter passed through a registe, with the true value selecting the execution of the delete() operator."<<endl;
+	cout<<" 	Thereafter, a pure virtual method is specially marked as pure_virtual as it is not invokable. In the classes that implement it, the entry"<<endl;
+    cout<<" 	is overriden with the method's signature."<<endl<<endl; 
 
-	return 0;
+
+	cout<<"How virtuality works under the hood: multiple inheritance"<<endl;
+	cout<<"     1.  When it comes to multiple inheritance of a Derived class, the object's memory diagram layout firstly places the Base parts, in the"<<endl;
+	cout<<" 	order specified at inheritance. That is Base1 part is followed by Base2 part and so on, with the last part corresponding to Derived. "<<endl;
+	cout<<" 	If the Base classes contain virtual methods, each will have a vptr that will be inherited by Derived, thus the Derived object's memory "<<endl;
+	cout<<" 	layout will contain a vptr for each Base part. This means that Derived will have multiple vtables and if it overrides a method inherited"<<endl;
+	cout<<" 	from a Base parent, the vtable inherited from that Base will be updated with the considered override."<<endl;
+
+	cout<<"     2.  In case of non-virtual multiple inheritance, the vtable of the Derived class firstly contains the vtable of the first class specified"<<endl;
+	cout<<" 	in the derivation list, whose entries are updated with Derived overrides, if any. Furthermore, if Derived overrides virtual methods inherited"<<endl;
+	cout<<" 	from the other Base classes, those entries are added to this first table, thus enlarging the vtable inherited from the first Base class."<<endl;
+	
+	cout<<" 	Next, the vtables inherited from other Base classes, are placed, in order. If Derived overrides any virtual method inherited from those"<<endl;
+	cout<<" 	the corresponding entry in the vtable is updated with the override. If all Base classes have a virtual method with similar name, in the"<<endl;
+	cout<<" 	vtables of the next Base classes (all, but first), the entries of this virtual method are populated with the address of the override from"<<endl;
+	cout<<" 	the vtable corresponding to first Base class. This is normal, as there is only one implementation, and all vtables practically share it."<<endl;
+	cout<<" 	Similarily it happens with the virtual dtor: both entries for it are added ot the first table, regardless the first Base class has a virtual"<<endl;
+	cout<<" 	dtor or not, as it would suffice for at least one of the Base classes to define a virtual dtor. Then, in the vtable part corresponding"<<endl;
+	cout<<" 	to the Base class(es) with virtual dtor, two extra entries are added, each containing offset to the dtor entry from the first Base vtable."<<endl;
+
+	cout<<" 	Each subsequent vtable to the first one contains a value for the offset to the top. This value is used to compute the addresses of methods"<<endl;
+	cout<<" 	shared by the vtables in the memory layout of Derived and is a negative integer. Also, this negative index represents the amount of bytes"<<endl;
+	cout<<" 	that need to be shifted in order to point to the start of the object in memory (the first vtable), hence the name offset to top."<<endl;
+	cout<<" 	Furthermore, this value is used when performing upcasting from pointer/ref to Derived to pointer/ref to one of the Base classes, but first,"<<endl;
+	cout<<" 	followed by a downcast, via dynamic_cast. The downcasting actuallly uses the negative offset in order to compute the pointer/reference to"<<endl;
+	cout<<" 	the start of the object, from the pointer/reference tot he given Base class."<<endl;
+
+
+	Derived* dPtr = new Derived{};
+	cout<<dPtr->euler<<endl;
+	Derived derivedInst{};
+	//the line below is augmented as static_cast<Base3&>(derived), thus an upcast occurs, to a reference to a base class,
+	//with the reference now pointing to the Base3 part of the Derived's vtable
+	Base3& base3Ref{derivedInst};
+	//after dynamic_cast, the downCast reference will point to the top of the object's memory layout
+	Derived& downCast = dynamic_cast<Derived&>(base3Ref);
+
+	cout<<"Vtable for Base1"<<endl;
+	cout<<" 	Base1::_ZTV5Base1: 6 entries"<<endl;
+	cout<<" 	0     (int (*)(...))0"<<endl;
+	cout<<" 	8     (int (*)(...))(& _ZTI5Base1)"<<endl;
+	cout<<" 	16    (int (*)(...))Base1::~Base1"<<endl;
+	cout<<" 	24    (int (*)(...))Base1::~Base1"<<endl;
+	cout<<" 	32    (int (*)(...))Base1::printName"<<endl;
+	cout<<" 	40    (int (*)(...))Base1::printInt"<<endl;
+	cout<<" "<<endl;
+
+	cout<<"Vtable for Base2"<<endl;
+	cout<<" 	Base2::_ZTV5Base2: 4 entries"<<endl;
+	cout<<" 	0     (int (*)(...))0"<<endl;
+	cout<<" 	8     (int (*)(...))(& _ZTI5Base2)"<<endl;
+	cout<<" 	16    (int (*)(...))Base2::printName"<<endl;
+	cout<<" 	24    (int (*)(...))Base2::printEuler"<<endl;
+	cout<<" "<<endl;
+
+	cout<<" 	Vtable for Base3"<<endl;
+	cout<<" 	Base3::_ZTV5Base3: 4 entries"<<endl;
+	cout<<" 	0     (int (*)(...))0"<<endl;
+	cout<<" 	8     (int (*)(...))(& _ZTI5Base3)"<<endl;
+	cout<<" 	16    (int (*)(...))Base3::~Base3"<<endl;
+	cout<<" 	24    (int (*)(...))Base3::~Base3"<<endl;
+	cout<<" 	32    (int (*)(...))Base3::printName"<<endl;
+	cout<<" 	40    (int (*)(...))Base3::printChar"<<endl;
+	cout<<" "<<endl;
+
+	cout<<" 	Vtable for Derived"<<endl;
+	cout<<" 	Derived::_ZTV7Derived: 15 entries"<<endl;
+	cout<<" 	0     (int (*)(...))0"<<endl;
+	cout<<" 	8     (int (*)(...))(& _ZTI7Derived)"<<endl;
+	cout<<" 	16    (int (*)(...))Derived::~Derived"<<endl;
+	cout<<" 	24    (int (*)(...))Derived::~Derived"<<endl;
+	cout<<" 	32    (int (*)(...))Derived::printName"<<endl;
+	cout<<" 	40    (int (*)(...))Base1::printInt"<<endl;
+	cout<<" 	48    (int (*)(...))Derived::printEuler"<<endl;
+	cout<<" 	56    (int (*)(...))Derived::printString"<<endl;
+	cout<<" 	64    (int (*)(...))-16"<<endl;
+	cout<<" 	72    (int (*)(...))(& _ZTI7Derived)"<<endl;
+	cout<<" 	80    (int (*)(...))Derived::_ZThn16_N7Derived9printNameEv"<<endl;
+	cout<<" 	88    (int (*)(...))Derived::_ZThn16_N7Derived10printEulerEv"<<endl;
+	cout<<" 	96    (int (*)(...))-32"<<endl;
+	cout<<" 	104    (int (*)(...))(& _ZTI7Derived)"<<endl;
+	cout<<" 	112   (int (*)(...))Derived::_ZThn32_N7DerivedD1Ev"<<endl;
+	cout<<" 	120   (int (*)(...))Derived::_ZThn32_N7DerivedD0Ev"<<endl;
+	cout<<" 	128   (int (*)(...))Derived::_ZThn32_N7Derived9printNameEv"<<endl;
+	cout<<" 	136   (int (*)(...))Base3::printChar"<<endl;
+
+	cout<<" 	Vtable for Bottom"<<endl;
+	cout<<" 	Bottom::_ZTV6Bottom: 24 entries"<<endl;
+	cout<<" 	0     64"<<endl;
+	cout<<" 	8     (int (*)(...))0"<<endl;
+	cout<<" 	16    (int (*)(...))(& _ZTI6Bottom)"<<endl;
+	cout<<" 	24    (int (*)(...))Bottom::printName"<<endl;
+	cout<<" 	32    (int (*)(...))Left::printEuler"<<endl;
+	cout<<" 	40    (int (*)(...))Bottom::~Bottom"<<endl;
+	cout<<" 	48    (int (*)(...))Bottom::~Bottom"<<endl;
+	cout<<" 	56    (int (*)(...))Bottom::printString"<<endl;
+	cout<<" 	64    48"<<endl;
+	cout<<" 	72    (int (*)(...))-16"<<endl;
+	cout<<" 	80    (int (*)(...))(& _ZTI6Bottom)"<<endl;
+	cout<<" 	88    (int (*)(...))Bottom::_ZThn16_N6Bottom9printNameEv"<<endl;
+	cout<<" 	96    (int (*)(...))Right::printChar"<<endl;
+	cout<<" 	104   (int (*)(...))Bottom::_ZThn16_N6BottomD1Ev"<<endl;
+	cout<<" 	112   (int (*)(...))Bottom::_ZThn16_N6BottomD0Ev"<<endl;
+	cout<<" 	120   0"<<endl;
+	cout<<" 	128   0"<<endl;
+	cout<<" 	136   18446744073709551552"<<endl;
+	cout<<" 	144   18446744073709551552"<<endl;
+	cout<<" 	152   (int (*)(...))-64"<<endl;
+	cout<<" 	160   (int (*)(...))(& _ZTI6Bottom)"<<endl;
+	cout<<" 	168   (int (*)(...))Bottom::_ZTv0_n24_N6BottomD1Ev"<<endl;
+	cout<<" 	176   (int (*)(...))Bottom::_ZTv0_n24_N6BottomD0Ev"<<endl;
+	cout<<" 	184   (int (*)(...))Bottom::_ZTv0_n32_N6Bottom9printNameEv"<<endl;
+	cout<<" 	192   (int (*)(...))Top::printInt"<<endl;
+	cout<<" 	200   (int (*)(...))TopRoot::doNothing"<<endl;
+
+	cout<<"     3.  A class that has multiple Base classes which virtually inherit froma common top base class, has its object memory split into 2 regions:"<<endl;
+	cout<<" 	invariant and variant. In the first section reside the parts that have fixed offsets, which correspond to Bottom and its direct Base classes."<<endl;
+	cout<<" 	In the variants section reside Top base classes from which at least two Base classes inherit (that are virtual Base classes). This section"<<endl;
+	cout<<" 	is placed after the invariant one, including in the vtable layout. In the vtable, this region contains virtual methods inherited from Top class"<<endl;
+	cout<<" 	but not subsequently overriden. That said, as it happens with regular multiple inheritance, the first vptr and vtable of Bottom correspond"<<endl;
+	cout<<" 	to the first Base class."<<endl;
+
+	cout<<"     The vtable of the first Base class of Bottom can be used to access the data members of Top virtual base class, using negative indexing."<<endl;
+	cout<<" 	invariant and variant. In the first section reside the parts that have fixed offsets, which correspond to Bottom and its direct Base classes."<<endl;
+	cout<<" 	In the variant section reside Top base classes from which at least two Base classes inherit (that are virtual Base classes). This section"<<endl;
+	cout<<" 	is placed after the invariant one, including in the vtable layout. In the vtable, this region contains virtual methods inherited from Top class"<<endl;
+	cout<<" 	but not subsequently overriden."<<endl;
+
+	cout<<"     When it comes to the virtual dtor inherited from Top class, in the Bottom object memory diagram, the 2 entries are generated in the vtable"<<endl;
+	cout<<" 	corresponding to the first Base class. The next vtables, including the one corresponding to Top class, contain the 2 entries for the virtual"<<endl;
+	cout<<" 	dtor, with the afferent values being offsets to the entries of dtors from the vtable of the first Base class."<<endl;
+
 }

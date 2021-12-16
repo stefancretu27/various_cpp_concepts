@@ -1,0 +1,6 @@
+#ifndef TEMPLATECLASS_HPP
+#define TEMPLATECLASS_HPP
+
+
+
+#endif

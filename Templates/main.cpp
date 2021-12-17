@@ -5,6 +5,7 @@
 
 #include "TemplateFunctions.hpp"
 #include "TemplateMethods/TemplateMethods.hpp"
+#include "TemplateClasses/TemplateClass.hpp"
 
 int main()
 {
@@ -25,7 +26,7 @@ int main()
 	spDerived->printName();
 	spDerived->printString();
 
-	cout<<endl<<"Insights on template functions:"<<endl;
+	cout<<endl<<"Insights on template functions and methods:"<<endl;
 	cout<<"     1. The template functions represent a pattern, that uses placeholder for generic types, which is used to create similar functions, with "<<endl;
 	cout<<"     specific data types. Thus, the same piece of code is reused in distinct contextes with distinct data types, that should fit in the "<<endl;
 	cout<<"     function's logic (eg: does not make sense to pass char or string data types to a template function performing some numeric operations)."<<endl<<endl;
@@ -67,7 +68,7 @@ int main()
 	cout<<"     the method's signature can be slightly changed (arguments types, return type, but not args number) and the specialization stays valid. "<<endl;
 	cout<<"     When a function is specialized, its signature should stay the same (return type, argument's types and const qualifiers, its constness)"<<endl;
 	
-	cout<<"     8. AThe approach described above can also be applied when specializing template method of a non template class. Nonetheless, the syntax"<<endl;
+	cout<<"     8. The approach described above can also be applied when specializing template method of a non template class. Nonetheless, the syntax"<<endl;
 	cout<<"     requires some adjustments. Firstly, the template struct which wraps the template method should eb defined inside the non template class"<<endl;
 	cout<<"     for an easier access to members. Thereafter, for the wrapped method to eb able to access members of the outer class, it has to receive as"<<endl;
 	cout<<"     argument the instance (this pointer) of the calling instance of the non template class. The wrapped method stays as static and does not"<<endl;
@@ -93,23 +94,43 @@ int main()
 
 	tempMethodsInst.doWork<double, bool>(3.14159, true);
 	tempMethodsInst.doWork<bool, float>(false, 2.7182);
+
+	cout<<endl<<"Insights on template class:"<<endl;
+	cout<<"     1. A template class that is implemented in a .cpp file requires another .cpp file where it is explicitly instantiated with the needed"<<endl;
+	cout<<"     data types. As explained above, this need comes from the fact that the template is not compiled by itslef, instead it is replicated when"<<endl;
+	cout<<"     an explicit instance is done. Furthermore, the additional .cpp file needs access to the template implementations of the class methods in"<<endl;
+	cout<<"     order to properly generate the code for each explicit instantiation. Thus, the .cpp file with template implementations must be included"<<endl;
+	cout<<"     in the additional .cpp file that holds the explicit instantiations."<<endl;
+
+	cout<<"     2. A template class can be fully specialized. That is, a separate implementation is provided using explicit data types for all its"<<endl;
+	cout<<"     template parameters. In this case, the class declaration starts with template<>, keeping the template parameter list empty, whereas"<<endl;
+	cout<<"     the explicit data types are provided after the class name (ClassName<dataType1, dataType2>) when the class is defined and when its methods"<<endl;
+	cout<<"     are implemented in a separate file. In addition, when implementing its methods the template<> specifier is not needed anymore. "<<endl;
+	cout<<"     Since all its data type are explicitly specified, it is clear that a full specialization does not require explicit instantiation. Its"<<endl;
+	cout<<"     syntax is mostly like the one of a plain class."<<endl;
+
+	cout<<"     3. Unlike template functions, a template class can be [partially] specialized. That is, a separate implementation is provided for some"<<endl;
+	cout<<"     of its template type parameters. THos parameters that are not specialized, remain general and the syntax for them stays similar with regular"<<endl;
+	cout<<"     template classes. For the specialized types, the syntax follows the principles fo full specialization in the sense that the explicit types"<<endl;
+	cout<<"     must be included after the class name when defining and and when implementing its methods."<<endl;
+	cout<<"     Like a template class beholding general types, a partially specialized class requires explicit intantiation with the needed types for its"<<endl;
+	cout<<"     generic template parameters."<<endl;
+	cout<<"     Partial specialization can also be done for pointers or refs. Even though there is only one template parameter for which the specialization"<<endl;
+	cout<<"     is implemented, it is still considered a partial specialization, as the type is not explicitly specified. In this case, the syntax is similar"<<endl;
+	cout<<"     full specializations, only that after the class name is specified the pointer/ref type (ClassName<T*>) when defining the class and when"<<endl;
+	cout<<"     implementing its methods."<<endl;
+
+	CheckType<int&> refType{};
+	refType.printType();
 	
-	// //-----------------------------------------------------Static members---------------------------------------------------------
-	// cout<<endl<<"-----------------------------------------------------Static members---------------------------------------------------------"<<endl;
-
-	// cout<<endl<<"Conclusions on static members and methods:"<<endl;
-    // cout<<"     1. Static members belong to class and not to instances, so they must be explicitly instantiated in a .cpp in order for them to be assigned to a global memory."<<endl;
-	// cout<<"     Static members can be const and are accessible in static and non-static methods."<<endl<<endl;
+	CheckType<int> intType{};
+	intType.printType();
 	
-	// cout<<"     2. Static methods cannot be const. Also, they only can access static members, since they lack *this pointer, due to they are not bound to any instance of the class."<<endl;
-    // cout<<"     Thus, they are accessible via scope resolution operator, but also can be accessed via in instance, though it would eb counter intuitive"<<endl<<endl;
-
-	// cout<<"     3. A Derived class of a Base class that has static members, does not inherit the static members, but it has access to the same static member. Thus, a static member"<<endl;
-    // cout<<"     of a Base class is a shared resource of all classes that inherit from it, not only shared amongst its instances."<<endl<<endl;
-
-	// cout<<"     4. A Derived class inherits all static methods from Base class. Furthermore, the Derived class can override Base class inherited static methods. That said, the same "<<endl;
-    // cout<<"     rules for methods' inheritances and override do apply for non static methods and for static methods in the same way."<<endl<<endl;
-    
-
+	CheckType<int*> ptrType{};
+	ptrType.printType();
+	
+	CheckType<bool> boolType{};
+	boolType.printType();
+	
 	return 0;
 }

@@ -2,6 +2,7 @@
 
 #include <type_traits>
 
+//implement template method that has only 1 template parameter type
 template <class T>
 void NonTemplateClass::doWork(const T input)
 {
@@ -15,13 +16,15 @@ void NonTemplateClass::doWork(const T input)
     }
 }
 
+//implement template method that has 2 template parameter types
+//the actual template method that is accessible to class users wraps the method that is subject to specialization
 template<class T, class S>
 void NonTemplateClass::doWork(const T& t, const S& s)
 {
     EncapsulateTemplateMethod<T,S>::wrappedDoWork(*this, t, s);
 }
 
-//implementation of the wrapped method
+//implementation of the wrapped method for general cases
 template <class T, class S>
 void NonTemplateClass::EncapsulateTemplateMethod<T,S>::wrappedDoWork(const NonTemplateClass& obj, const T& t, const S& s)
 {
@@ -77,7 +80,7 @@ void NonTemplateClass::EncapsulateTemplateMethod<T, bool>::wrappedDoWork(const N
     }
 }
 
-//specialization of the template struct
+//full specialization of the template struct
 template<>
 struct NonTemplateClass::EncapsulateTemplateMethod<bool, bool>
 {

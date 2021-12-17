@@ -28,6 +28,8 @@ class NonTemplateClass
     // template<>
     // void doWork<char>(const char input);
 
+    //the below method cannot be fully/partially specialized by itself, only that it wraps the call for the static method of the struct above which
+    //can be fully/partially specialized. However, the method below can still be overloaded
     template <class T, class S>
     void doWork(const T& t, const S& s);
 };

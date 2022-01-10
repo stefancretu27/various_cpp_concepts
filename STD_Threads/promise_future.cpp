@@ -163,21 +163,21 @@ void promise_futureInsights()
 	future<int> futurePromise = promiseInt.get_future();
 	//packaged_task with lambda target
 	packaged_task<int(const shared_ptr<int>&, promise<int>& p)> packTask{	[](const shared_ptr<int>& spi, promise<int>& p)
-																			{
-																				cout<<"inside thread callable target"<<endl;
-																				int result{1};
+										{
+											cout<<"inside thread callable target"<<endl;
+											int result{1};
 
-																				if(spi)
-																				{
-																					cout<<"	shared_ptr value: "<<*spi<<" use count: "<<spi.use_count()<<endl;
-																					result += *spi;
-																				}
+											if(spi)
+											{
+												cout<<"	shared_ptr value: "<<*spi<<" use count: "<<spi.use_count()<<endl;
+												result += *spi;
+											}
 
-																				p.set_value(*spi*2);
+											p.set_value(*spi*2);
 
-																				return result;
-																			}
-																		};
+											return result;
+										}
+									};
 	//a packaged_task cannot be copied
 	//auto packTaskCopy{packTask};
 
@@ -230,15 +230,15 @@ void promise_futureInsights()
 	cout<<"get result from future returned by async launch::deferred: "<<futureAsyncDeferred.get()<<endl;
 
 	auto resultFuture = async(launch::async, [&spi](char randomChar)
-											{
-												if(spi)
-												{
-													cout<<"inside async thread: captured shared_ptr value: "<<*spi<<" and random char: "<<randomChar<<endl;
-												}
-												return spi.use_count();
-											},
-											'/'
-							 );
+						{
+							if(spi)
+							{
+								cout<<"inside async thread: captured shared_ptr value: "<<*spi<<" and random char: "<<randomChar<<endl;
+							}
+							return spi.use_count();
+						},
+						'/'
+				 );
 	//wait for the thread to make the result available. Otherwise, the below cout would be called before the result is ready
 	resultFuture.wait();
 	cout<<"get result from future returned from async launch::async: "<<resultFuture.get()<<endl;
@@ -247,16 +247,16 @@ void promise_futureInsights()
 	promise<int> promiseIntPackedTask;
 	future<int> futurepromiseIntPackedTask = promiseIntPackedTask.get_future();
 	//define a packaged_task whose target function receives a promise argument and declare the associated future
-	packaged_task<int(promise<int>&)> packedTask{[&spi](promise<int>& promiseIntPackedTask)
-														{
-															if(spi)
-															{
-																cout<<"		[packaged_task] inside async thread: captured shared_ptr value: "<<*spi<<endl;
-																promiseIntPackedTask.set_value(++*spi);
-															}
-															return static_cast<int>(spi.use_count());
-														}
-													};
+	packaged_task<int(promise<int>&)> packedTask{	[&spi](promise<int>& promiseIntPackedTask)
+							{
+								if(spi)
+								{
+									cout<<"		[packaged_task] inside async thread: captured shared_ptr value: "<<*spi<<endl;
+									promiseIntPackedTask.set_value(++*spi);
+								}
+								return static_cast<int>(spi.use_count());
+							}
+						};
 	auto futurePackedTask = packedTask.get_future();
 
 	//use ref as it would be used in thread c-tor for arguments passed by reference to the target function. The packaged_task target can only be passed by reference or moved
@@ -268,16 +268,16 @@ void promise_futureInsights()
 	//declare a promise and the associated future
 	promise<int> promiseIntFunction;
 	future<int> futurePromiseIntFunction = promiseIntFunction.get_future();
-	function<int(promise<int>&)> functionAsync{[&spi](promise<int>& promiseIntFunction)
-														{
-															if(spi)
-															{
-																cout<<"		[function] inside async thread: captured shared_ptr value: "<<*spi<<endl;
-																promiseIntFunction.set_value(++*spi);
-															}
-															return static_cast<int>(spi.use_count());
-														}
-													};
+	function<int(promise<int>&)> functionAsync{	[&spi](promise<int>& promiseIntFunction)
+							{
+								if(spi)
+								{
+									cout<<"		[function] inside async thread: captured shared_ptr value: "<<*spi<<endl;
+									promiseIntFunction.set_value(++*spi);
+								}
+								return static_cast<int>(spi.use_count());
+							}
+						};
 
 	//use ref as it would be used in thread c-tor for arguments passed by reference to the target function. The packaged_task target can only be passed by reference or moved
 	future<int> futureAsync = async(functionAsync, ref(promiseIntFunction));

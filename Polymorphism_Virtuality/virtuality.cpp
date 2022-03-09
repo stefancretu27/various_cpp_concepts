@@ -6,20 +6,20 @@ void virtualityUnderTheHood()
 
     cout<<"How virtuality works under the hood: Vptr and vtable"<<endl;
 	cout<<"     1.  A class that declares a virtual function, for the first time in the inheritance chain, gets a public non-static pointer referred to "<<endl;
-	cout<<" 	as vptr, thus becoming larger  by a pointer. That said, the vptr is allocated per object. Thereafter, the vptr points to a static array of "<<endl;
+	cout<<" 	as vptr, thus becoming larger by a pointer. That said, the vptr is allocated per object. Thereafter, the vptr points to a static array of "<<endl;
 	cout<<" 	pointers to the functions declared as virtual. This array is referred to as the vtable. As all class instances require access to the same "<<endl;
 	cout<<" 	methods, the vtable is generated one per class at compile time, as it is known how many virtual methods a class has when it is compiled."<<endl;
 	cout<<" 	When a class that derives from a Base that has at least one virtual method, it inherits the vptr and the vtable. If an inherited virtual "<<endl;
 	cout<<" 	method is overriden in  the Derived class, its entry in the Derived class vtable is updated. Otherwise, the entries remain the same. Thus,"<<endl;
 	cout<<" 	at runtime, when a virtual method is invoked,  the vptr is dereferenced to access the vtable and the apropriate entry for the virtual"<<endl;
-    cout<<" 	method is found and the call is resolved to it."<<endl<<endl; 
+    	cout<<" 	method is found and the call is resolved to it."<<endl<<endl; 
 	
 	cout<<" 	2. Late binding is used to resolve method call at runtime. Binding is the process that converts variables and functions into addresses. "<<endl;
-	cout<<" 	For pointers, it always  takes place at runtime, and is referred to as late/dynamic binding. So, even though the vtable is generated at "<<endl;
+	cout<<" 	For pointers, it always takes place at runtime, and is referred to as late/dynamic binding. So, even though the vtable is generated at "<<endl;
 	cout<<" 	compile time, the addresses of the functions are only known at runtime."<<endl;
 	cout<<" 	Concretely, at each compilation, a distinct address is generated in the process' virtual memory space for each function (generally speaking),"<<endl;
-	cout<<" 	such that an entry in the vtable gets is assigned to a new value whenever the code is recompiled. Nevertheless, a mapping between each virtual"<<endl;
-	cout<<" 	method's signature and an index in the vtable is done at compile time because there is known the number of virtual methods the given class "<<endl;
+	cout<<" 	such that an entry in the vtable is assigned to a new value whenever the code is recompiled. Nevertheless, a mapping between each virtual"<<endl;
+	cout<<" 	method's signature and an index in the vtable is done at compile time because it is known the number of virtual methods the given class "<<endl;
 	cout<<" 	has (namely, the length of the statically allocated array of pointers to  functions), but it cannot be distinguished to which implementation"<<endl;
 	cout<<" 	a mapping is done, because it is performed at runtime, via late binding. The index is fixed in the inheritance chain."<<endl<<endl;
 
@@ -30,23 +30,23 @@ void virtualityUnderTheHood()
 	cout<<" 	static cast: Base* bPtr = static_cast<Base*>(new Derived()). "<<endl;
 	cout<<" 	Next to that, it is also known that each method's name is mangled at compile time such that its first parameter is the *this pointer, which"<<endl;
 	cout<<" 	is inferred from the calling object, so it is known for which object the given method is called and which values do the members bear in the"<<endl;
-    cout<<"     invoked method. So it happens with virtual methods, only that the pointer/reference to Base class needs to be casted to the Derived"<<endl;
-    cout<<"     pointer/reference."<<endl<<endl;
+    	cout<<"     	invoked method. So it happens with virtual methods, only that the pointer/reference to Base class needs to be casted to the Derived"<<endl;
+    	cout<<"     	pointer/reference."<<endl<<endl;
 
-	cout<<"     Having said that, given the vptr is placed in the public part, it can by directly accessed by the pointer/reference to Base. Next to that,"<<endl;
-	cout<<" 	if the pointer/reference is used to invoke a virtual method, the call takes places via the vptr, which directly accesses the pointers to"<<endl;
-	cout<<"     the virtual methods (No pointer indirection vptr->vtable occurrs due to efficiency reasons). With the corresponding index for the given"<<endl;
-	cout<<"     method's signature being known, a virtual method call would look like below"<<endl; 
-    cout<<" 	Derived d; "<<endl;
+	cout<<"		Having said that, given the vptr is placed in the public part, it can by directly accessed by the pointer/reference to Base. Next to that,"<<endl;
+	cout<<"		if the pointer/reference is used to invoke a virtual method, the call takes places via the vptr, which directly accesses the pointers to"<<endl;
+	cout<<"		the virtual methods (No pointer indirection vptr->vtable occurrs due to efficiency reasons). With the corresponding index for the given"<<endl;
+	cout<<"		method's signature being known, a virtual method call would look like below"<<endl; 
+    	cout<<" 	Derived d; "<<endl;
 	cout<<" 	Base& refBase{d);"<<endl;
-	cout<<" 	refBase.virtualMethod()    ---> at compile time might look like:  (*refBase.vptr[index])(static_cast<Derived&>()refBase)"<<endl;
+	cout<<" 	refBase.virtualMethod()    ---> at compile time might look like:  (*refBase.vptr[index])(static_cast<Derived&>(refBase))"<<endl;
 
 	cout<<"Vtables for class hierarchy Root->Base->DerivedImpl obtained with 'g++ -fdump-lang-class file.cpp'"<<endl;
 	cout<<"Class Root"<<endl;
    	cout<<"size=8 align=8"<<endl;
    	cout<<"base size=8 base align=8"<<endl;
 	cout<<"Root (0x0x7f814a5319c0) 0 nearly-empty"<<endl;
-    cout<<"vptr=((& Root::_ZTV4Root) + 16)"<<endl;
+    	cout<<"vptr=((& Root::_ZTV4Root) + 16)"<<endl;
 	cout<<"Root::_ZTV4Root: 4 entries"<<endl;
 	cout<<"0     (int (*)(...))0"<<endl;
 	cout<<"8     (int (*)(...))(& _ZTI4Root)"<<endl;
@@ -60,9 +60,9 @@ void virtualityUnderTheHood()
    	cout<<"size=48 align=8"<<endl;
    	cout<<"base size=44 base align=8"<<endl;
 	cout<<"Base (0x0x7f814a7f99c0) 0"<<endl;
-    cout<<"	vptr=((& Base::_ZTV4Base) + 16)"<<endl;
+    	cout<<"	vptr=((& Base::_ZTV4Base) + 16)"<<endl;
  	cout<<"		Root (0x0x7f814a574060) 0 nearly-empty"<<endl;
-    cout<<"			primary-for Base (0x0x7f814a7f99c0)"<<endl;
+    	cout<<"			primary-for Base (0x0x7f814a7f99c0)"<<endl;
 	cout<<"Base::_ZTV4Base: 4 entries"<<endl;
 	cout<<"0     (int (*)(...))0"<<endl;
 	cout<<"8     (int (*)(...))(& _ZTI4Base)"<<endl;
@@ -76,11 +76,11 @@ void virtualityUnderTheHood()
   	cout<<"size=56 align=8"<<endl;
    	cout<<"base size=56 base align=8"<<endl;
 	cout<<"DerivedImpl (0x0x7f814a604b60) 0"<<endl;
-    cout<<"		vptr=((& DerivedImpl::_ZTV11DerivedImpl) + 16)"<<endl;
+    	cout<<"		vptr=((& DerivedImpl::_ZTV11DerivedImpl) + 16)"<<endl;
   	cout<<"	 Base (0x0x7f814a604bc8) 0"<<endl;
-    cout<<"			primary-for DerivedImpl (0x0x7f814a604b60)"<<endl;
-    cout<<"		Root (0x0x7f814a61df00) 0 nearly-empty"<<endl;
-    cout<<"				primary-for Base (0x0x7f814a604bc8)"<<endl;
+    	cout<<"			primary-for DerivedImpl (0x0x7f814a604b60)"<<endl;
+    	cout<<"		Root (0x0x7f814a61df00) 0 nearly-empty"<<endl;
+    	cout<<"				primary-for Base (0x0x7f814a604bc8)"<<endl;
 	cout<<"DerivedImpl::_ZTV11DerivedImpl: 4 entries"<<endl;
 	cout<<"0     (int (*)(...))0"<<endl;
 	cout<<"8     (int (*)(...))(& _ZTI11DerivedImpl)"<<endl;
@@ -91,19 +91,19 @@ void virtualityUnderTheHood()
 
 
 	cout<<"     4. As it can be seen above, each vtable starts with an empty entry. It is called offset-to-top and is an entry in the table reserved."<<endl;
-	cout<<"     This entry is indexed with negative index -2."<<endl;
-	cout<<" 	to store the offset to the corresponding Base class. In a liniar class hierarchy, that does not involve multiple inheritance, the offset is 0."<<endl;
+	cout<<"     	This entry is indexed with negative index -2, to store the offset to the corresponding Base class."<<endl;
+	cout<<" 	In a liniar class hierarchy, that does not involve multiple inheritance, the offset is 0. (vtable[-2] = 0)"<<endl;
 	cout<<" 	This offset is non zero for Derived classes that have multiple Base classes. (more details below)"<<endl;
-	cout<<"     This entry is indexed with negative index -1. Hence, the pointers to virtual functions are indexed from 0 onwards."<<endl;
-	cout<<" 	Next entry in vtable holds type info pointer to the RTTI: run-time type information, which is  mainly accessed by 3 operators: type_info,"<<endl;
+	cout<<"     	The next entry is indexed with negative index -1. Hence, the pointers to virtual functions are indexed from 0 onwards."<<endl;
+	cout<<" 	The second entry in vtable holds type info pointer to the RTTI: run-time type information, which is mainly accessed by 3 operators: type_info,"<<endl;
 	cout<<" 	type_id, dynamic_cast."<<endl;
 	cout<<" 	Then, if the dtor is virtual, it gets two entries. In an abstract class, its entries are 0, as the dtor does not require implementation,"<<endl;
 	cout<<" 	because the class cannot be instantiated. In non-abstarct class, the 2 entries have the same signature. The first one is called complete"<<endl;
 	cout<<" 	object dtor and is called for statically allocated objects' destruction, whereas the second one is called deleting destructor and it "<<endl;
 	cout<<" 	performs delete on the dynamically allocated object, by internally invoking delete(). The selection of which dtor is called is done via a"<<endl;
-	cout<<" 	hidden boolean parameter passed through a registe, with the true value selecting the execution of the delete() operator."<<endl;
+	cout<<" 	hidden boolean parameter passed through a register, with the true value selecting the execution of the delete() operator."<<endl;
 	cout<<" 	Thereafter, a pure virtual method is specially marked as pure_virtual as it is not invokable. In the classes that implement it, the entry"<<endl;
-    cout<<" 	is overriden with the method's signature."<<endl<<endl; 
+    	cout<<" 	is overriden with the method's signature."<<endl<<endl; 
 
 
 	cout<<"How virtuality works under the hood: multiple inheritance"<<endl;

@@ -24,7 +24,7 @@ void NonTemplateClass::doWork(const T& t, const S& s)
     EncapsulateTemplateMethod<T,S>::wrappedDoWork(*this, t, s);
 }
 
-//implementation of the wrapped method for general cases
+// Implementation of the wrapped method for general cases. Here, it is provided in the struct encapsulated by the non template class
 template <class T, class S>
 void NonTemplateClass::EncapsulateTemplateMethod<T,S>::wrappedDoWork(const NonTemplateClass& obj, const T& t, const S& s)
 {
@@ -48,13 +48,16 @@ void NonTemplateClass::EncapsulateTemplateMethod<T,S>::wrappedDoWork(const NonTe
     }
 }
 
-//partial specialization of the template struct
+// Partial specialization of the template struct with T=bool. Such declaration could be included in header, to make it
+// obvious which specializations do exist. However, if it is desired to hide such implementation details, the approach
+// used in this file is accepted.
 template<class S>
 struct NonTemplateClass::EncapsulateTemplateMethod<bool, S>
 {
     static void wrappedDoWork(const NonTemplateClass& obj, bool t, const S& s);
 };
 
+// the implementation of the partial specialization is provided outside the class, for syntax proof sake
 template<class S>
 void NonTemplateClass::EncapsulateTemplateMethod<bool, S>::wrappedDoWork(const NonTemplateClass& obj, bool t, const S& s)
 {
@@ -64,7 +67,7 @@ void NonTemplateClass::EncapsulateTemplateMethod<bool, S>::wrappedDoWork(const N
     }
 }
 
-//partial specialization of the template struct
+// Partial specialization of the template struct with S=bool
 template<class T>
 struct NonTemplateClass::EncapsulateTemplateMethod<T, bool>
 {
@@ -80,7 +83,7 @@ void NonTemplateClass::EncapsulateTemplateMethod<T, bool>::wrappedDoWork(const N
     }
 }
 
-//full specialization of the template struct
+// Full specialization of the template struct with S=bool and T=bool
 template<>
 struct NonTemplateClass::EncapsulateTemplateMethod<bool, bool>
 {

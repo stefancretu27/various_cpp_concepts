@@ -7,7 +7,6 @@
 #include <memory>
 #include <type_traits>
 
-#include "MultipleInheritance.hpp"
 using namespace std;
 
 // Template base function with 2 template type parameters

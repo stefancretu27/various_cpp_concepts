@@ -12,6 +12,51 @@
 
 int main()
 {
+	cout<<endl<<"Insights on template concepts:"<<endl;
+	cout<<"     1. In C++11 template is an entity defininga  family of functions/methods or a family of classes. "<<endl;
+	cout<<"     A template declaration starts with 'template' word followed by a list of parameters, specified between '<' and '>'. It is mandatory "<<endl;
+	cout<<"     to have at least one parameter, for the template declaration to be correct. Otherwise, there is no point in defining the template."<<endl;
+	
+	cout<<"     2. A template can be parameterized by one or more parameters, that can have the following kinds:"<<endl;
+	cout<<"     	i) template type parameter: it acts as a placeholder for a data type. The data type can be a fundamental one or defined"<<endl;
+	cout<<"     	as a class/struct. It has a generic name, usually is T, that is preceded by keyword 'class' or 'typename', as it is no difference"<<endl;
+	cout<<"     	between 'class' and 'typename' keywords in a template parameter list. Then, in class/function implementation the generic name is used"<<endl;
+	cout<<"     	as the data type placeholder for some variables. Hence, the idea of family of classes/functions, as the same implementation can be reused"<<endl;
+	cout<<"     	for several distinct data types, that are explicitly specified as arguments upon class instantiation/function invokation"<<endl;
+	
+	cout<<"     	ii) template non type parameter: it explicitly specifies a data type that is used by all classes/function in the same family."<<endl;
+	cout<<"     	The accepted types are restricted to:"<<endl;
+	cout<<"     		-> integral types (bool, char, int with their short/long variations and cv qualifications)"<<endl;
+	cout<<"     		-> enumerator of an enum"<<endl;
+	cout<<"     		-> pointers to objects/functions, including nullptr"<<endl;
+	cout<<"     		-> pointers to data members or methods of a class/struct, including nullptr"<<endl;
+	cout<<"     		-> reference to lvalues (&) to objects/functions"<<endl;
+	
+	cout<<"     	iii) template template parameter: other templates can be templates parameter for another template's definition. Here, the "<<endl;
+	cout<<"     	parameters of the template template parameters are mandatory specified by keyword 'typename' with their name not necessarily provided."<<endl;
+	cout<<"     	eg: template <typename T, template <typename, typename> class Cont >"<<endl;
+	cout<<"     	    class Matrix{"<<endl;
+	cout<<"     		Cont<T, std::allocator<T>> data; ->the template template parameter used the template type parameter."<<endl;
+	cout<<"     	    };"<<endl<<endl;
+	
+	
+	cout<<"     3. When template arguments are provided upon function invokation or class instantiation, a specialization for that template is "<<endl;
+	cout<<"     generated, with the specified types substituting the template parameters. For functions, the types can be deduced from function's "<<endl;
+	cout<<"	    argument types."<<endl;
+	cout<<"     Specializations can also be provided explicitly, as specific behaviors can be implemented for some specific types. A full"<<endl;
+	cout<<"     specialization entails all template parameters are explicitly stated upon definition. It is supported both by classes and functions."<<endl;
+	cout<<"     Partial specialization means that some template parameters, at least one, still is generic. A specialization for pointer/ref to the same "<<endl;
+	cout<<"     generic type as the base template, is considered a partial specialization. It is supported only by classes/structs"<<endl<<endl;
+	
+	cout<<"     4. When a class/function template specialization, either explicitly provided or implicitly generated upon instantiation/invokation,"<<endl;
+	cout<<"     is referenced in a context, that template is instantiated with the types provided as arguments. Thus, it is generated a complete"<<endl;
+	cout<<"	    function definition (lvalue) or a complete object definition (for the template class instance). When it comes to template classes,"<<endl;
+	cout<<"     their methods are not instantied unless used."<<endl;
+	cout<<"     The instantiation steps requires that template definition/implementation to be visible. Oftentimes, template declarations and definitions"<<endl;
+	cout<<"     are entirely included in header files. If the code is condiered too verbose, the implementations can reside in source code files, with"<<endl;
+	cout<<"     the instantiations either specified at the end of this file, or in a separate source code file including the source code file with "<<endl;
+	cout<<"     the implementations."<<endl<<endl;
+	
 	static constexpr double pi{3.14159};
 	int i{2};
 	float f = castTtoS<int, float>(i);
@@ -36,12 +81,12 @@ int main()
 
 	cout<<"     2. A template function's definition includes a template parameter declaration which specifies that some placeholders are to be used"<<endl;
 	cout<<"     for the data types that are supposed to be generic. This generic declaration is not compiled directly, as the compiler does not know how to"<<endl;
-	cout<<"		compile generic template parameter types Instead, each time it is invoked, the data types for the generic types are explicitly specified,"<<endl;
+	cout<<"	    compile generic template parameter types Instead, each time it is invoked, the data types for the generic types are explicitly specified,"<<endl;
 	cout<<"     thus the compiler replicates the generic pattern and creates a function with the actual data types."<<endl;
 	cout<<"     In other terms, the compiler stencils out a copy of the generic definition, replaces the template type parameters"<<endl;
 	cout<<"     with those provided by that call, creating a specific function, which is referred to as template function instance."<<endl<<endl;
 
-    cout<<"     3. Like a plain function/method, a template function or method can be overloaded following the same principles. Nevertheless, a template"<<endl;
+    	cout<<"     3. Like a plain function/method, a template function or method can be overloaded following the same principles. Nevertheless, a template"<<endl;
 	cout<<"     specialization does not overload."<<endl;
 
 	cout<<"     4. A template method can be defined inside a non template class. In this case it is recommended that the implementation of the template "<<endl;
@@ -49,9 +94,9 @@ int main()
 	cout<<"     can be included in the .cpp file where the templates are intasntiated with the used data types, such that the compiler can resolve the calls"<<endl<<endl;
 
 	cout<<"     5. Template functions cannot be partially specialized, but only fully specialized. Nevertheless, in such cases, as the data types are known"<<endl;
-    cout<<"     it is preferred to implement an overload. That is due to the steps of resolving a function's call:"<<endl<<endl;
+    	cout<<"     it is preferred to implement an overload. That is due to the steps of resolving a function's call:"<<endl<<endl;
 	cout<<"     	i) Firstly, non template implementations are looked for. The one that best matches the parameter types is chosen, if any."<<endl;
-    cout<<"     	ii) Secondly, the templates are looked for. The best overload is chosen, if any."<<endl;
+    	cout<<"     	ii) Secondly, the templates are looked for. The best overload is chosen, if any."<<endl;
 	cout<<"     	iii) Lastly, for the most suitable overload, it is looked for a specialization, if any, that best matches the call"<<endl;
 	cout<<"     As it can be seen, providing a specialization might lead to situation when it is ignored when resolving a call, if there is an overload"<<endl;
 	cout<<"     that is considered to be a good fit, because it depends for which overload that specialization was implemented."<<endl;
@@ -59,7 +104,7 @@ int main()
 	cout<<"     be fully specialized within a class, unless the class is specialzied itself."<<endl<<endl;
 
 	cout<<"     6. The full specialization of a function/method is also called explicit specialization. When fully specializing a function/method, "<<endl;
-    cout<<"     all the template parameters are omitted from the template declaration (thus, only template<> remains). The specialization entails that"<<endl;
+    	cout<<"     all the template parameters are omitted from the template declaration (thus, only template<> remains). The specialization entails that"<<endl;
 	cout<<"     all data types corresponding to template types are known, therefore they can be directly used when implementing the full specialization"<<endl;
 	cout<<"     Optionally, the data types can be inserted after the function's name, between <>, marking its name as templatized (void f<int, float>(args))"<<endl;
 	cout<<"     Moreover, the specialization must have the same signature with the template definition it specializes, following similar principles as overriding"<<endl<<endl;
@@ -73,7 +118,7 @@ int main()
 	
 	cout<<"     8. The approach described above can also be applied when specializing template method of a non template class. Nonetheless, the syntax"<<endl;
 	cout<<"     requires some adjustments. Firstly, the template struct which wraps the template method should eb defined inside the non template class"<<endl;
-	cout<<"     for an easier access to members. Thereafter, for the wrapped method to eb able to access members of the outer class, it has to receive as"<<endl;
+	cout<<"     for an easier access to members. Thereafter, for the wrapped method to be able to access members of the outer class, it has to receive as"<<endl;
 	cout<<"     argument the instance (this pointer) of the calling instance of the non template class. The wrapped method stays as static and does not"<<endl;
 	cout<<"     have a this pointer from the wrapping template struct."<<endl;
 

@@ -28,17 +28,45 @@ struct Functor
     }
 };
 
+template<class T>
+struct FunctionWrapper
+{
+    static T doComputation(T arg1)
+    {
+        T result{arg1};
+        
+        if(is_fundamental<T>::value)
+        {
+            result = arg1 + arg1;
+        }
+        
+        return result;
+    }
+};
+
 /*
 * This shows a way of implementing a callback mechanism: a struct that encapsulates
 * a method envisaged for being called back, is used as template argument for a template
 * function or class.
 */
 
-//Template function that acts as a wrapper for a functor received as template argument
-template<class T, template<typename> class Funct>
+// Template function that has 2 template template parameters whose template type parameter
+// reuse T, the template parameter of the function (i.e. the same template type is shared amongst them)
+template<class T, template<typename> class Funct, template<typename> class funcWrapper>
 void function(T val)
 {
-    Funct<T>()(val);
+    if(is_class<Funct<T>>::value)
+    {
+        Funct<T>()(val);
+    }
+    
+    if(is_class<funcWrapper<T>>::value)
+    {
+        if(is_function<decltype(funcWrapper<T>::doComputation)>::value)
+        {
+            cout<<funcWrapper<T>::doComputation(val)<<endl;
+        }
+    }
 }
 
 //template class that has  a template template parameter another class whose instance is a member of the former. 
@@ -89,8 +117,8 @@ int main()
 	cout<<"     		Cont<T, std::allocator<T>> data; ->the template template parameter used the template type parameter."<<endl;
 	cout<<"     	    };"<<endl<<endl;
 	
-	//call template function wrapper of functor
-    	function<int, Functor>(8);
+	//call template function. with the 2 template template arguments being just the name of the structs/classes
+    	function<int, Functor, FunctionWrapper>(8);
     	//call template class overloaded function call operator that wraps the functor
     	MyClass<int, Functor>()(-27, 3, 11);
 	

@@ -10,10 +10,60 @@
 #include "TemplateMethods/TemplateMethods.hpp"
 #include "TemplateClasses/TemplateClass.hpp"
 
+
+/*
+* Template struct overloading the function call () operator
+* A template function cannot be a template template argument. Instead, it can be encapsulated 
+* in a class that can be a template template argument.
+*/
+template<class T>
+struct Functor
+{
+    void operator()(T param)
+    {
+        if(is_fundamental<T>::value)
+        {
+            cout<<"value of the parameter: "<<param<<endl;
+        }
+    }
+};
+
+/*
+* This shows a way of implementing a callback mechanism: a struct that encapsulates
+* a method envisaged for being called back, is used as template argument for a template
+* function or class.
+*/
+
+//Template function that acts as a wrapper for a functor received as template argument
+template<class T, template<typename> class Funct>
+void function(T val)
+{
+    Funct<T>()(val);
+}
+
+//template class that has  a template template parameter another class whose instance is a member of the former. 
+template<class T, template<typename> class Funct>
+class MyClass
+{
+    public:
+    MyClass() = default;
+    ~MyClass() = default;
+    
+    void operator()(T param, T param2, T param3)
+    {
+        functorInst(param+param2);
+	//functor direct call, bypassing instance usage
+	Funct<T>()(param3);
+    }
+    
+    private:
+    Funct<T> functorInst;
+};
+
 int main()
 {
 	cout<<endl<<"Insights on template concepts:"<<endl;
-	cout<<"     1. In C++11 template is an entity defininga  family of functions/methods or a family of classes. "<<endl;
+	cout<<"     1. In C++11 template is an entity defining a family of functions/methods or a family of classes. "<<endl;
 	cout<<"     A template declaration starts with 'template' word followed by a list of parameters, specified between '<' and '>'. It is mandatory "<<endl;
 	cout<<"     to have at least one parameter, for the template declaration to be correct. Otherwise, there is no point in defining the template."<<endl;
 	
@@ -21,8 +71,8 @@ int main()
 	cout<<"     	i) template type parameter: it acts as a placeholder for a data type. The data type can be a fundamental one or defined"<<endl;
 	cout<<"     	as a class/struct. It has a generic name, usually is T, that is preceded by keyword 'class' or 'typename', as it is no difference"<<endl;
 	cout<<"     	between 'class' and 'typename' keywords in a template parameter list. Then, in class/function implementation the generic name is used"<<endl;
-	cout<<"     	as the data type placeholder for some variables. Hence, the idea of family of classes/functions, as the same implementation can be reused"<<endl;
-	cout<<"     	for several distinct data types, that are explicitly specified as arguments upon class instantiation/function invokation"<<endl;
+	cout<<"     	as the data type placeholder for some variables. Hence, the idea of family of classes/functions, as the same implementation can be"<<endl;
+	cout<<"     	reused for several distinct data types, that are explicitly specified as arguments upon class instantiation/function invokation"<<endl;
 	
 	cout<<"     	ii) template non type parameter: it explicitly specifies a data type that is used by all classes/function in the same family."<<endl;
 	cout<<"     	The accepted types are restricted to:"<<endl;
@@ -32,13 +82,17 @@ int main()
 	cout<<"     		-> pointers to data members or methods of a class/struct, including nullptr"<<endl;
 	cout<<"     		-> reference to lvalues (&) to objects/functions"<<endl;
 	
-	cout<<"     	iii) template template parameter: other templates can be templates parameter for another template's definition. Here, the "<<endl;
-	cout<<"     	parameters of the template template parameters are mandatory specified by keyword 'typename' with their name not necessarily provided."<<endl;
+	cout<<"     	iii) template template parameter: template classes, but not functions, can be template parameters for another template's definition. Here, "<<endl;
+	cout<<"     	the parameters of the template template parameter are mandatory specified by keyword 'typename' with their name not necessarily provided."<<endl;
 	cout<<"     	eg: template <typename T, template <typename, typename> class Cont >"<<endl;
 	cout<<"     	    class Matrix{"<<endl;
 	cout<<"     		Cont<T, std::allocator<T>> data; ->the template template parameter used the template type parameter."<<endl;
 	cout<<"     	    };"<<endl<<endl;
 	
+	//call template function wrapper of functor
+    	function<int, Functor>(8);
+    	//call template class overloaded function call operator that wraps the functor
+    	MyClass<int, Functor>()(-27, 3, 11);
 	
 	cout<<"     3. When template arguments are provided upon function invokation or class instantiation, a specialization for that template is "<<endl;
 	cout<<"     generated, with the specified types substituting the template parameters. For functions, the types can be deduced from function's "<<endl;
@@ -52,7 +106,7 @@ int main()
 	cout<<"     is referenced in a context, that template is instantiated with the types provided as arguments. Thus, it is generated a complete"<<endl;
 	cout<<"	    function definition (lvalue) or a complete object definition (for the template class instance). When it comes to template classes,"<<endl;
 	cout<<"     their methods are not instantied unless used."<<endl;
-	cout<<"     The instantiation steps requires that template definition/implementation to be visible. Oftentimes, template declarations and definitions"<<endl;
+	cout<<"     The instantiation step requires that template definition/implementation to be visible. Oftentimes, template declarations and definitions"<<endl;
 	cout<<"     are entirely included in header files. If the code is condiered too verbose, the implementations can reside in source code files, with"<<endl;
 	cout<<"     the instantiations either specified at the end of this file, or in a separate source code file including the source code file with "<<endl;
 	cout<<"     the implementations."<<endl<<endl;

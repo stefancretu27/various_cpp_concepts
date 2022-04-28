@@ -6,7 +6,7 @@
 
 // class hierarchy used in code examples
 #include "MultipleInheritance.hpp"
-
+#include "StaticPolymorphism.hpp"
 #include "TemplateFunctions.hpp"
 #include "TemplateMethods/TemplateMethods.hpp"
 #include "TemplateClasses/TemplateClass.hpp"

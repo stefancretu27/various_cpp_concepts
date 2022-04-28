@@ -88,6 +88,19 @@ class MyClass
     Funct<T> functorInst;
 };
 
+// base template struct declaration 
+template<class T, class S>
+struct Example
+{
+    T data1;
+    S data2;
+};
+
+// alias template for the above abse template dclaration
+template<class T>
+using ExampleInt = Example<T, int>;
+
+
 int main()
 {
 	cout<<endl<<"Insights on template concepts:"<<endl;
@@ -139,6 +152,16 @@ int main()
 	cout<<"     the instantiations either specified at the end of this file, or in a separate source code file including the source code file with "<<endl;
 	cout<<"     the implementations."<<endl<<endl;
 	
+	cout<<"     5. The aliasing syntax from c++, which binds an identifier to a name (using name = identifier), can also be applied to template declarations,"<<endl;
+	cout<<"     leading to template aliases. This is useful in cases a template has more parameters and there is envisaged to provide some specific names"<<endl;
+	cout<<"	    for declarations that explicitly specify some of the parameters. Consequently, the provided name will still be templated."<<endl<<endl;
+	
+	// instantiate base template
+	Example<char, double> inst{'a', 2.7182};
+	// instantiate template alias
+    	ExampleInt<bool> instInt{false, 44};
+	
+	//template functions with specializations and overloads for smart pointers
 	static constexpr double pi{3.14159};
 	int i{2};
 	float f = castTtoS<int, float>(i);

@@ -1,6 +1,7 @@
 //for size_t
 #include <cstdio>
-//for move
+#include <list>
+#include <memory>
 #include <vector>
 
 // class hierarchy used in code examples
@@ -148,7 +149,7 @@ int main()
 	cout<<"	    function definition (lvalue) or a complete object definition (for the template class instance). When it comes to template classes,"<<endl;
 	cout<<"     their methods are not instantied unless used."<<endl;
 	cout<<"     The instantiation step requires that template definition/implementation to be visible. Oftentimes, template declarations and definitions"<<endl;
-	cout<<"     are entirely included in header files. If the code is condiered too verbose, the implementations can reside in source code files, with"<<endl;
+	cout<<"     are entirely included in header files. If the code is consdiered too verbose, the implementations can reside in source code files, with"<<endl;
 	cout<<"     the instantiations either specified at the end of this file, or in a separate source code file including the source code file with "<<endl;
 	cout<<"     the implementations."<<endl<<endl;
 	
@@ -160,6 +161,30 @@ int main()
 	Example<char, double> inst{'a', 2.7182};
 	// instantiate template alias
     	ExampleInt<bool> instInt{false, 44};
+	
+	cout<<"     6. Polymorphism represents the capability of different entities to support the same interface. In other terms, the same interface can be"<<endl;
+	cout<<"     used (called) by entities of different types. The interface can encapsulate the same behavior for all types, as in the case of"<<endl;
+	cout<<"	    template functions, or a distinct behavior particular to each type, as in the case of overloading and overriding."<<endl;
+	cout<<"	    There are 2 types of polymoprhism: static and dynamic. The static polymorphism is achieved at compile time either using overloading"<<endl;
+	cout<<"	    or templates. As templates can take template type parameters as placeholders for types/entities they work with, the encapsulated"<<endl;
+	cout<<"	    behavior becomes available to those entities, which use/invoke the (same) template interface."<<endl;
+	
+	//dynamic polymoprhism example
+	list<unique_ptr<Interface>> inheritanceChainRefs;
+	inheritanceChainRefs.push_back(make_unique<Derived2>());
+	inheritanceChainRefs.push_back(make_unique<Derived1>());
+	inheritanceChainRefs.push_back(make_unique<Derived12>());
+
+	for(auto&& inst : inheritanceChainRefs)
+	{
+	    inst->printName();
+	}
+
+	// changed into static polymorphic implementation
+	printNameFunc(Base1{});
+	printNameFunc(Base2{});
+	printNameFunc(DerivedBase12{});
+	
 	
 	//template functions with specializations and overloads for smart pointers
 	static constexpr double pi{3.14159};

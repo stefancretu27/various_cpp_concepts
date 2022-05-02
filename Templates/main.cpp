@@ -21,10 +21,62 @@ struct Example
     S data2;
 };
 
-// alias template for the above abse template dclaration
+// alias template for the above base template declaration
 template<class T>
 using ExampleInt = Example<T, int>;
 
+
+//variadic template struct
+template<class T, class ... Args>
+struct VariadicArgsExample
+{
+    static T computeSum(T firstValue, Args... args)
+    {
+        if(is_fundamental<T>::value)
+        {
+            return firstValue + VariadicArgsExample<Args...>::computeSum(args...);
+        }
+    }
+};
+
+//partial specialization with 1 argument for the struct above 
+template<class T>
+struct VariadicArgsExample<T>
+{
+    static T computeSum(T singleValue)
+    {
+        return singleValue;
+    }
+};
+
+
+//example of a printf using variadic templates and cout
+void myPrintf(const char* format)
+{
+    cout<<*format;
+}
+
+template<class T, class ... Args>
+void myPrintf(const char* format, T firstValue, Args ... args)
+{
+    for(; *format!='\0'; ++format)
+    {
+        //if a format specifier is encountered, the actual type specifier is omitted
+        //as cout knows how to interpret them
+        if(*format == '%')
+        {
+            //cout the input value and recursively call with the format poinitng
+            //to the next character and with expanded pack
+            cout<<firstValue;
+            myPrintf(format + 1, args...);
+            break;
+        }
+        else
+        {
+            cout<<*format;
+        }
+    }
+}
 
 int main()
 {
@@ -90,7 +142,7 @@ int main()
 	cout<<"	    template functions, or a distinct behavior particular to each type, as in the case of overloading and overriding."<<endl;
 	cout<<"	    There are 2 types of polymoprhism: static and dynamic. The static polymorphism is achieved at compile time either using overloading"<<endl;
 	cout<<"	    or templates. As templates can take template type parameters as placeholders for types/entities they work with, the encapsulated"<<endl;
-	cout<<"	    behavior becomes available to those entities, which use/invoke the (same) template interface."<<endl;
+	cout<<"	    behavior becomes available to those entities, which use/invoke the (same) template interface."<<endl<<endl;
 	
 	//dynamic polymoprhism example
 	list<unique_ptr<Interface>> inheritanceChainRefs;
@@ -108,6 +160,24 @@ int main()
 	printNameFunc(Base2{});
 	printNameFunc(DerivedBase12{});
 	
+	cout<<"     7. Variadic templates are template functions/classes which can take an arbitrary number of arguments."<<endl;
+	cout<<"     This behavior is achieved by using ellipsis operator (...) which makes Args or args a parameter pack (distinct parameters, "<<endl;
+	cout<<"	    possibly of different types, that are tied together). Parameter packs can be subjects to 2 operations only: they can be packed or"<<endl;
+	cout<<"	    unpacked. When the ellipsis precedes Args, they are packed; when the 3 dots are on the right of Args, they are unpacked."<<endl;
+	
+	cout<<"	    The main usage of this syntax is the recursion applied to templates. In detail, an operation is performed on the first argument,"<<endl;
+	cout<<"	    then the function is called recursively for the parameter pack, sent as argument with the unpacking syntax (arg...)."<<endl;
+	cout<<"	    Thus, the parameter pack is reduced at each recursive call. Furthermore, ther should be implemented an explicit specialization "<<endl;
+	cout<<"	    for 1 template argument, or for none, which would be called in th last instance, acting as stop condition for the recursive calls."<<endl;
+	cout<<"	    Under the hood, the compiler generates an implicit specialization for each template function called in the recursive call graph. So,"<<endl;
+	cout<<"	    another template function definition is generated, at each recursive step, with the new set of arguments resulted from unpacking."<<endl<<endl;
+	
+	cout<<VariadicArgsExample<int, int, int, int>::computeSum(1, 2, 3, 4)<<endl;
+    	cout<<VariadicArgsExample<char, int, float, bool>::computeSum('c', 1, 3.14159, false)<<endl;
+    	cout<<VariadicArgsExample<int, char, float, bool, short int, unsigned long long>::computeSum(1, 'c', 3.14159, false, -11, 11)<<endl;
+	
+	myPrintf("\n");
+    	myPrintf("% world% %\n", "Hello", '!', 2022); 
 	
 	//template functions with specializations and overloads for smart pointers
 	static constexpr double pi{3.14159};

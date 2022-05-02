@@ -61,25 +61,24 @@ int main()
     	MyClass<int, Functor>()(-27, 3, 11);
 	
 	cout<<"     3. When template arguments are provided upon function invokation or class instantiation, a specialization for that template is "<<endl;
-	cout<<"     generated, with the specified types substituting the template parameters. For functions, the types can be deduced from function's "<<endl;
-	cout<<"	    argument types."<<endl;
+	cout<<"     implicitly generated, with the specified types substituting the template parameters. For functions, the types can be deduced from "<<endl;
+	cout<<"	    function's argument types."<<endl;
 	cout<<"     Specializations can also be provided explicitly, as specific behaviors can be implemented for some specific types. A full"<<endl;
 	cout<<"     specialization entails all template parameters are explicitly stated upon definition. It is supported both by classes and functions."<<endl;
 	cout<<"     Partial specialization means that some template parameters, at least one, still is generic. A specialization for pointer/ref to the same "<<endl;
 	cout<<"     generic type as the base template, is considered a partial specialization. It is supported only by classes/structs"<<endl<<endl;
 	
-	cout<<"     4. When a class/function template specialization, either explicitly provided or implicitly generated upon instantiation/invokation,"<<endl;
-	cout<<"     is referenced in a context, that template is instantiated with the types provided as arguments. Thus, it is generated a complete"<<endl;
-	cout<<"	    function definition (lvalue) or a complete object definition (for the template class instance). When it comes to template classes,"<<endl;
-	cout<<"     their methods are not instantied unless used."<<endl;
+	cout<<"     4. When a class/function template specialization, is referenced in a context, that template is instantiated with the types provided "<<endl;
+	cout<<"     as arguments. Thus, it is generated a complete function definition (lvalue) or a complete object definition (for the template class instance)."<<endl;
+	cout<<"	    When it comes to template classes, their methods are not instantied unless used/called."<<endl;
 	cout<<"     The instantiation step requires that template definition/implementation to be visible. Oftentimes, template declarations and definitions"<<endl;
 	cout<<"     are entirely included in header files. If the code is consdiered too verbose, the implementations can reside in source code files, with"<<endl;
 	cout<<"     the instantiations either specified at the end of this file, or in a separate source code file including the source code file with "<<endl;
 	cout<<"     the implementations."<<endl<<endl;
 	
-	cout<<"     5. The aliasing syntax from c++, which binds an identifier to a name (using name = identifier), can also be applied to template declarations,"<<endl;
+	cout<<"     5. The aliasing syntax from C++, which binds an identifier to a name (using name = identifier), can also be applied to template declarations,"<<endl;
 	cout<<"     leading to template aliases. This is useful in cases a template has more parameters and there is envisaged to provide some specific names"<<endl;
-	cout<<"	    for declarations that explicitly specify some of the parameters. Consequently, the provided name will still be templated."<<endl<<endl;
+	cout<<"	    for declarations of partial specializations. Consequently, the provided name will still be templated."<<endl<<endl;
 	
 	// instantiate base template
 	Example<char, double> inst{'a', 2.7182};
@@ -212,7 +211,7 @@ int main()
 	cout<<"     syntax is mostly like the one of a plain class."<<endl;
 
 	cout<<"     3. Unlike template functions, a template class can be [partially] specialized. That is, a separate implementation is provided for some"<<endl;
-	cout<<"     of its template type parameters. THos parameters that are not specialized, remain general and the syntax for them stays similar with regular"<<endl;
+	cout<<"     of its template type parameters. Those parameters that are not specialized, remain general and the syntax for them stays similar with regular"<<endl;
 	cout<<"     template classes. For the specialized types, the syntax follows the principles fo full specialization in the sense that the explicit types"<<endl;
 	cout<<"     must be included after the class name when defining and and when implementing its methods."<<endl;
 	cout<<"     Like a template class beholding general types, a partially specialized class requires explicit intantiation with the needed types for its"<<endl;

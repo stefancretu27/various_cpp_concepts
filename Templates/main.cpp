@@ -78,6 +78,23 @@ void myPrintf(const char* format, T firstValue, Args ... args)
     }
 }
 
+
+//perfect forwarding example
+struct Data
+{
+    string name;
+    const int number;
+    
+    Data(string&& s, const int i):name{s}, number{i}{};
+};
+
+//perfect forwarding implementation for the above
+template<class ... Args>
+Data factoryPerfectFwd(Args&& ... args)
+{
+	return Data(forward<Args>(args)...);	
+}
+
 int main()
 {
 	cout<<endl<<"Insights on template concepts:"<<endl;
@@ -161,6 +178,7 @@ int main()
 	printNameFunc(DerivedBase12{});
 	
 	cout<<"     7. Variadic templates are template functions/classes which can take an arbitrary number of arguments."<<endl;
+	cout<<"     Thus, variadic templates are to be used when the function/class needs a variable number of arguments of a variety of types "<<endl;
 	cout<<"     This behavior is achieved by using ellipsis operator (...) which makes Args or args a parameter pack (distinct parameters, "<<endl;
 	cout<<"	    possibly of different types, that are tied together). Parameter packs can be subjects to 2 operations only: they can be packed or"<<endl;
 	cout<<"	    unpacked. When the ellipsis precedes Args, they are packed; when the 3 dots are on the right of Args, they are unpacked."<<endl;
@@ -178,6 +196,16 @@ int main()
 	
 	myPrintf("\n");
     	myPrintf("% world% %\n", "Hello", '!', 2022); 
+	
+	cout<<"	    8. Perfect forwarding is used often in conjunction with variadic templates. It allows to preserve the argument's value category,"<<endl;
+	cout<<"	    be it lvalue or rvalue, but also its cv-qualification. It is useful when the template function need to pass the received arguments,"<<endl;
+	cout<<"	    without changing them, to another function that it wraps =>forwarding. A rvalue argument to the wrapper would become a lvalue argument"<<endl;
+	cout<<"	    for the wrapped function call (unless an explicit std::move call is made)."<<endl;
+	
+	cout<<"	    The pattern to implement perfect forwarding consists fo 3 steps"<<endl;
+	cout<<"	    	i) use  atemplate definition: template<class T>/template<class ... Args>"<<endl;
+	cout<<"	    	ii) use universal reference for the argument such that lvalue/rvalue category is preserved: myFunc(T&& arg)/myFunc(Args&&... args)"<<endl;
+	cout<<"	    	iii) invoke std::forward on the argument: std::forward<T>(arg)/ std::forward<Args>(args)..."<<endl;
 	
 	//template functions with specializations and overloads for smart pointers
 	static constexpr double pi{3.14159};

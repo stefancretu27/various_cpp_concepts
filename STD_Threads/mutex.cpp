@@ -1,6 +1,7 @@
 #include "headers.hpp"
 
 #include <vector>
+#include <chrono>
 
 using namespace std;
 
@@ -31,6 +32,16 @@ class Queue
     }
 };
 
+auto IncrementData(const unique_ptr<int>& uPtr, recursive_mutex& recMtxUPtr) -> void
+{
+    lock_guard<recursive_mutex> lckGuard{recMtxUPtr};
+    if(uPtr)
+    {
+        ++(*uPtr);
+        cout<<__FUNCTION__<<" Line: "<<__LINE__<<" value: "<<*uPtr<<endl;
+    }
+}
+
 void mutexInsights()
 {
 	cout<<endl<<"Insights on std mutex"<<endl;
@@ -39,18 +50,18 @@ void mutexInsights()
 	cout<<"     2. Mutex is a synchronization primitive that ensures exclusive access (atomic access) to a shared resource amongst multiple threads "<<endl;
 	cout<<"     attempting to access it. When a thread acquires a mutex, it becomes the owner of that mutex and is the only responsible for unlocking it."<<endl;
     cout<<"     A thread attempting to acquire a mutex must not own already the same mutex, otherwise it leads to undefined behavior, possibly deadlock."<<endl;
-    cout<<"     While a thread successfully acquired a mutex, the other threads attempting to lock the mutex are blocked until the mutex is unlocked"<<endl<<endl;
+    cout<<"     While a thread successfully acquired a mutex, the other threads attempting to lock the mutex are blocked until the mutex is unlocked."<<endl<<endl;
 
-    cout<<"     3. Since a mutex provide exclusive access to a given shared resource, when dealing with multiple shared resources, the approach is to"<<endl;
+    cout<<"     3. Since a mutex provides exclusive access to a given shared resource, when dealing with multiple shared resources, the approach is to"<<endl;
 	cout<<"     have a mutex for each shared resource on which atomic access is required. Using a given mutex for more shared variables would be"<<endl;
     cout<<"     ambiguous and could lead to deadlocks or undefined behaviors. lock(mutex1, mutex2, ...mutexn) can be used to lock at least 2 mutexes"<<endl<<endl;
 
-    cout<<"     4. A mutex instance is NOT MOVABLE or COPYABLE => mutex class does not implement any copy or move semantics. If a mutex would have been "<<endl;
-    cout<<"     copyable, a copy instance could be created on another thread. Thereafter, on the initial instance, but also on the copy instance"<<endl;
-    cout<<"     lock operations would be possible. If both the initial instance and the copy should guard the access to the same shared resource, "<<endl;
-    cout<<"     each thread would end with locking distinct mutexes (as the copy is another different instance), thus not preventing race condition"<<endl;
-    cout<<"     In the end, in order to properly guard a critical section, all threads should use the same mutex when accessing it, such that each one"<<endl; 
-	cout<<"     can check if the mutex is locked or not. The mutex locking status is visible to all thread."<<endl<<endl;
+    cout<<"     4. A mutex instance is NOT MOVABLE or COPYABLE => mutex class does not implement any copy or move semantics. Also, in order to properly"<<endl;
+    cout<<"     guard a critical section, all threads should use the same mutex when accessing it, such that each one can check if the mutex is locked"<<endl;
+    cout<<"     Thus, the mutex locking status is visible to all threads.If a mutex would have been copyable, a copy instance could be created on "<<endl;
+    cout<<"     another thread. Thereafter, on the initial instance, but also on the copy instance lock operations would be possible. As they would share"<<endl;
+    cout<<"     the same locking status, locking one leads to locking the copy, which leads to undefined behavior. Furthermore, if a mutex would be movable"<<endl;
+    cout<<"     its locking status could be transferred from one thread to another, meaning the critical section it initially guarded remains unprotected"<<endl<<endl;
 
 	cout<<"     5. A mutex is owned when it is successfully acquired using one of the following:"<<endl;
 	cout<<"         1. mutex.lock() - acquire mutex. If already acquired by another thread, this call blocks here until the mutex is released."<<endl;
@@ -60,12 +71,17 @@ void mutexInsights()
 
     cout<<"     6. lock_guard<std::mutex> lg(mutex) - it is a template class which wraps over mutex, allowing for acquiring a mutex in RAII fashion, "<<endl;
     cout<<"     within the scope where the lock_guard is defined. When lock_guard is destroyed, at the end of the scope where it is defined,"<<endl;
-    cout<<"     its d-tor automatically calls unlock(). A lock_guard is NOT COPYABLE or MOVABLE => both copy and move semantics are deleted."<<endl<<endl;
+    cout<<"     its d-tor automatically calls unlock(). A lock_guard is NOT COPYABLE or MOVABLE => both copy and move semantics are deleted."<<endl;
+    cout<<"     Once a mutex is acquired using lock_guard, the lock_guard instance cannot be used to explicitly unlock and lock again the mutex, as"<<endl;
+    cout<<"     the class does not provide lock(), unlock() interface. Locking is just performed upon lock_guard instantiation. "<<endl<<endl;
 
     cout<<"     7. unique_lock<std::mutex> lg(mutex) - it is a template class which wraps over mutex, allowing for deferred locking, recursive locking "<<endl;
     cout<<"     move of locking ownership, time-constrained attempt of locking and use in conjuction with condition variables."<<endl;
     cout<<"     A unique_lock is NOT COPYABLE, but it is MOVABLE => only its copy semantics is deleted. The mutex is released at the end of the scope"<<endl;
-    cout<<"     where the unique_lock is defined, following the RAII principle."<<endl;
+    cout<<"     where the unique_lock is defined, following the RAII principle. Unlike lock_guard, it provides lock(), unlock(), try_lock_for() interface"<<endl;
+    cout<<"     meaning that it allows for on demand (explicit) unlocking and lock again operations, as well as for timed locking attempts. For these"<<endl;
+    cout<<"     reasons the unique_lock is used in conjunction with conditions variables, as they have to unlock and lock the mutex for checking the"<<endl;
+    cout<<"     status of the condition variable (notification received)"<<endl<<endl;
 
     cout<<"     8. Locking options:"<<endl;
     cout<<"      - defer_lock - allows construction of an unique_lock that wraps a given mutex, but does not lock it. An explicit subsequent call to"<<endl;
@@ -76,11 +92,31 @@ void mutexInsights()
     cout<<"     of mutexes previously acquired using deadlock avoidance algorithm, by a lock() call. Thereafter, the lock ownership is bound to (adopted) "<<endl;
     cout<<"     lock_guard objects, in order to ensure RAII unlocking.It can also be used with unique_lock, but it assumes the mutex is already locked."<<endl<<endl;
 
-    cout<<"     9. scoped_lock<std::mutex> lg(mutex) - it is a template class which wraps over mutex, allowing for ;pcking multiple mutexes simultaneously,"<<endl;
+    cout<<"     9. scoped_lock<std::mutex> lg(mutex) - it is a template class which wraps over mutex, allowing for locking multiple mutexes simultaneously,"<<endl;
     cout<<"     RAII fashion, using deadlock avoidance algorithm. It was introduced in c++17."<<endl;
-    cout<<"     A scoped_lock is NOT COPYABLE."<<endl;
-    
-    cout<<endl<<">>>    lock_guard stuff   <<<"<<endl;
+    cout<<"     A scoped_lock is NOT COPYABLE."<<endl<<endl;
+
+    cout<<"     10. recursive_mutex- it is a synchronization primitive preventing multiple thread from simultaneously accessing a shared data"<<endl;
+    cout<<"     Unlike mutex, once locked by a thread, the recursive_mutex can be locked and unlocked again by the same thread. This is useful when the"<<endl;
+    cout<<"     shared data is accessed in a recursive fashion. The recursive_mutex is acquired when a successful call to lock or try_lock is done."<<endl;
+    cout<<"     During this period, the thread can make additional calls to lock and unlock, for an unspecified number of times. The period of ownership"<<endl;
+    cout<<"     end when the number of unlocks matches the number of locks. Although unspecified, when the number of maximum lock is reached, any further"<<endl;
+    cout<<"     call to lock returns system error "<<endl;
+
+    cout<<"     11. timed_mutex- it is a synchronization primitive preventing multiple thread from simultaneously accessing a shared data"<<endl;
+    cout<<"     Likewise mutex, it offers exclusive, non recursive access to the shared data for the thread which successfully acquires it."<<endl;
+    cout<<"     In addition to mutex, it offers the possibility to try to lock the mutex, attempt tried for a specified amount of time or until a time"<<endl;
+    cout<<"     point has been reached, using try_lock_for() and try_lock_until() respectively. These functions return true if the mutex has been locked"<<endl;
+    cout<<"     during the specified time frame."<<endl<<endl;
+
+    cout<<"     12. recursive_timed_mutex- it is a synchronization primitive preventing multiple thread from simultaneously accessing a shared data"<<endl;
+    cout<<"     Likewise timed_mutex, it offers the possibility to try to lock the mutex, attempt tried for a specified amount of time or until a time"<<endl;
+    cout<<"     point has been reached, using try_lock_for() and try_lock_until() respectively. These functions return true if the mutex has been locked"<<endl;
+    cout<<"     during the specified time frame. Unlike timed_mutex, it can be locked and unlocked multiple times by the same thread."<<endl;
+    cout<<"     Additionally, likewise recursive_mutex, the recursive_timed_mutex can be locked() and unlocked() again by the thread that owns it."<<endl;
+    cout<<"     Unlike, recursive_mutex, these attempts can be done in a temly manner."<<endl<<endl;
+
+    cout<<endl<<">>>    lock_guard example   <<<"<<endl;
 
     auto threadLambda_LockGuard{  [](shared_ptr<HelperClass>& hc, mutex& hc_mutex)
                             {
@@ -110,7 +146,7 @@ void mutexInsights()
     joinThread(threadInst);
 
     //--------------unique_lock--------------
-    cout<<endl<<">>>    unique_lock stuff   <<<"<<endl;
+    cout<<endl<<">>>    unique_lock example   <<<"<<endl;
     int a{}, b{42};
     mutex mtx_a, mtx_b;
 
@@ -144,7 +180,7 @@ void mutexInsights()
     cout<<"[after joining] a = "<<a<<" b = "<<b<<endl;
 
     //--------------adopt_lock and defer_lock---------------
-    cout<<endl<<">>>    adopt_lock and defered_lock stuff   <<<"<<endl;
+    cout<<endl<<">>>    adopt_lock and defered_lock examples   <<<"<<endl;
 
     Queue q1{{1,2,3,4,5}};
     mutex mtx_q1;
@@ -236,7 +272,7 @@ void mutexInsights()
     q2.printElements();
 
     //--------------scoped_lock---------------
-    cout<<endl<<">>>    scoped_lock stuff   <<<"<<endl;
+    cout<<endl<<">>>    scoped_lock example   <<<"<<endl;
 
     auto swapQueuesLambda_ScopedLock{ [&mtx_q1, &mtx_q2](Queue& q1, Queue& q2)
                                         {
@@ -266,4 +302,103 @@ void mutexInsights()
     cout<<" [after thread joined] q1 length: "<<q1.getLength()<<" q2 length: "<<q2.getLength()<<endl;
     q1.printElements();
     q2.printElements();
+
+    //--------------recursive_mutex--------------
+    cout<<endl<<">>>    recursive_mutex example   <<<"<<endl;
+    
+    recursive_mutex recMtx;
+    unique_ptr<int> uPtrInt;
+
+    auto lambda{
+                [&recMtx, &uPtrInt](const string& thread_name)
+                    {
+                        lock_guard<recursive_mutex> lckGuard{recMtx};
+                        if(uPtrInt)
+                        {
+                            ++(*uPtrInt);
+                            cout<<thread_name<<" "<<__FUNCTION__<<" Line: "<<__LINE__<<" value: "<<*uPtrInt<<endl;
+                        }
+                        else
+                        {
+                            uPtrInt = make_unique<int>();
+                            cout<<thread_name<<" "<<__FUNCTION__<<" Line: "<<__LINE__<<" value: "<<*uPtrInt<<endl;
+                            this_thread::sleep_for(chrono::seconds(3));
+                        }
+                        IncrementData(uPtrInt, recMtx);
+                        
+                    ;}
+                };
+
+    thread th1{lambda, "thread1"}, th2{lambda, "thread2"};
+
+    joinThread(th1);
+    joinThread(th2);
+
+    //--------------timed_mutex--------------
+    cout<<endl<<">>>    timed_mutex example   <<<"<<endl;
+    
+    shared_ptr<int> sharedData{make_shared<int>(8)};
+    timed_mutex timedMtx;
+
+    auto threadFunc1 = [&sharedData, &timedMtx]
+                        {
+                            //if(timedMtx.try_lock_until(chrono::steady_clock::now() + chrono::seconds(2)))
+                            if(timedMtx.try_lock_for(chrono::seconds(2)))
+                            {
+                                //if the mutex was acquired, adopt lock and own it in RAII manner
+                                lock_guard<timed_mutex> lckGuard{timedMtx, adopt_lock};
+                                this_thread::sleep_for(chrono::seconds(2));
+                                ++(*sharedData);
+                                cout<<this_thread::get_id()<<" "<<__LINE__<<" "<<__FUNCTION__<<" value: "<<*sharedData<<endl;
+                            }
+                            else
+                            {
+                                cout<<this_thread::get_id()<<" "<<__LINE__<<" "<<__FUNCTION__<<" couldn't lock timed_mutex"<<endl;
+                            }
+                            
+                        };
+
+    auto threadFunc2 = [&sharedData, &timedMtx]
+                        {
+                            this_thread::sleep_for(chrono::seconds(4));
+
+                            //if(timedMtx.try_lock_until(chrono::steady_clock::now() + chrono::seconds(2)))
+                            if(timedMtx.try_lock_for(chrono::seconds(2)))
+                            {
+                                //if the mutex was acquired, adopt lock and own it in RAII manner
+                                lock_guard<timed_mutex> lckGuard{timedMtx, adopt_lock};
+                                this_thread::sleep_for(chrono::seconds(2));
+                                ++(*sharedData);
+                                cout<<this_thread::get_id()<<" "<<__LINE__<<" "<<__FUNCTION__<<" value: "<<*sharedData<<endl;
+                            }
+                            else
+                            {
+                                cout<<this_thread::get_id()<<" "<<__LINE__<<" "<<__FUNCTION__<<" couldn't lock timed_mutex"<<endl;
+                            }
+                            
+                        };
+
+    auto dummyFunc = [&timedMtx]
+                    {
+                        this_thread::sleep_for(chrono::seconds(5));
+
+                        //if(timedMtx.try_lock_until(chrono::steady_clock::now() + chrono::seconds(2)))
+                        if(timedMtx.try_lock_for(chrono::seconds(2)))
+                        {
+                            lock_guard<timed_mutex> lckGuard{timedMtx, adopt_lock};
+                            cout<<this_thread::get_id()<<" "<<__LINE__<<" "<<__FUNCTION__<<endl;
+                        }
+                        else
+                        {
+                            cout<<this_thread::get_id()<<" "<<__LINE__<<" "<<__FUNCTION__<<" dummyThread couldn't lock timed_mutex"<<endl;
+                        }
+                    };
+
+
+    thread t1{threadFunc1}, dummyThread{dummyFunc}, t2{threadFunc2};
+
+    joinThread(t1);
+    joinThread(dummyThread);
+    joinThread(t2);
+
 }

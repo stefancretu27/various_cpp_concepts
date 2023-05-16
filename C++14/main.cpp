@@ -1,4 +1,6 @@
 #include "LibraryFeatures.hpp"
+#include "LanguageFeatures.hpp"
+
 
 int main()
 {
@@ -194,6 +196,166 @@ int main()
     
     string quotedString{"aaa \"to be quoted string\" aaa "};
     cout<< quoted(quotedString)<<endl;
+    
+    /*
+    * C++14 new language features
+    */
+    cout<<"-----C++14 new language features------"<<endl;
+    
+    cout<<"------a. Variable templates------"<<endl;
+    cout<<"      define a family of variables or static data members => the type of the data is generic (the template type parameter)"<<endl; 
+    cout<<"     The variable or the static member instantiated from the template are called instantiated variable/ static member."<<endl;
+    cout<<"     For the static variable template member, likewise any static data member, it has ot be explicitly defined outside"<<endl;
+    cout<<"     the class declaration. The definition reuses the generic tempplate parameter type as it doesn't require explicit "<<endl;
+    cout<<"     instantiation of the template."<<endl;
+    cout<<"     The same variable name can be reused for multiple types, memory being set aside separately for each type, once."<<endl;
+    cout<<"     Reusing the variable template with an already instantiated type, would rewrite it's previous value, upon assignment."<<endl;
+    cout<<"     Declaring a non template variable with the same name as the template variable, is not conflicting, but also doesn't"<<endl;
+    cout<<"     represent an explicit instantiation. It is just another variable."<<endl<<endl;
 
+    VariableTemplate::SetStaticTemplVariable(8);
+    cout<<VariableTemplate::GetStaticTemplVariable<int>()<<endl;
+    
+    VariableTemplate::SetStaticTemplVariable(2.7182);
+    cout<<VariableTemplate::GetStaticTemplVariable<double>()<<" "<<VariableTemplate::GetStaticTemplVariable<int>()<<endl;
+    
+    //instantiation and assignment
+    myGenericVariable<int> = 12;
+    myGenericVariable<char> = 'c';
+    //explicit instantiation of the template
+    myGenericVariable<float>;
+    //assignment to that instantiation
+    myGenericVariable<float> = 3.1415f;
+    //reuse an existing instantiation, overwritting its value
+    myGenericVariable<int> = -98;
+    
+    cout<<myGenericVariable<int><<" "<<myGenericVariable<float><<" "<<myGenericVariable<char><<endl;
+    
+    anotherGenericVar<double> = {4.4};
+    int anotherGenericVar{12};
+
+    
+    cout<<"------b. Generic lambda------"<<endl;
+    cout<<"     A lambda expression that has at least one parameter of auto type.Thus, the parameter's type"<<endl;
+    cout<<"     is inferred at compile time, from the function's instantiation argument's type."<<endl;
+    cout<<"     Conceptually, a generic lambda is equivalent to a function object with a templatized function-call operator method"<<endl;
+    cout<<"     (whose arguments have the type defined by the template type parameter)."<<endl<<endl;
+
+    
+    unique_ptr<int> uPtrInt{make_unique<int>(8)};
+    auto lambda = [](const auto& data)
+    {
+        cout<<*data<<endl;  
+    };
+    
+    lambda(uPtrInt);
+    cout<<*uPtrInt<<endl;
+    
+    cout<<"------c. Capture-init for lambda------"<<endl;
+    cout<<"      data captured in the capture list of a lambda can be initialized in the capture list."<<endl;
+    cout<<"     Works with variables captured by value, not by reference. The initialization is valid only for the lambda's scope."<<endl<<endl;
+    
+    string s;
+    
+    auto InitCaptureClosure = [ s = "initialized in capture list" ]() mutable
+    {
+        cout<<"inside lambda "<<s<<endl;
+    };
+    
+    InitCaptureClosure();
+    cout<<"outside lambda "<<s<<endl;
+    
+    int* pi;
+    shared_ptr<int> sPtrInt;
+    
+    auto InitCaptureClosureDynamic = [pi = new int{2}, sPtrInt = make_shared<int>()] 
+    {
+        cout<<"inside lambda: "<<*pi<<endl;
+        if(sPtrInt)
+        {
+            cout<<++(*sPtrInt)<<" use count "<<sPtrInt.use_count()<<endl;
+        }
+    };
+    
+    InitCaptureClosureDynamic();
+    if(pi)
+        cout<<"outside lambda "<<*pi<<endl;
+        
+    if(sPtrInt)
+    {
+        cout<<++(*sPtrInt)<<endl;
+    }
+    
+    cout<<"------d. new/delete elision------"<<endl;
+    cout<<"      One such case is when the lifetime of an object allocated with new or deleted"<<endl;
+    cout<<"     is nested within the lifetime of anothe robject allocated with new/deleted. It is also called allocation"<<endl;
+    cout<<"     elision and is the second form of optimization after copy/move elision introduced in c++11, which results"<<endl;
+    cout<<"     in zero copy pass by value operations (return by value, pass argument by value), as the object is built"<<endl;
+    cout<<"     in place where it would have been copied/moved to."<<endl<<endl;
+    
+
+    cout<<"------e. Relaxed restrictions on constexpr functions------"<<endl;
+    cout<<"     The constexpr qualifier was introduced in c++11 to"<<endl;
+    cout<<"     indicate a compile time known constant data. Furthermore, it could also be used as a qualifier for"<<endl;
+    cout<<"     functions and methods, if they satisfy a series of criteria, as follows:"<<endl;
+    cout<<"        - they are not functions-try-blocks: functions whose bodies are try-block. It also holds for c-tors."<<endl;
+    cout<<"        - the returned value is a Literal, likewise its parameters"<<endl;
+    cout<<"        - for constexpr c-tor, the class must have non virtual base class"<<endl;
+    cout<<"        - the function's body is either deleted or contains only: static-assert, using, typedef, maximum one return statement,"<<endl;
+    cout<<"      switch-case"<<endl;
+    cout<<"        - the function's body mustn't contain: try-catch and go to statements (as they lead to jumps in code), non-literal"<<endl;
+    cout<<"      variables definitions, thread local data definition, static data definition"<<endl;
+    
+    cout<<"      The relaxation measures include:"<<endl;
+    cout<<"        - allow loop statements: for, while, do while"<<endl;
+    cout<<"        - allow if statements"<<endl;
+    cout<<"        - allow variables declarations, but not uninitialized variables, static and thread local. variables must be initialzied with"<<endl;
+    cout<<"      literals, const data (compile time known values) or default/uniform initialized"<<endl;
+   
+    cout<<"      Function try-blocks are often used to implement constructors whose member initializer list can throw an exception."<<endl;
+    cout<<"      All the members' initialization declarations are placed after try expression. Lambdas cannot have a try-block implementation."<<endl;
+    cout<<"     The constexpr functions values can be evaluated at compile time."<<endl<<endl;
+
+    
+    //function try-block example
+    unique_ptr<int> smartUPtr;
+    TryCatchFunction(smartUPtr);
+    TryCatchCtor inst{100};
+    
+    constexpr int cei = ConstExprFunc(3);
+    constexpr int cei2 = ConstExprFunc(-3);
+    cout<<cei<<" "<<cei2<<endl;
+    
+    //works only if x is const or constexpr
+    const int x{7};
+    constexpr int cei3 = ConstExprFunc(x);
+                                        
+    ConstExprClass ceObj{5};
+    cout<<ceObj.GetD()<<" "<<cei3<<endl;
+    
+    cout<<"------f. Binary literals------"<<endl;
+    cout<<"      Used to initialize data with a bianry sequence, as done in decimal and hexa
+    cout<<"      Digit separators = commas used to separate digits of numeric literals, ignored by the compiler. Also,works with floating point numbers."<<endl;
+
+    int binaryLiteral = 0b1101;
+    int digitSeparators = 10'938'756;
+    double floatDigitSeparators = 3.141'59;
+    cout<<binaryLiteral<<" "<<digitSeparators<<" "<<floatDigitSeparators<<endl;
+    
+    cout<<"------g. Return type deduction for functions------"<<endl;
+    cout<<"     It's deduced by the compiler from the type of the expression"<<endl; 
+    cout<<"     used in the return statement. If there are multiple return statements, they must all deduce to the same type."<<endl;
+    cout<<"     If the return statement uses a braced-init-list, deduction is not allowed."<<endl;
+
+    cout<<ReturnTypeDeducFunc()<<endl;
+    
+    cout<<"------h. aggregate classes with default non-static member initializers ------"<<endl;
+    cout<<"     An aggregate class, typically struct or union are used, is used to pack elements of distinct types together."<<endl;
+    cout<<"     Thus, it does not have a constructor, neither default, inherited, explicit or user provided."<<endl;
+    cout<<"     Since c++14 it can have a default member initializer for non static members."<<endl;
+
+    AggregateClass aggr{22, 'x', 3.1415, "aggr"};
+    cout<<aggr.i<<" "<<aggr.str<<endl;
+    
     return 0;
 }

@@ -9,6 +9,8 @@
 #include "StaticPolymorphism.hpp"
 #include "TemplateFunctions.hpp"
 #include "TemplateMethods/TemplateMethods.hpp"
+#include "TemplateClasses/RecursiveVariadicTemplates.hpp"
+#include "TemplateClasses/PartialSpecializationPointersRefs.hpp"
 #include "TemplateClasses/TemplateClass.hpp"
 #include "TemplateTemplateParameter.hpp"
 
@@ -319,17 +321,27 @@ int main()
 	cout<<"     full specializations, only that after the class name is specified the pointer/ref type (ClassName<T*>) when defining the class and when"<<endl;
 	cout<<"     implementing its methods."<<endl;
 
-	CheckType<int&> refType{};
-	refType.printType();
-	
-	CheckType<int> intType{};
-	intType.printType();
-	
-	CheckType<int*> ptrType{};
-	ptrType.printType();
-	
-	CheckType<bool> boolType{};
-	boolType.printType();
+	std::cout<<"Use partial specialization for pointers and references in template classes to check a data type is plain, pointer or reference"<<std::endl; 
+	double d{2.7182};
+        double* ptrD{new double(-273.1)};
+        double& refD{d};
+    
+        cout<<endl<<"IsPlainData "<<CheckType<double>::IsPlainData(d)<<" IsPtr "<<CheckType<double>::IsRawPointer(d)<<" IsRef "<<CheckType<double>::IsRef(d)<<endl;
+        cout<<"IsPlainData "<<CheckType<double*>::IsPlainData(ptrD)<<" IsPtr "<<CheckType<double*>::IsRawPointer(ptrD)<<" IsRef "<<CheckType<double*>::IsRef(ptrD)<<endl;
+        cout<<"IsPlainData "<<CheckType<double&>::IsPlainData(refD)<<" IsPtr "<<CheckType<double&>::IsRawPointer(refD)<<" IsRef "<<CheckType<double&>::IsRef(refD)<<endl;
+
+	std::cout<<"Use copy-and-swap idiom in implementation of template class with 2 template parameters"<<std::endl; 
+	TemplateClass<int, double> tc{-42, 3.14159}, tc2{89, 2.7182}, tc3{};
+        cout<<" tc "<<tc.GetMMember()<<" "<<*tc.GetMUptrData()<<endl;
+        tc3 = tc2;
+        cout<<"tc2 "<<tc2.GetMMember()<<" "<<*tc2.GetMUptrData()<<" tc3 "<<tc3.GetMMember()<<" "<<*tc3.GetMUptrData()<<endl;
+        tc2 = move(tc);
+        cout<<"tc2 "<<tc2.GetMMember()<<" "<<*tc2.GetMUptrData()<<" tc "<<tc.GetMMember()<<" "<<(tc.GetMUptrData()==nullptr)<<endl;
+
+	std::cout<<"Use variadic template arguments to recursively print data arguments. The print method is encapsulated in a struct, thus allowing for partial specializations"<<std::endl; 
+	DataPrinter<int, double, char, string>::PrintData(-273, 2.7182, 'c', "string");
+    	ArgsTuple<4, string, double, int, char>::PrintArgs("<variadic args to tuple>", 3.1415, -71, 'k');
+    	ArgsTuple<4, tuple<double, char, string, int>>::PrintArgs(make_tuple(20.202, 'y', "<<args with tuple>>", 27));
 	
 	return 0;
 }

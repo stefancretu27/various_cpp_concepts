@@ -4,6 +4,60 @@
 #include <tuple>
 using namespace std;
 
+//variadic template struct
+template<class T, class ... Args>
+struct VariadicArgsExample
+{
+    static T computeSum(T firstValue, Args... args)
+    {
+        if(is_fundamental<T>::value)
+        {
+            return firstValue + VariadicArgsExample<Args...>::computeSum(args...);
+        }
+    }
+};
+
+//partial specialization with 1 argument for the struct above 
+template<class T>
+struct VariadicArgsExample<T>
+{
+    static T computeSum(T singleValue)
+    {
+        return singleValue;
+    }
+};
+
+
+//example of a printf using variadic templates and cout
+void myPrintf(const char* format)
+{
+    cout<<*format;
+}
+
+template<class T, class ... Args>
+void myPrintf(const char* format, T firstValue, Args ... args)
+{
+    for(; *format!='\0'; ++format)
+    {
+        //if a format specifier is encountered, the actual type specifier is omitted
+        //as cout knows how to interpret them
+        if(*format == '%')
+        {
+            //cout the input value and recursively call with the format poinitng
+            //to the next character and with expanded pack
+            cout<<firstValue;
+            myPrintf(format + 1, args...);
+            break;
+        }
+        else
+        {
+            cout<<*format;
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+
 //base template struct
 template<size_t argsCount, class ... ArgsTypes>
 struct ArgsTuple

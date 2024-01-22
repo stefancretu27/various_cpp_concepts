@@ -127,7 +127,7 @@ int main()
 	
 	cout<<"     7. Variadic templates are template functions/classes which can take an arbitrary number of arguments."<<endl;
 	cout<<"     Thus, variadic templates are to be used when the function/class needs a variable number of arguments of a variety of types "<<endl;
-	cout<<"     This behavior is achieved by using ellipsis operator (...) which makes Args or args a parameter pack (distinct parameters, "<<endl;
+	cout<<"     This behavior is achieved by using ellipsis operator (...) which makes Args a parameter pack (distinct parameters, "<<endl;
 	cout<<"	    possibly of different types, that are tied together). Parameter packs can be subjects to 2 operations only: they can be packed or"<<endl;
 	cout<<"	    unpacked. When the ellipsis precedes Args, they are packed; when the 3 dots are on the right of Args, they are unpacked."<<endl;
 	
@@ -173,7 +173,7 @@ int main()
 	spDerived->printName();
 	spDerived->printString();
 
-	//template functions and methods---------------------------------------------------------------------------
+	//template functions and methods----------------------------------------------------------------------------------------------------
 	double d{3.14159};
 	wrapTemplateMethodCall<double>(d);
 	wrapTemplateMethodCall<bool>(true);
@@ -195,31 +195,8 @@ int main()
 	tempMethodsInst.doWork<double, bool>(3.14159, true);
 	tempMethodsInst.doWork<bool, float>(false, 2.7182);
 
-	cout<<endl<<"Insights on template class:"<<endl;
-	cout<<"     1. A template class that is implemented in a .cpp file requires another .cpp file where it is explicitly instantiated with the needed"<<endl;
-	cout<<"     data types. As explained above, this need comes from the fact that the template is not compiled by itslef, instead it is replicated when"<<endl;
-	cout<<"     an explicit instance is done. Furthermore, the additional .cpp file needs access to the template implementations of the class methods in"<<endl;
-	cout<<"     order to properly generate the code for each explicit instantiation. Thus, the .cpp file with template implementations must be included"<<endl;
-	cout<<"     in the additional .cpp file that holds the explicit instantiations."<<endl;
-
-	cout<<"     2. A template class can be fully specialized. That is, a separate implementation is provided using explicit data types for all its"<<endl;
-	cout<<"     template parameters. In this case, the class declaration starts with template<>, keeping the template parameter list empty, whereas"<<endl;
-	cout<<"     the explicit data types are provided after the class name (ClassName<dataType1, dataType2>) when the class is defined and when its methods"<<endl;
-	cout<<"     are implemented in a separate file. In addition, when implementing its methods the template<> specifier is not needed anymore. "<<endl;
-	cout<<"     Since all its data type are explicitly specified, it is clear that a full specialization does not require explicit instantiation. Its"<<endl;
-	cout<<"     syntax is mostly like the one of a plain class."<<endl;
-
-	cout<<"     3. Unlike template functions, a template class can be [partially] specialized. That is, a separate implementation is provided for some"<<endl;
-	cout<<"     of its template type parameters. Those parameters that are not specialized, remain general and the syntax for them stays similar with regular"<<endl;
-	cout<<"     template classes. For the specialized types, the syntax follows the principles fo full specialization in the sense that the explicit types"<<endl;
-	cout<<"     must be included after the class name when defining and and when implementing its methods."<<endl;
-	cout<<"     Like a template class beholding general types, a partially specialized class requires explicit intantiation with the needed types for its"<<endl;
-	cout<<"     generic template parameters."<<endl;
-	cout<<"     Partial specialization can also be done for pointers or refs. Even though there is only one template parameter for which the specialization"<<endl;
-	cout<<"     is implemented, it is still considered a partial specialization, as the type is not explicitly specified. In this case, the syntax is similar"<<endl;
-	cout<<"     full specializations, only that after the class name is specified the pointer/ref type (ClassName<T*>) when defining the class and when"<<endl;
-	cout<<"     implementing its methods."<<endl;
-
+	//template class-------------------------------------------------------------------------------------------------------------------
+	
 	std::cout<<"Use partial specialization for pointers and references in template classes to check a data type is plain, pointer or reference"<<std::endl; 
 	double d{2.7182};
         double* ptrD{new double(-273.1)};

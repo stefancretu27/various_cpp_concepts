@@ -42,8 +42,8 @@ TemplateClass<S, T>& TemplateClass<S, T>::operator=(TemplateClass<S, T> tc)
     return *this;
 }
 
-template<class S, class T>
-void swap(TemplateClass<S, T>& lhs, TemplateClass<S, T>& rhs)
+template<class SS, class TT>
+void swap(TemplateClass<SS, TT>& lhs, TemplateClass<SS, TT>& rhs)
 {
     //use internally defined swap
     lhs.swap(rhs);

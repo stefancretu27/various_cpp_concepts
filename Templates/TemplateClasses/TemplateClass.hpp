@@ -43,7 +43,10 @@ class TemplateClass
     TemplateClass& operator=(TemplateClass tc);
     void swap(TemplateClass& tc);
     //define friend swap function for being used by std algorithms
-    friend void swap(TemplateClass<S, T>& lhs, TemplateClass<S, T>& rhs);
+    //the friend function has to be declared template, so it can be stenciled out as the template class implementation
+    //but it must use other template type parameter's, so not to shadow those of the template class
+    template<class SS, class TT>
+    friend void swap(TemplateClass<SS, TT>& lhs, TemplateClass<SS, TT>& rhs);
     
     const std::unique_ptr<S>& GetMUptrData() const {return mUptrData;};
     T GetMMember() const {return mMember;};

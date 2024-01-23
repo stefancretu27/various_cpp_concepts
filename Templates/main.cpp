@@ -5,7 +5,6 @@
 #include <vector>
 
 // class hierarchy used in code examples
-#include "MultipleInheritance.hpp"
 #include "StaticPolymorphism.hpp"
 #include "TemplateFunctions.hpp"
 #include "TemplateMethods/TemplateMethods.hpp"
@@ -15,6 +14,7 @@
 #include "TemplateTemplateParameter.hpp"
 #include "EnableIf.hpp"
 
+using namespace std;
 // base template struct declaration 
 template<class T, class S>
 struct Example
@@ -77,7 +77,7 @@ int main()
 	
 	//call template function. with the 2 template template arguments being just the name of the structs/classes
     	function<int, Functor, FunctionWrapper>(8);
-    	//call template class overloaded function call operator that wraps the functor
+	//call template class overloaded function call operator that wraps the functor
     	MyClass<int, Functor>()(-27, 3, 11);
 	
 	/*  3. When template arguments are provided upon function invokation or class instantiation, a specialization for that template is
@@ -102,8 +102,10 @@ int main()
 	
 	// instantiate base template
 	Example<char, double> inst{'a', 2.7182};
+	cout<<inst.data1<<" "<<inst.data2<<endl;
 	// instantiate template alias
     	ExampleInt<bool> instInt{false, 44};
+	cout<<instInt.data1<<" "<<instInt.data2<<endl;
 
 	/*
 	*  6. Polymorphism represents the capability of different entities to support the same interface. In other terms, the same interface can be
@@ -147,10 +149,10 @@ int main()
 	
 	cout<<VariadicArgsExample<int, int, int, int>::computeSum(1, 2, 3, 4)<<endl;
     	cout<<VariadicArgsExample<char, int, float, bool>::computeSum('c', 1, 3.14159, false)<<endl;
-    	cout<<VariadicArgsExample<int, char, float, bool, short int, unsigned long long>::computeSum(1, 'c', 3.14159, false, -11, 11)<<endl;
+   	cout<<VariadicArgsExample<int, char, float, bool, short int, unsigned long long>::computeSum(1, 'c', 3.14159, false, -11, 11)<<endl;
 	
 	myPrintf("\n");
-    	myPrintf("% world% %\n", "Hello", '!', 2022); 
+	myPrintf("% world% %\n", "Hello", '!', 2022); 
 
 	/*
 	*  8. Perfect forwarding is used often in conjunction with variadic templates. It allows to preserve the argument's value category,
@@ -169,18 +171,6 @@ int main()
 	int i{2};
 	float f = castTtoS<int, float>(i);
 	cout<<"result of call to template method that performs static_cast: "<<f*pi<<endl;
-
-	shared_ptr<Base2> spBase2{make_shared<Derived>()};
-	//perform side cast
-	shared_ptr<Base3> spBase3 = castTtoS<Base2, Base3>(spBase2);
-	spBase3->printName();
-	spBase3->printString();
-
-	cout<<is_polymorphic<Base2>::value<<endl;
-
-	shared_ptr<Derived> spDerived = castTtoS<Base2, Derived>(spBase2);
-	spDerived->printName();
-	spDerived->printString();
 
 	//template functions and methods----------------------------------------------------------------------------------------------------
 	double d{3.14159};
@@ -207,21 +197,21 @@ int main()
 	//template class-------------------------------------------------------------------------------------------------------------------
 	
 	std::cout<<"Use partial specialization for pointers and references in template classes to check a data type is plain, pointer or reference"<<std::endl; 
-	double d{2.7182};
-        double* ptrD{new double(-273.1)};
-        double& refD{d};
+	double dd{2.7182};
+    	double* ptrD{new double(-273.1)};
+    	double& refD{dd};
     
-        cout<<endl<<"IsPlainData "<<CheckType<double>::IsPlainData(d)<<" IsPtr "<<CheckType<double>::IsRawPointer(d)<<" IsRef "<<CheckType<double>::IsRef(d)<<endl;
-        cout<<"IsPlainData "<<CheckType<double*>::IsPlainData(ptrD)<<" IsPtr "<<CheckType<double*>::IsRawPointer(ptrD)<<" IsRef "<<CheckType<double*>::IsRef(ptrD)<<endl;
-        cout<<"IsPlainData "<<CheckType<double&>::IsPlainData(refD)<<" IsPtr "<<CheckType<double&>::IsRawPointer(refD)<<" IsRef "<<CheckType<double&>::IsRef(refD)<<endl;
+   	cout<<endl<<"IsPlainData "<<CheckType<double>::IsPlainData(d)<<" IsPtr "<<CheckType<double>::IsRawPointer(d)<<" IsRef "<<CheckType<double>::IsRef(d)<<endl;
+    	cout<<"IsPlainData "<<CheckType<double*>::IsPlainData(ptrD)<<" IsPtr "<<CheckType<double*>::IsRawPointer(ptrD)<<" IsRef "<<CheckType<double*>::IsRef(ptrD)<<endl;
+    	cout<<"IsPlainData "<<CheckType<double&>::IsPlainData(refD)<<" IsPtr "<<CheckType<double&>::IsRawPointer(refD)<<" IsRef "<<CheckType<double&>::IsRef(refD)<<endl;
 
 	std::cout<<"Use copy-and-swap idiom in implementation of template class with 2 template parameters"<<std::endl; 
 	TemplateClass<int, double> tc{-42, 3.14159}, tc2{89, 2.7182}, tc3{};
-        cout<<" tc "<<tc.GetMMember()<<" "<<*tc.GetMUptrData()<<endl;
-        tc3 = tc2;
-        cout<<"tc2 "<<tc2.GetMMember()<<" "<<*tc2.GetMUptrData()<<" tc3 "<<tc3.GetMMember()<<" "<<*tc3.GetMUptrData()<<endl;
-        tc2 = move(tc);
-        cout<<"tc2 "<<tc2.GetMMember()<<" "<<*tc2.GetMUptrData()<<" tc "<<tc.GetMMember()<<" "<<(tc.GetMUptrData()==nullptr)<<endl;
+    	cout<<" tc "<<tc.GetMMember()<<" "<<*tc.GetMUptrData()<<endl;
+     	tc3 = tc2;
+    	cout<<"tc2 "<<tc2.GetMMember()<<" "<<*tc2.GetMUptrData()<<" tc3 "<<tc3.GetMMember()<<" "<<*tc3.GetMUptrData()<<endl;
+    	tc2 = move(tc);
+    	cout<<"tc2 "<<tc2.GetMMember()<<" "<<*tc2.GetMUptrData()<<" tc "<<tc.GetMMember()<<" "<<(tc.GetMUptrData()==nullptr)<<endl;
 
 	std::cout<<"Use variadic template arguments to recursively print data arguments. The print method is encapsulated in a struct, thus allowing for partial specializations"<<std::endl; 
 	DataPrinter<int, double, char, string>::PrintData(-273, 2.7182, 'c', "string");
@@ -231,7 +221,7 @@ int main()
 	//enable_if-------------------------------------------------------------------------------------------------------------------
 	
 	IntegersWrapper<int> iw{5};
-        iw.PrintData();
+   	iw.PrintData();
 	IntegersWrapper<char> iwc{'c'};
 	iwc.PrintData();
 	iwc.PrintType();

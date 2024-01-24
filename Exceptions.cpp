@@ -7,6 +7,14 @@
 #include <future>
 #include <thread>
 #include <climits>
+#include <regex>
+#include <system_error>
+#include <ios>
+#include <fstream>
+#include <typeinfo>
+#include <memory>
+#include <functional>
+
 /*
 * Defined in header <exception>, implementing the std::exception class, from which all standard exceptions derive.
 * The interface handles erros thrown via the throw expression.
@@ -33,6 +41,17 @@ void ComputeNumbersInRange0To100(int a, int b)
     if(a <0 || b < 0 || a >100 || b > 100)
         throw std::domain_error("Error ar line " + to_string(__LINE__) + " as arguments must be in range 0 to 100 in function " + string(__FUNCTION__));
 }
+
+//basic polymoprhic hierarchy used for bad_cast and bad_typeid exceptions
+struct Base
+{
+    virtual void ClassName() const {cout<<"---Base"<<endl;};
+};
+
+struct Derived: public Base
+{
+    virtual void ClassName() const override {cout<<"---Derived"<<endl;};
+};
 
 int main()
 {
@@ -133,12 +152,20 @@ int main()
     
     /*
     * 2.std::runtime_error: It reports errors that are due to events beyond the scope of the program and can not be easily predicted.
-    *   2.1 range_error: It can be used to report range errors (that is, situations where a result of a computation cannot be represented by the destination type).
-    *                    The only standard library components that throw this exception are std::wstring_convert::from_bytes and std::wstring_convert::to_bytes.
-    *                    The mathematical functions in the standard library components do not throw this exception
-    *   2.2 overflow_error: It can be used to report arithmetic overflow errors = situations where a result of a computation is too large for the destination type.
-    *                       The only standard library components that throw this exception are std::bitset::to_ulong and std::bitset::to_ullong. 
-    *   2.3 underflow_error: It may be used to report arithmetic underflow errors = situations where the result of a computation is a subnormal floating-point value
+    *   2.1 std::range_error: It can be used to report range errors (that is, situations where a result of a computation cannot be represented by the destination type).
+    *                       The only standard library components that throw this exception are std::wstring_convert::from_bytes and std::wstring_convert::to_bytes.
+    *                       The mathematical functions in the standard library components do not throw this exception
+    *   2.2 std::overflow_error: It can be used to report arithmetic overflow errors = situations where a result of a computation is too large for the destination type.
+    *                           The only standard library components that throw this exception are std::bitset::to_ulong and std::bitset::to_ullong. 
+    *   2.3 std::underflow_error: It may be used to report arithmetic underflow errors = situations where the result of a computation is a subnormal floating-point value
+    *   2.4 std::regex_error: exception object thrown to report errors in the regular expressions library. Unlike the above 3, it is defined in <regex> header
+    *   2.5 std::system_error: defined in <system_error> header, it is an exception thrown by various library functions (typically the functions that interface 
+    *                       with the OS facilities, e.g. the constructor of std::thread) when the exception has an associated std::error_code, which may be reported.
+    *       2.5.1 std::ios_base::failure: defines an exception object that is thrown on failure by the functions in the Input/Output library. It is implemented in the
+    *                                       header <ios_base> and extended std::system_error
+    *
+    *   Both regex_error and system_error (thus ios-base::failure) exceptions have an additional method, called code(), which retrunes a code number associated 
+    *   with the error.
     */
     
     try
@@ -195,6 +222,156 @@ int main()
     catch(std::underflow_error const & ueException)
     {
         cout<<__LINE__<<" "<<ueException.what()<<endl;
+    }
+    
+    try
+    {
+        /*
+        * basic_regex<T> is a template class that provides a general framework for holding regular expressions. 
+        * std::regex is a typedef forstd::basic_regex<char>
+        * std::wregex is a typedef forstd::basic_regex<wchar_t>
+        */
+        
+        std::regex regularExpr{"grep *.bin || [a-9]"};
+    }
+    catch(const std::regex_error& reException)
+    {
+        cout<<__LINE__<<" "<<reException.what()<<" "<<reException.code()<<endl;
+    }
+    
+    try
+    {
+        auto lambda{[](){cout<<"-----------ThreadFunc"<<endl;}};
+        
+        std::thread th{cref(lambda)};
+        
+        if(th.joinable())
+        {
+            th.join();
+        }
+        
+        th.join();
+        
+    }
+    catch(const std::system_error& seException)
+    {
+        cout<<__LINE__<<" "<<seException.what()<<" "<<seException.code()<<endl;
+    }
+    
+    try
+    {
+        std::ifstream inFile("input_file");
+        
+        //failbit:	input/output operation failed (formatting or extraction error), is a member of fstream class
+        inFile.exceptions(inFile.failbit);
+    }
+    catch(const std::ios_base::failure& ibfException)
+    {
+        cout<<__LINE__<<" "<<ibfException.what()<<" "<<ibfException.code()<<endl;
+    }
+    
+    /*
+    * 3. std::bad_typeid: defined in header <typeinfo>,it is thrown when a typeid operator is applied to a dereferenced null pointer value of a polymorphic type
+    * 4. std::bad_cast: also defined in the <typeinfo> header, it is thrown when a dynamic_cast to a reference type fails the run-time check 
+    *                   (e.g. because the types are not related by inheritance), and also from std::use_facet if the requested facet does not exist in the locale. 
+    * 5. std::bad_weak_ptr: defined in <memory> header, it is the type of the object thrown as exceptions by the constructors of std::shared_ptr that take 
+    *                        std::weak_ptr as the argument, when the std::weak_ptr refers to an already deleted object. 
+    * 6. std::bad_function_call: is the type of the exception thrown by std::function::operator() if the function wrapper has no target. Defined in <functional> 
+    * 7. std::bad_aloc: exception thrown by the allocation functions to report failure to allocate storage. Defined in <new> header. Usually occurs when the heap
+    *                   is filled by allocations.
+    *   7.1 std::bad_array_length: exception thrown by the allocation of arrays with new, if the size is negative, less than initializer list length or exceeds
+    *                               implementation-defined max value
+    */
+    
+    try
+    {
+        Base* bd = new Derived{};
+        
+        cout<<"typeid name of non dereferenced raw pointer: "<<typeid(bd).name()<<endl;
+        cout<<"typeid name of dereferenced raw pointer: "<<typeid(*bd).name()<<endl;
+        
+        delete bd;
+        bd = nullptr;
+        cout<<"typeid name of non dereferenced raw pointer: "<<typeid(bd).name()<<endl;
+        cout<<"typeid name of dereferenced raw pointer: "<<typeid(*bd).name()<<endl;
+    }
+    catch(const std::bad_typeid& btidException)
+    {
+        cout<<__LINE__<<" "<<btidException.what()<<endl;
+    }
+    
+    try
+    {
+        //unrelated type to attempt dynamic_cast to
+        struct OtherType
+        {
+            virtual void ClassName() const {cout<<"---OtherType"<<endl;};
+        };
+        
+        const Base& bref{Derived()};
+        auto dref = dynamic_cast<const Derived&>(bref);
+        dref.ClassName();
+        
+        Base* bptr{new Base()};
+        auto dptr = dynamic_cast<Derived*>(bptr);
+        if(dptr)
+        {
+            dptr->ClassName();
+        }
+        else
+        {
+            cout<<"dynamic_cast returned nullptr"<<endl;
+        }
+        
+        auto otref = dynamic_cast<const OtherType&>(bref);
+        otref.ClassName();
+    }
+    catch(const std::bad_cast& bcastException)
+    {
+        cout<<__LINE__<<" "<<bcastException.what()<<endl;
+    }
+    
+    
+    try
+    {
+        shared_ptr<int> spInt{make_shared<int>(8)};
+        weak_ptr<int> wpInt{spInt};
+        cout<<" use count "<<wpInt.use_count()<<" expired "<<wpInt.expired()<<endl;
+        
+        spInt.reset();
+        auto ptr{wpInt}; //builds another weak_ptr
+        std::cout<<"is new weak ptr indicating to the same manager object before old weak_ptr"<<ptr.owner_before(wpInt);
+        //ptr.lock()   //constructs a new shared_ptr from weak_ptr thus the below would not fail
+        shared_ptr<int> anotherSpInt{wpInt};
+    }
+    catch(const std::bad_weak_ptr& bweakptrEx)
+    {
+        cout<<__LINE__<<" "<<bweakptrEx.what()<<endl;
+    }
+    
+    try
+    {
+        std::function<void()> func;
+        
+        func();
+    }
+    catch(const std::bad_function_call& bfcEx)
+    {
+        cout<<__LINE__<<" "<<bfcEx.what()<<endl;
+    }
+    
+    try
+    {
+        int size{-1};
+        //int* p = new int[size];
+        
+        //if the size is directly passed to new as r-value argument, compile time error is thrown
+        size_t smallSize{3};
+        char* c = new char[smallSize]{'a', 'b', 'n', 'y', 'q'};
+    }
+    catch(const std::bad_array_new_length& banlEx)
+    {
+        cout<<__LINE__<<" "<<banlEx.what()<<endl;
     }
 
     return 0;

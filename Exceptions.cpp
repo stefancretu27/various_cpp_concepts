@@ -32,6 +32,19 @@
 *
 * Exceptions are treated in try-catch blocks. A try block can handle only one thrown exception. There can be multiple catch clauses,
 * that should be specified from the most specialized one, to the most generic one.
+*
+* Exceptions are to be used in situations to protect a feature of an existing (class, library etc) from being missused. Thus, when the control flow
+* reaches the node of using that feature, it's execution can be guarded by a try-catch statement, preventing the code from proceeding further in case
+* of certain missuse, jumping upwards in the call stack. Here are some good practices:
+*    - Do not use exceptions for flow control.
+*    - use exceptions as part of a feature's interface.
+*    - Document every exception the feature can throw
+*
+* Reasons not to use exceptions:
+*   - they break the control flow, leverageing the goto-label mechanism which breaks the program's continuity, making it less maintainable (spaghetti code). 
+*        It is the only C++ control flow that is not geographically linked to the code they control (unlike if-else, loops, functions)
+*   - unlike the goto-lable statements, the exceptions do not cause jumps anywhere in the code, but always upwards in the call stack => the control flow jumps to a 
+*       higher level in the call graph, reaching an earlier stage (to the caller, or caller's caller and so on)
 */
 
 using namespace std;

@@ -25,36 +25,11 @@ using namespace std;
 *                         of optimization after copy/move elision introduced in c++11, which results in zero copy pass by value operations 
 *                         (return by value, pass argument by value), as the object is built in place where it would have been copied/moved to.
 *
-* 5.Relaxed restrictions on constexpr functions: The constexpr qualifier was introduced in c++11 to indicate a compile time known constant data. 
-*                                                Furthermore, it could also be used as a qualifier for functions and methods, if they satisfy a series of criteria, as follows:
-*                                                    - they are not functions-try-blocks: functions whose bodies are try-block. It also holds for c-tors.
-*                                                    - the returned value is a Literal, likewise its parameters
-*                                                    - for constexpr c-tor, the class must have non virtual base class
-*                                                    - the function's body is either deleted or contains only: static-assert, using, typedef, maximum one return statement, switch-case
-*                                                    - the function's body mustn't contain: try-catch and go to statements (as they lead to jumps in code), non-literal
-*                                                      variables definitions, thread local data definition, static data definition
-*    
-*                                                The relaxation measures include:
-*                                                   - allow loop statements: for, while, do while
-*                                                   - allow if statements
-*                                                   - allow variables declarations, but not {uninitialized variables, static, thread local}. Variables must be initialzied with
-*                                                      literals, const data (compile time known values) or default/uniform initialized.
-*   
-*                                                 Function try-blocks are often used to implement constructors whose member initializer list can throw an exception.
-*                                                 All the members' initialization declarations are placed after try expression. Lambdas cannot have a try-block implementation.
-*                                                 The constexpr functions values can be evaluated at compile time.
-*
 * 6. Binary literals: Used to initialize data with a bianry sequence, as done in decimal and hexa.
 *                     Digit separators = commas used to separate digits of numeric literals, ignored by the compiler. Also, works with floating point numbers."<<endl;
-*
-* 7. Return type deduction for functions: It's deduced by the compiler from the type of the expression used in the return statement. 
-*                                         If there are multiple return statements, they must all deduce to the same type.
-*                                         If the return statement uses a braced-init-list, deduction is not allowed.
-*
-* 8. Aggregate classes with default initializers for non-static members: An aggregate class, typically struct or union are used, is used to pack elements of distinct types together.
-*                                                                        Thus, it does not have a constructor, neither default, inherited, explicit or user provided.
-*                                                                        Since c++14 it can have a default member initializer for non static members.
 */
+
+
 
 class VariableTemplate
 {
@@ -88,6 +63,26 @@ T myGenericVariable;
 template<class T>
 T anotherGenericVar = {};
 
+/*
+* 5. Relaxed restrictions on constexpr functions: The constexpr qualifier was introduced in c++11 to indicate a compile time known constant data. 
+*                                                Furthermore, it could also be used as a qualifier for functions and methods, if they satisfy a series of criteria, as follows:
+*                                                    - they are not functions-try-blocks: functions whose bodies are try-block. It also holds for c-tors.
+*                                                    - the returned value is a Literal, likewise its parameters
+*                                                    - for constexpr c-tor, the class must have non virtual base class
+*                                                    - the function's body is either deleted or contains only: static-assert, using, typedef, maximum one return statement, switch-case
+*                                                    - the function's body mustn't contain: try-catch and go to statements (as they lead to jumps in code), non-literal
+*                                                      variables definitions, thread local data definition, static data definition
+*    
+*                                                The relaxation measures include:
+*                                                   - allow loop statements: for, while, do while
+*                                                   - allow if statements
+*                                                   - allow variables declarations, but not {uninitialized variables, static, thread local}. Variables must be initialzied with
+*                                                      literals, const data (compile time known values) or default/uniform initialized.
+*   
+*                                                 Function try-blocks are often used to implement constructors whose member initializer list can throw an exception.
+*                                                 All the members' initialization declarations are placed after try expression. Lambdas cannot have a try-block implementation.
+*                                                 The constexpr functions values can be evaluated at compile time.
+*/
 
 //try-block function
 void TryCatchFunction(unique_ptr<int>& smartPtr)
@@ -141,6 +136,11 @@ class ConstExprClass
     double m_d;
 };
 
+/*
+* 7. Return type deduction for functions: It's deduced by the compiler from the type of the expression used in the return statement. 
+*                                         If there are multiple return statements, they must all deduce to the same type.
+*                                         If the return statement uses a braced-init-list, deduction is not allowed.
+*/
 //return type deduction for function
 auto ReturnTypeDeducFunc()
 {
@@ -148,6 +148,11 @@ auto ReturnTypeDeducFunc()
     return pi*e;
 }
 
+/*
+* 8. Aggregate classes with default initializers for non-static members: An aggregate class, typically struct or union are used, is used to pack elements of distinct types together.
+*                                                                        Thus, it does not have a constructor, neither default, inherited, explicit or user provided.
+*                                                                        Since c++14 it can have a default member initializer for non static members.
+*/
 class AggregateClass
 {
     public:

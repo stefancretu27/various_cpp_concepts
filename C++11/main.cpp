@@ -160,6 +160,8 @@ int main()
     new (&cmu.vec) std::vector<int>();              //must be explicitly allocated
     cmu.vec.emplace_back(55);
     cmu.vec.~vector<int>();                           //must be explicitly destroyed
+
+    //------------------------------align----------------------------------------
     
     AlignExample ae1{};
     cout<<"alignment: "<<alignof(AlignExample)<<" sizeof: "<<sizeof(AlignExample)<<endl;

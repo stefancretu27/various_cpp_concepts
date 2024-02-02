@@ -6,11 +6,10 @@ using namespace std;
 * <thread> library introducced in C++11:
 *	1. Threads represent a mechanism that allows a program to execute multiple tasks concurrently, being the smallest sequence of programmed instructions that can be managed independently 
 *	   by a scheduler, which is typically a part of the OS. They allow for sharing data in between them with ease, as they share the same global memory and heap memory with the main program. 
-*	   The main program constitues a thread itself which can be referred to as main thread or default thread. Each thread executes 
-*	   a target function, which in its turn can call other (sub)functions. Sometimes, the target function is referred to as thread's entry point.
-*	   The target functions can use shared data (global or static variables) which are accessible within each thread. That said, when a code segment can be accessed by multiple threads
-*	   it is referred to as CRITICAL SECTION, and the concurrent access to it requires use of synchronization mechanisms. These mechanisms are useful to prevent RACE CONDITIONS, which occur 
-*	   when at least to threads attempt to access the same data simultaneously.
+*	   The main program constitues a thread itself which can be referred to as main thread or default thread. Each thread executes a target function, which in its turn can call other (sub)functions.
+*	   Sometimes, the target function is referred to as thread's entry point. The target functions can use shared data (global or static variables) which are accessible within each thread. 
+*	   That said, when a code segment can be accessed by multiple threads it is referred to as CRITICAL SECTION, and the concurrent access to it requires use of synchronization mechanisms. 
+*	   These mechanisms are useful to prevent RACE CONDITIONS, which occur when at least to threads attempt to access the same data simultaneously.
 *
 *	2. The class thread is implemented in the header <thread> and an instance of it represents a single thread of execution. The thread instance starts to execute concurrently, 
 *	     immediately after the construction, the function provided as parameter to its c-tor. The function's arguments are provided as parameters to thread c-tor, by copy or moved. 

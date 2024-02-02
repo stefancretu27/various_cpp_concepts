@@ -56,6 +56,9 @@ using namespace std;
 *	shared variable has changed. The shared variable's purpose is to flag that a notification has been fired. If the notification is sent before the waiting thread reaches its waiting state, the additional 
 *	condition is used to ensure a notification was sent. Without using an additional predicate, a call to wait sometimes works and sometimes blocks on waiting, therefore it is not reliable enough. 
 *	If the predicate evaluates to false, the waiting thread will be put in waiting state.
+*
+*	12. condition_variable's wait, wait_for, wait_until take as first argument only unique_lock.
+*		condition_variable_any can work with any type of lockable object which offers lock(), unlock() interface (not lock_guard), such as unique_lock, shared_lock (c++14).		
 */
 
 void conditionVariableInsights()

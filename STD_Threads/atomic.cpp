@@ -61,6 +61,18 @@ void thread_entry_point(const shared_ptr<int>& spi, atomic<uint_least16_t>& aUIn
 	cout<<"value from atomic int after pre decrement was called: "<<aUInt16.load()<<endl;
 }
 
+template<const size_t dim, class ... Ints/*, class std::enable_if<is_integral<Ints...>::value, bool>::type*/>
+void funcAtomic(atomic<int*>& aPInt, Ints&& ... args)
+{
+    int* pInt = aPInt.exchange(new int[dim]{args...});
+
+    cout<<"values of the dynamically allocated arrays held in atomic variable to pointer to int "<<endl;
+	for(size_t idx{}; idx < dim; ++idx)
+	{
+		cout<<" old value: "<<*(pInt+idx)<<" new value: "<<aPInt.load()[idx]<<endl;
+	}
+};
+
 struct Trash
 {
 	int i;
@@ -110,18 +122,48 @@ void atomicInsights()
 	aCopy.store(Garbage{-273.2});
 	cout<<" value retrieved from atomic variable after store: "<<aCopy.load().getD()<<endl;
 	
-	//declare atomic variable whose underlying type is pointer to int. Upon atomic variable's declaration allocate and initialize memory pointed to by the pointer
-	atomic<int*> aPInt{new int[5]{15,16,17,18,19}};
-	int* pInt = aPInt.exchange(new int[5]{0,1,2,3,4});
+	atomic<int_fast16_t> atInt16{};
+	thread_local int_least16_t localData;
+	    
+    	std::function<void(const string&, const int)> threadFunc {[&atInt16](const string& threadName, const int value)
+									    {
+										atInt16.store(8);
+										atInt16.store(atInt16.load()+value);
+										localData = atInt16.load();
+										cout<<" thread_name "<<threadName<<" is_lock_free "<<atInt16.is_lock_free()<<" "<<localData<<endl;
+									    }
+									};
 	
-	cout<<"values of the dynamically allocated arrays held in atomic variable to pointer to int "<<endl;
-	for(size_t idx{}; idx < 5; ++idx)
+    	thread th1{threadFunc, "th1", 1}, th2{threadFunc, "th2", 2}, th3{threadFunc, "th3", 3};
+	    
+    	if(th1.joinable())
 	{
-		cout<<" old value: "<<*(pInt+idx)<<" new value: "<<aPInt.load()[idx]<<endl;
-	}
-	
+		th1.join();
+    	}
+	    
+    	if(th2.joinable())
+    	{
+		th2.join();
+    	}
+	    
+    	if(th3.joinable())
+    	{
+		th3.join();
+    	}
+	    
+    	atomic<int*> aPInt{new int[5]{15,16,17,18,19}};
 	//use atomic variable to pointer to int to dereferntiate the pointer
 	cout<<" dereferentiate atomic variable to pointer to access 3rd element: "<<*(aPInt+2)<<endl;
+    	thread th4{funcAtomic<5, int, int, int, int, int>, ref(aPInt), 1,2,3,4,5}, th5{funcAtomic<5, int, int, int, int, int>, ref(aPInt), 21,22,23,24,25};
+	    
+	if(th5.joinable())
+    	{
+		th5.join();
+	}
+    	if(th4.joinable())
+    	{
+		th4.join();
+    	}
 	
 	shared_ptr<int> spi{make_shared<int>(8)};
 	//pass atomic variable to thread entry point only by reference, as there is no copy or move semantics

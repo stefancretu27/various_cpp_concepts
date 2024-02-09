@@ -10,6 +10,8 @@
 #include <deque>
 #include <type_traits>
 #include <functional>
+#include <numeric>
+#include <random>
 
 /*
 * 1. Concurrency support libraries:
@@ -97,4 +99,22 @@
 *       7.9 Sorting operations: - sort(firstIt, lastIt), sorts elements in range, by default in ascending order, in O(n*logn)=>qsort. Equal elements' order might not be preserved
 *                               - partial_sort(firstIt, midIt, lastIt), sorts elements in range [firstIt, midIt), by default in ascending order
 *                               -  is_sorted(firstIt, lastIt), is_sorted_until(firstIt, lastIt): check if the range/the largest range is sorted in ascending order. Returna bools/iterator
+*
+*       7.9 Sorting operations: - sort(firstIt, lastIt), sorts elements in range, by default in ascending order, in O(n*logn)=>qsort. Equal elements' order might not be preserved
+*                               - partial_sort(firstIt, midIt, lastIt), sorts elements in range [firstIt, midIt), by default in ascending order
+*                               - is_sorted(firstIt, lastIt), is_sorted_until(firstIt, lastIt): check if the range/the largest range is sorted in ascending order. Returns bool/iterator
+*                               - nth_element(firstIt, nthIt, lastIt): changes the nth element, putting on its position the value that would have been there if the range was sorted in ascending order.
+*                               Before its position are elements whose values are less than or equal to those placed after its position
+*
+*                               - iota(firstIt, lastIt, startVal), defined in header <numeric>, fills the input range with sequentially increasing values, starting with startVal and repetitively 
+*                                 evaluating ++value
+*
+*       7.10 Binary search operations: - lower_bound(firstIt, lastIt, val): returns iterator to the first element in input range such that val<=elem (for which val is a lower bound). The range must be partitioned
+*                                       such that all elements meeting the criteria val<=elem should pe placed first.
+*                                     - upper_bound(firstIt, lastIt, val): same as above only that the condition is val<elem (val should be upper bound)
+*                                     - equal_range(firstIt, lastIt, val): returns a pair of iterators [first, first_past) pointing to a range containing all elements equal to val. The input range must 
+*                                       be partitioned with respect to the input val, as all elements elem < val must precede the other => partion with predicate elem < val. It is basically a pair of iter
+*                                       [lower-bound;upper_bound)
+*                                     - binary_search(firstIt, lastIt, val): recursively seraches for val in the input range, that must be aprtitioned with pred val < elem, returning bool 
+*                                    
 */

@@ -395,7 +395,7 @@ int main()
     }
     cout<<endl;
     
-    std::cout<<endl<<"-------opartitioning operations: partition, partition_copy, is_partitioned, partition point--------"<<endl;
+    std::cout<<endl<<"-------partitioning operations: partition, partition_copy, is_partitioned, partition point--------"<<endl;
     
     auto partitionIt = partition(fwdListInts.begin(), fwdListInts.end(), bind(&CheckPosNeg<int>::IsNegative, CheckPosNeg<int>{}, placeholders::_1) );
     cout<<" fwd_list elems after partition negatives;positives: "<<*pivot<<endl;
@@ -424,6 +424,86 @@ int main()
         cout<<elem<<" ";
     }
     cout<<endl;
+
+    std::cout<<endl<<"-------ordering operations: sort, partial_sort, is_sorted, is_sorted_until, nth_element--------"<<endl;
+    vector<int> vecInts{9, -6, 10, -2, -8, -6, -7, -1, 9, 8, -1};
+    for(auto&& elem : vecInts)
+    {
+        cout<<elem<<" ";
+    }
+    size_t nthElemIdx{4};
+    cout<<endl<<" nth_element val "<<*next(vecInts.begin(), nthElemIdx)<<" on index "<<nthElemIdx<<" nth_element values "<<endl;
+    nth_element(vecInts.begin(), next(vecInts.begin(), nthElemIdx), vecInts.end());
+    cout<<" new nth_element val "<<*next(vecInts.begin(), nthElemIdx)<<endl;
+    for(auto&& elem : vecInts)
+    {
+        cout<<elem<<" ";
+    }
+    cout<<endl;
+    
+    vecInts = {9, -6, 10, -3, -8, -6, -7, -1, 9, 7, -1};
+    nthElemIdx = {7};
+    cout<<endl<<" nth_element val "<<*next(vecInts.begin(), nthElemIdx)<<" on index "<<nthElemIdx<<" nth_element values "<<endl;
+    nth_element(vecInts.begin(), next(vecInts.begin(), nthElemIdx), vecInts.end());
+    cout<<" new nth_element val "<<*next(vecInts.begin(), nthElemIdx)<<endl;
+    for(auto&& elem : vecInts)
+    {
+        cout<<elem<<" ";
+    }
+    cout<<endl<<endl;
+    
+    vector<int> vecIota(11);
+    iota(vecIota.begin(), vecIota.end(), -6);
+    std::random_device rd;
+    std::mt19937 g(rd());
+    reverse(vecIota.begin(), vecIota.end());
+    for(size_t idx{0}, vecSize{vecIota.size()}; idx < vecSize; ++idx)
+    {
+        if(vecIota[idx] %2 != 0)
+        {
+            ++vecIota[idx];
+        }
+    }
+    for(auto&& elem : vecIota)
+    {
+        cout<<elem<<" ";
+    }
+    nthElemIdx = 7;
+    cout<<endl<<" nth_element val "<<*next(vecIota.begin(), nthElemIdx)<<" on index "<<nthElemIdx<<" nth element values "<<endl;
+    nth_element(vecIota.begin(), next(vecIota.begin(), nthElemIdx), vecIota.end());
+    cout<<" new nth_element val "<<*next(vecIota.begin(), nthElemIdx)<<endl;
+    for(auto&& elem : vecIota)
+    {
+        cout<<elem<<" ";
+    }
+    cout<<endl;
+    
+    std::cout<<endl<<"-------binary search operations: lower_bound_upper_bound, equal_range, binary_search--------"<<endl;
+    auto bound_val{7};
+    partition(vecInts.begin(), vecInts.end(), [&bound_val](const int elem){return elem <= bound_val;});
+    for(auto&& elem : vecInts)
+    {
+        cout<<elem<<" ";
+    }
+    cout<<endl<<endl;
+    auto lowerBoundIt = lower_bound(vecInts.begin(), vecInts.end(), bound_val);
+    cout<<"lower_bound(greater than or equal) "<<bound_val<<" than "<<*lowerBoundIt<<" at index "<<distance(vecInts.begin(), lowerBoundIt)<<endl;
+    auto upperBoundIt = upper_bound(vecInts.begin(), vecInts.end(), bound_val);
+    cout<<"upper_bound(strictly greater) "<<bound_val<<" than "<<*upperBoundIt<<" at index "<<distance(vecInts.begin(), upperBoundIt)<<endl;
+    
+    auto equalRangeVal{-1};
+    partition(vecInts.begin(), vecInts.end(), [&equalRangeVal](const int elem){return elem < equalRangeVal;});
+    for(auto&& elem : vecInts)
+    {
+        cout<<elem<<" ";
+    }
+    cout<<endl;
+    auto pairIt = equal_range(vecInts.begin(), vecInts.end(), equalRangeVal);
+    cout<<" "<<distance(vecInts.begin(), pairIt.first)<<" "<<distance(vecInts.begin(), pairIt.second)<<endl;
+    for(auto iter = pairIt.first; iter != pairIt.second; ++iter)
+    {
+        cout<<" value: "<<*iter<<" index "<<distance(vecInts.begin(), iter)<<" ";
+    }
     
     return 0;
 }

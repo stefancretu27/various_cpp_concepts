@@ -603,6 +603,38 @@ int main()
     for (const auto& elem : symdifferenceSet)
         std::cout << elem << ' ';
     std::cout<<endl;
+
+    cout<<"-------------------------numeric operations-----------------------"<<endl;
+    auto accPlus = accumulate(v.begin(), v.end(), 0, plus<int>{});
+    auto accSumOfElemsInRange = accumulate(next(v.begin()), v.end(), v.front());//accumulate(v.begin(), v.end(), 0);
+    auto prodOfElemsInRange = accumulate(next(v.begin()), v.end(), v.front(), multiplies<>{}); //accumulate((v.begin(), v.end(), 1, multiplies<>())
+    cout<<"accPlus "<<accPlus<<" accSumOfElemsInRange "<<accSumOfElemsInRange<<" prodOfElemsInRange "<<prodOfElemsInRange<<endl;
+    vector<int> vi{1, -2, 3, -4, 5, 1};
+    auto diffElemsInRange = accumulate(next(vi.begin()), vi.end(), vi.front(), minus<int>{});
+    vector<int> vi2{200, 100, 10, 2, 1, 1};
+    double dividesElemsInRange = accumulate(next(vi2.begin()), vi2.end(), vi2.front(), divides<>{});
+    cout<<"diffElemsInRange "<<diffElemsInRange<<" dividesElemsInRange "<<dividesElemsInRange<<" "<<minus<int>{}(3,2)<<endl;
+    
+    std::plus<int> plusInt;
+    plusInt(2, 3);
+    
+    auto innerProd = inner_product(vi.begin(), vi.end(), vi2.begin(), 0);
+    auto countPairsEqual = inner_product(vi.begin(), vi.end(), vi2.begin(), 0, plus<int>{}, equal_to<int>{});
+    auto countDivisiblePairs = inner_product(vi.begin(), vi.end(), vi2.begin(), 0, plus<int>{}, [](const int& lhs, const int& rhs){return (lhs%rhs==0)||(rhs%lhs==0);});
+    cout<<"innerProd "<<innerProd<<" countPairsEqual "<<countPairsEqual<<" countDivisiblePairs "<<countDivisiblePairs<<endl;
+    
+    auto adjDiffIt = adjacent_difference(vi.begin(), vi.end(), vi.begin());
+    cout<<"vi after adjacent_difference between second and first elem in each pair of values "<<endl;
+    for (const auto& elem : vi)
+        std::cout << elem << ' ';
+    std::cout<<endl;
+
+    vector<int> partialSum(vi.size());
+    auto partSumIt = partial_sum(vi.begin(), vi.end(), partialSum.begin());
+    cout<<"partialSum of the above between the prev sum (stored in acc internally)  and next elem in vector "<<endl;
+    for (const auto& elem : partialSum)
+        std::cout << elem << ' ';
+    std::cout<<endl;
     
     return 0;
 }

@@ -154,5 +154,21 @@
 *                               - is_heap(firstIt, lastIt): Checks whether [first, last) is a heap. Returns bool
 *                               - pop_heap(firstIt, lastIt): Swaps the value in the position first and the value in the position last - 1 and makes the subrange 
 *                                                           [first, last - 1) into a heap. This has the effect of removing the first element from the heap [first, last)
-*                                   
+* 
+*    8. <numeric> header: defines numeric operations
+*                       - void iota(firstIt, lastIt, init): fills the input range with values in ascending order, starting with init
+*                       - accumulate(firstIt, lastIt, init): returns the sum of the elements in the range [first, last), computed starting with initial sum init
+*                         accumulate(firstIt, lastIt, init, op): op is binary operation function object that will be applied to init, as it is iterated over range
+*                       - inner_product(first1, last1, first2, init): computes sum of products or performs ordered map/reduce operation on the range [first1, last1) 
+*                                                                   and the range beginning at first2
+*                       - inner_product(first1, last1, first2, init, op1, op2): op2("prod") is the 2nd operand of op1 ("sum"), as init is the 1st operand at the 
+*                                                                               1st call
+*                       - adjacent_difference(firstIt, lastIt, outputIt): computes the differences between the second and the first of each adjacent pair of its 
+*                                                                         elements and writes the differences to the range beginning at outputIt + 1. Iterator to the 
+*                                                                         element past the last element written
+*                       - partial_sum(firstIt, lastIt, outputIt): computes the partial sums of the elements in its subranges and writes the sums to the range 
+*                                                                   beginning at outputIt, returning iter past last elem
+*
+*   9. <functional>: - plus<>(), minus<>(), divides<>(), multiplies<>(), modulus<>(), negate<>() template functor structs, that need to be instantiated before using ()
+*                    - equal_to<>(), not_equal_to<>(), less<>(), less_equal<>(), greater<>(), greater_equal<>() template functor structs
 */

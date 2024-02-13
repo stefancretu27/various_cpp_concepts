@@ -66,6 +66,18 @@ struct CheckPosNeg
     static bool IsPositive(const T value){return value > 0;};
 };
 
+template<class Iter>
+void merge_sort(Iter first, Iter last)
+{
+    if (last - first > 1)
+    {
+        Iter middle = first + (last - first) / 2;
+        merge_sort(first, middle);
+        merge_sort(middle, last);
+        std::inplace_merge(first, middle, last);
+    }
+}
+
 int main()
 {
     cout<<"------------------------------decltype----------------------------------------"<<endl;
@@ -504,6 +516,93 @@ int main()
     {
         cout<<" value: "<<*iter<<" index "<<distance(vecInts.begin(), iter)<<" ";
     }
+
+    cout<<"-------------------------merge operations-----------------------"<<endl;
+    std::vector<int> v{8, 2, -2, 0, 11, 11, 1, 7, 3};
+    merge_sort(v.begin(), v.end());
+    for (const auto& n : v)
+        std::cout << n << ' ';
+    std::cout<<endl;
+    
+    vector<int> vect{1, 2, 3, 4, 5, 6, -31, -23, -23, -14, -5};
+    inplace_merge(vect.begin(), next(vect.begin(), 1+distance(vect.begin(), vect.end())/2), vect.end());
+    for (const auto& elem : vect)
+        std::cout << elem << ' ';
+    std::cout<<endl;
+    
+    cout<<"-------------------------max heap operations------------------"<<endl;
+    make_heap(vect.begin(), vect.end());
+    for (const auto& elem : vect)
+        std::cout << elem << ' ';
+    std::cout<<endl;
+    
+    vect.push_back(9);
+    push_heap(vect.begin(), vect.end());
+    for (const auto& elem : vect)
+        std::cout << elem << ' ';
+    std::cout<<endl;
+    
+    vect.emplace_back(7);
+    push_heap(vect.begin(), vect.end());
+    for (const auto& elem : vect)
+        std::cout << elem << ' ';
+    std::cout<<endl;
+    
+    //works only with the last element
+    vect.insert(vect.end(), {11, 12});
+    push_heap(vect.begin(), vect.end());
+    for (const auto& elem : vect)
+        std::cout << elem << ' ';
+    std::cout<<endl;
+    
+    cout<<"after pop_heap: "<<endl;
+    pop_heap(vect.begin(), vect.end());
+    for (const auto& elem : vect)
+        std::cout << elem << ' ';
+    std::cout<<endl;
+    auto top = vect.back();
+    vect.pop_back();
+    cout<<"after pop_heap and pop_back: "<<endl;
+    for (const auto& elem : vect)
+        std::cout << elem << ' ';
+    std::cout<<endl;
+    
+    sort_heap(vect.begin(), vect.end());
+    cout<<"is_heap after sort_heap: "<<is_heap(vect.begin(), vect.end())<<endl;
+    
+    cout<<"-------------------------set operations-----------------------"<<endl;
+    set<char> setCh{'a', 'c', 'd', 'e', 'g', 'h', 'i', 'j', 'k', 'l'};
+    set<char> subsetCh{'c', 'd', 'h', 'i', 'k'};
+    multiset<char> setForUnion{'b', 'b', 'c', 'c', 'e', 'f', 'h', 'h', 'i', 'm', '<', '@'};
+    vector<char> unionSet(subsetCh.size()+setForUnion.size());
+    cout<<"is subsetCh included in setCh: "<<includes(setCh.begin(), setCh.end(), subsetCh.begin(), subsetCh.end())<<endl;
+    
+    set_union(subsetCh.begin(), subsetCh.end(), setForUnion.begin(), setForUnion.end(), unionSet.begin());
+    cout<<"set_union result: "<<endl;
+    for (const auto& elem : unionSet)
+        std::cout << elem << ' ';
+    std::cout<<endl;
+    
+    list<char> intersectionSet(min(subsetCh.size(), setForUnion.size()));
+    set_intersection(subsetCh.begin(), subsetCh.end(), setForUnion.begin(), setForUnion.end(), intersectionSet.begin());
+    cout<<"set_intersection result: "<<endl;
+    for (const auto& elem : intersectionSet)
+        std::cout << elem << ' ';
+    std::cout<<endl;
+    
+    forward_list<char> differenceSet(subsetCh.size() + setForUnion.size());
+    set_difference(subsetCh.begin(), subsetCh.end(), setForUnion.begin(), setForUnion.end(), differenceSet.begin());
+    cout<<"set_difference result: "<<endl;
+    for (const auto& elem : differenceSet)
+        std::cout << elem << ' ';
+    std::cout<<endl;
+    
+    deque<char> symdifferenceSet(subsetCh.size() + setForUnion.size());
+    set_symmetric_difference(subsetCh.begin(), subsetCh.end(), setForUnion.begin(), setForUnion.end(), symdifferenceSet.begin());
+    cout<<"set_symmetric_difference result: "<<endl;
+    for (const auto& elem : symdifferenceSet)
+        std::cout << elem << ' ';
+    std::cout<<endl;
     
     return 0;
 }

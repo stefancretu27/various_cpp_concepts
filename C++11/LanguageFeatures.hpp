@@ -57,7 +57,7 @@
 *
 *                   Syntax: MyClass(MyClass&&); MyClass& operator=(MyClass&&)
 *
-*  9. list initialization. - Direct initialization (T obj{arg}) and copy initialization (T obj; obj = {arg}). Direct list should be preferred to copy list initialization
+*  9. list initialization. - Direct initialization (T obj{arg}) and copy initialization (T obj = {arg}). Direct list should be preferred to copy list initialization
 *                          as it accepts explicit constructors
 *                               - int a; / int a{} - default initialization
 *                               - int a(5); / int a{5} - direct initialization

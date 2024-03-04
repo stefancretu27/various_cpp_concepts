@@ -24,14 +24,15 @@
 *               fetch_or, fetch_sub, fetch_and
 *
 *   1.3 <mutex>: synchronization mechanisms that block all threads but 1 that attempt to access a critical section/shared resource.
-*               Mutex types: mutex, timed_mutex, recursive_mutex (used by the same thread, when resource is accessed recursively), recurisve_timed_mutex
-*               Mutex wrappers, allow for owning mutexes in RAII style: lock_guard, unique_lock (offers interface for lock, unlock, try_lock operations => used with 
+*               - Mutex types: mutex, timed_mutex, recursive_mutex (used by the same thread, when resource is accessed recursively), recursive_timed_mutex.
+*                Methods: lock(), unlock(), try_lock() - returns bool; for timed mutexes: try_lock_for(), try_lock_until()
+*               - Mutex wrappers, allow for owning mutexes in RAII style: lock_guard, unique_lock (offers interface for lock, unlock, try_lock operations => used with 
 *               condition_variable), defer_lock (used with unique_lock, for more mutexes locked simultaneously), adopt_lock (used with lock_guard for same thing)
 *
 *   1.4 <condition_variable>: synch mechanism that blocks all threads waiting for being notified upon status change on the shared resource. Notification and
 *               waiting operations are done via the condition_variable. Spurious wake-ups occurs when more threads are notified, one wakes-up, but another one
-*               proceeds in accessing the shared resoruce => extra predicate function is used on waiting to mititgate its
-*               condition_variable takes as 1st argument only unique_lock, whereas condition_variable_any works with any mutex type
+*               proceeds in accessing the shared resoruce => extra predicate function is used on waiting to mititgate this
+*               - condition_variable takes as 1st argument only unique_lock, whereas condition_variable_any works with any mutex type
 *               Methods: notify_one, notify_all, wait, wait_for, wait_until
 *
 *   1.5 <future>: - {promise, future}, promise allows a thread to pass a value to another thread, before completion (threads are joined), being the wirting end. 
@@ -115,7 +116,7 @@
 *                                   - equal_range(firstIt, lastIt, val): returns a pair of iterators [first, first_past) pointing to a range containing all elements equal to val. The input range must 
 *                                                                        be partitioned with respect to the input val, as all elements elem < val must precede the other => partion with predicate elem < val. 
 *                                                                        It is basically a pair of iter [lower-bound;upper_bound)
-*                                   - binary_search(firstIt, lastIt, val): recursively seraches for val in the input range, that must be aprtitioned with pred val < elem, returning bool 
+*                                   - binary_search(firstIt, lastIt, val): recursively seraches for val in the input range, that must be partitioned with pred val < elem, returning bool 
 *
 *    7.11 Minimux/maximum operations: - max(T a, T b)/max_element(firstIt, LastIt): returns the maximum value between the 2 args/in the given range
 *                                     - min(T a, T b)/min_element(firstIt, LastIt): returns the maximum value between the 2 args/in the given range

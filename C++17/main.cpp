@@ -317,7 +317,34 @@ int main()
                   << "code().message():  " << ex.code().message() << '\n'
                   << "code().category(): " << ex.code().category().name() << '\n';
     }
+        std::cout<<std::filesystem::current_path()<<std::endl;
     
+    std::filesystem::path dir_path{"C:\\Users\\me\\Downloads"};
+    if(std::filesystem::create_directory(dir_path))
+    {
+        std::filesystem::directory_entry dir_entry{dir_path};
+    
+        std::cout<<dir_entry.is_regular_file()<<" "<<dir_entry.is_directory()<<" "<<dir_entry.is_other()<<" "<<dir_entry.is_socket()<<" "<<dir_entry.is_fifo()<<std::endl;
+        std::cout<<dir_entry.is_character_file()<<" "<<dir_entry.is_block_file()<<" "<<dir_entry.is_symlink()<<" "<<dir_entry.exists()<<std::endl;
+    }
+    
+    std::filesystem::create_directories(dir_path/"dir1"/"dir2"/"dir3");
+    for(const std::filesystem::directory_entry&  dir_entry : std::filesystem::directory_iterator{dir_path})
+    {
+        std::cout<<dir_entry.path()<<" ";
+    }
+    std::cout<<std::endl;
+    for(const std::filesystem::directory_entry&  dir_entry : std::filesystem::recursive_directory_iterator{dir_path})
+    {
+        std::cout<<dir_entry.path()<<" ";
+    }
+    
+    
+    std::fstream file_stream{"myfile.txt"};
+    file_stream<<"write some text to file";
+    
+    std::filesystem::file_status file_status = std::filesystem::status("myfile.txt");
+    std::cout<<std::endl<<static_cast<int>(file_status.type())<<std::endl;
 
     return 0;
 }

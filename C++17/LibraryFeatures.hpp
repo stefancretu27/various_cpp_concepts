@@ -98,7 +98,34 @@
 *
 *     4.3. directory_entry: Represents a directory entry. The object stores a path as a member and may also store additional file attributes (hard link count, 
 *                           status, symlink status, file size, and last write time) during directory iteration.
+*                          - exists(): checks if path the underlying path refers to an existing path
+*                          - is_regular_file()/is_directory()/is_other(): checks if path the underlying path refers to a regular file/directory path/other file 
+*                          - is_fifo()/is_socket(): checks if path the underlying path refers to a named pipe/named IPC socket
 *
 *     4.4. directory_iterator: iterates over the directory_entry elements of a directory (but does not visit the subdirectories). The iteration order is 
 *                              unspecified, except that each directory entry is visited only once. Initialized via c-tor from a filesystem::path object
+*
+*     4.5. recursive_directory_iterator: iterates over the directory_entry elements of a directory and, recursively, over the entries of all subdirectories. The iteration order is 
+*                              unspecified, except that each directory entry is visited only once. Initialized via c-tor from a filesystem::path object
+*
+*     4.6 file_status: Stores information about the type and permissions of a file. 
+*                      - std::filesystem::perms/void permissions(void/std::filesystem::perms): returns/sets permissions
+*                      - void/std::filesystem::file_type type(std::filesystem::file_type type/ void): sets/returns file type
+*
+*    4.7 struct space_info {
+*              std::uintmax_t capacity;
+*              std::uintmax_t free;
+*              std::uintmax_t available;};
+*      Represents the filesystem information as determined by filesystem::space.
+*
+*     Also, there are several function helpers impleme4nted in the header:
+*      - bool create_directory(const std::filesystem::path& p)/bool create_directories(const std::filesystem::path& p)
+*      - bool create_hard_link(const std::filesystem::path& target, const std::filesystem::path& path)/bool create_symlink(target, path)/bool create_directory_symlink(target, path)
+*      - path current_path(): returns or sets current path to the eventual path arg
+*      - bool exists(path): checks is path exists
+*      - void copy(path from, path to)/void rename(path old, path new): copy/rename file or directory
+*      - void copy_file(path from, path to): copy file contents
+*      - size_t file_size()/void resize_file(path file, size_t new_size): retruns/sets file size
+*      - std::filesystem::space_info space(path p): determines available free space on the file system 
+*      - std:;filesystem::status(path p): gets file_status
 */

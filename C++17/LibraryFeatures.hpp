@@ -128,4 +128,201 @@
 *      - size_t file_size()/void resize_file(path file, size_t new_size): retruns/sets file size
 *      - std::filesystem::space_info space(path p): determines available free space on the file system 
 *      - std:;filesystem::status(path p): gets file_status
+*
+*   5. <memory_resources> introduces the namespace std::pmr, the following classes
+*       5.1 polymorphic_allocator: is a template class that implements a different allocation behavior depending on the type it is constructed from,
+*           that is a pmr::memory_resource which uses runtime polymorphism for managing allocations. It receives as ctyor argument pointer to memory_resource.
+*       5.2 memory_resource: The class std::pmr::memory_resource is an abstract interface to an unbounded set of classes encapsulating memory resources. 
+*           Methods: - void* allocate( std::size_t bytes): allocates memory of indicated size_t
+*                    - void deallocate(void* p, std::size_t bytes): deallocates memory pointed by p, that was returned by allocate
+*       5.3 pool_options: is a set of constructor options for pool resources including synchronized_pool_resource and unsynchronized_pool_resource. 
+*           Members: - std::size_t max_blocks_per_chunk = max # of blocks that will be allocated at once from the upstream std::pmr::memory_resource to fill the pool.
+*                    - std::size_t largest_required_pool_block = largest allocation size that is required to be fulfilled using the pooling mechanism
+*
+*       Types of memory_resource:
+*       5.4 synchronized_pool_resource: a thread-safe memory_resource for managing allocations in pools of different block sizes.
+*                                       It owns the allocated memory and frees it on destruction, even if deallocate has not been called for some of the allocated 
+*                                       blocks. It consists of a collection of pools that serves requests for different block sizes. Each pool manages a collection 
+*                                       of chunks that are then divided into blocks of uniform size. 
+*       5.5 unsynchronized_pool_resource: same as above only that is thread-unsafe 
+*       5.6 monotonic_buffer_resource: is a special-purpose memory resource class that releases the allocated memory only when the resource is destroyed. 
+*                                      It is intended for very fast memory allocations in situations where memory is used to build up a few objects and then is 
+*                                      released all at once. It is not thread safe.
+*
+*       STL containers can be instantiated also from pmr namespace (pmr::list, pmr::deque, pmr::vector etc), eventually taking polymorphic_allocator instance as
+*       ctor argument.
+*
+*   6. <optional> intrdouces the following classes:
+*       6.1 optional: a class template that manages a value that may or may not be present. There are no optional references; a program is ill-formed if it 
+*                     instantiates an optional with a reference type
+*                     
+*                     A common use case for optional is the return value of a function that may fail. As opposed to other approaches, such as std::pair<T, bool>, 
+*                     std::optional handles expensive-to-construct objects well and is more readable, as the intent is expressed explicitly. 
+*
+*                     If an optional<T> contains a value, the value is guaranteed to be allocated as part of the optional object => no dynamic memory allocation
+*                     occurs. Thus, an optional object models an object, not a pointer, even though operator*() and operator->() are defined.
+*
+*       6.2 nullopt_t: is an empty class type used to indicate optional type with uninitialized state.
+*                      std::nullopt is a constant of type std::nullopt_t that is used to indicate optional type with uninitialized state. 
+*
+*   7. <string_view> while std::string offers dynamic memory management and mutable operations, std::string_view provides a lightweight, 
+*                    non-owning, read-only view of a string, which allows for search/find/access operations. Some of the encapsulated methods are
+*                        - char [], char at(index), char front(), char back(), const char* data() 
+*                        - copy(*dest, count, pos = 0), bool empty(), size(), length(), max_size()
+*                        - substr(pos = 0, count = npos), int compare - compare 2 string_views
+*                        - find(view v,  pos = 0) - finds the first substring equal to the given character sequence. 
+*                        - rfind(view v,  pos = 0) - finds the last substring equal to the given character sequence. 
+*
+*       7.1 basic_string_view: template class implementing read-only string view, describing an object that can refer to a constant contiguous sequence CharT, with the 
+*                               first element of the sequence at position zero. A typical implementation holds only two members: a pointer to constant CharT and a size.
+*       7.2 std::string_view: std::basic_string_view<char>
+*       7.3 std::u16string_view:  std::basic_string_view<char16_t>
+*       7.4 std::u32string_view:  std::basic_string_view<char32_t>
+*       7.5 std::wstring_view:  std::basic_string_view<wchar_t>
+*
+*   8. <variant> defines the following classes:
+*       8.1 variant: represents a type-safe union. An instance of std::variant at any given time either holds a value of one of its alternative types, or in the 
+*                   case of error - no value.
+*                   As with unions, if a variant holds a value of some object type T, the object representation of T is allocated directly within the object 
+*                   representation of the variant itself. Variant is not allowed to allocate additional (dynamic) memory. 
+*
+*                   A variant is not permitted to hold references, arrays, or the type void. A variant is permitted to hold the same type more than once, 
+*                   and to hold differently cv-qualified versions of the same type. 
+*
+*                   A program that instantiates the definition of std::variant with no template arguments is ill-formed. 
+*
+*                   Methods: variadic template c-tor, copy and move semantics; size_t index() - returns the 0-based position of the currently active data type;
+*                            bool valueless_by_exception() - checks if the variant is in the invalid state
+*                           template<class Type, ... Args> emplace(...args): creates a new value in-place, in an existing variant object, using as template arg
+*                           the data type or the index of the field to be activated and set
+*
+*       8.2 visit: template function having the signature below, applies the visitor vis (a Callable that can be called with any combination of types from variants) 
+*                  to the variants vars 
+*                            template< class Visitor, class... Variants >
+*                            constexpr  visit( Visitor&& vis, Variants&&... vars )
+*
+*   9. std::invoke: defined in header <functional>, it is a template function that wraps a callable object and its args, returning the wrapped's callable value
+*                   template< class F, class... Args > 
+*                   std::invoke_result_t<F, Args...> invoke( F&& f, Args&&... args )
+*
+*                   std::bind enables you to create new function objects on the fly, with the returning callable being used as callback argument, whilst std::invoke
+*                   calls the callable on the spot.
+*
+*   10. std::weak_from_this<T>: creates a weak_ptr observer to *this, created when the first shared_ptr<T> is created
+*
+*   11. std::scoped_lock: defined in <mutex> it is a mutex wrapper that provides a convenient RAII-style mechanism for owning zero or more mutexes for the duration 
+*                         of a scoped block. When a scoped_lock object is created, it attempts to take ownership of the mutexes it is given. When control leaves 
+*                         the scope in which the scoped_lock object was created, the scoped_lock is destructed and the mutexes are released. If several mutexes are 
+*                         given, deadlock avoidance algorithm is used as if by std::lock. The scoped_lock class is non-copyable. 
+*
+*   12. std::shared_mutex: The shared_mutex class is a synchronization primitive that can be used to protect shared data from being simultaneously accessed by 
+*                          multiple threads. In contrast to other mutex types which facilitate exclusive access, a shared_mutex has two levels of access:
+*                               - shared - several threads can share ownership of the same mutex. 
+*                               - exclusive - only one thread can own the mutex. 
+*                         If one thread has acquired the exclusive lock (through lock, try_lock), no other threads can acquire the lock (including the shared).
+*                         If one thread has acquired the shared lock (through lock_shared, try_lock_shared), no other thread can acquire the exclusive lock, 
+*                         but can acquire the shared lock. Within one thread, only one lock (shared or exclusive) can be acquired at the same time. 
+*
+*   13. std::shared_ptr<T>::operator[]: Index into the array pointed to by the stored pointer. std::make_shared not supported with arrays.
+*                                       Syntax: std::shared_ptr<T[]> sp {new T[dim]};
+*                                               sp = std::shared_ptr<T[]>{new T[dim]};
+*
+*   14. std::tuple: - deduction guides. Since the size, the types of its elements, and the ordering of those types are part of its type signature, 
+*                     they must all be available at compile time and can only depend on other compile-time information. Thus, upon instantiating a tuple,
+*                     the template types are deduced form arguments passed to tuple c-tor. When returning a tuple from function, the template types are specified
+*                     in the return type, but not necessary anymore in the return statement.
+*
+*                   - T make_from_tuple(Tupple&): Construct an object of type T, using the elements of the tuple t as the arguments to the constructor => calls
+*                                                 T's ctor by untying the tuple's elements such that they match the ctor args.
+*
+*                   - constexpr decltype(auto) apply( F&& f, Tuple&& t ): invoke the Callable object f with the elements of t as arguments. 
 */
+
+//optional
+std::optional<std::unique_ptr<int>> AllocateUPtr(const int value)
+{
+    std::optional<std::unique_ptr<int>> result{std::nullopt};
+    
+    result = std::make_unique<int>(value);
+    
+    return result;
+}
+ 
+template<class T, std::enable_if_t<std::is_fundamental<T>::value, bool> = true>
+void SetValue(T value)
+{
+    std::optional<T> optT{};
+    
+    if constexpr(std::is_integral<T>::value)
+    {
+        optT = value;
+    }
+    else if constexpr(std::is_void<T>::value || std::is_null_pointer<T>::value)
+    {
+        optT = std::nullopt;
+    }
+    
+    if(optT)
+    {
+        std::cout<<*optT<<std::endl;
+    }
+}
+
+//visit and Variant
+//struct that encapsulates multiple overloads of the operator()
+template<class ...CallableTypes>
+struct CallableWrapper : public CallableTypes...
+{
+    using CallableTypes::operator()...;
+};
+
+//user guided decution for the above
+template<class ...CallableTypes>
+CallableWrapper(CallableTypes...) -> CallableWrapper<CallableTypes...>;
+
+//weak_from_this() method from enable_shared_from_this<T> class
+class MyClass : public std::enable_shared_from_this<MyClass>
+{
+    public:
+    void ShMethod()
+    {
+        if(std::shared_ptr<MyClass> shPtr = shared_from_this(); shPtr)
+        {
+            shPtr->i = 2;
+            shPtr->d = 2.7182;
+            std::cout<<shPtr.use_count()<<" ";
+        }
+        std::cout<<__func__<<" "<<weak_from_this().use_count()<<std::endl;
+    }
+    
+    void WkMethod()
+    {
+        if(std::shared_ptr<MyClass> shPtr = weak_from_this().lock(); shPtr)
+        {
+            shPtr->i = 2;
+            shPtr->d = 2.7182;
+            std::cout<<shPtr.use_count()<<" ";
+        }
+        std::cout<<__func__<<" "<<weak_from_this().use_count()<<std::endl;
+    }
+    
+    private:
+    int i{};
+    double d{};
+};
+
+//tuple
+std::tuple<int, double, char> GetTuple()
+{
+    return {5, -3.09, 'g'};
+}
+
+struct Example
+{
+    Example(int i, double d, char c):mi{i}, md{d}, mc{c}
+    {};
+    
+    int mi;
+    double md; 
+    char mc;
+};

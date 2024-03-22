@@ -346,5 +346,154 @@ int main()
     std::filesystem::file_status file_status = std::filesystem::status("myfile.txt");
     std::cout<<std::endl<<static_cast<int>(file_status.type())<<std::endl;
 
+    std::cout<<"--------------------------------std::pmr memory_resource examples"<<std::endl;
+    /*
+    *   The program measures the time of creating huge double-linked lists using the following allocators:
+    *       - default standard allocator,
+    *       - default pmr allocator,
+    *       - pmr allocator with monotonic resource but without explicit memory buffer,
+    *       - pmr allocator with monotonic resource and external memory buffer (on stack). 
+    */
+    
+    constexpr int iterations{100};
+    constexpr int total_nodes{2'00'000};
+    
+    auto standard_list_allocator = [total_nodes]
+                                    {
+                                        std::list<int> mList;
+                                        for(size_t idx{}; idx < total_nodes; ++idx)
+                                        {
+                                            mList.push_back(idx);
+                                        }
+                                    };
+                                    
+    auto pmr_list_allocator = [total_nodes]
+                                {
+                                    std::pmr::list<int> mPmrList;
+                                    for(size_t idx{}; idx < total_nodes; ++idx)
+                                    {
+                                        mPmrList.push_back(idx);
+                                    }
+                                };
+                                
+    auto pmr_alloc_no_buffer = [total_nodes]
+                                {
+                                    //create the memory_resource of type monotonic_buffer_resource
+                                    std::pmr::monotonic_buffer_resource mbr{};
+                                    //use it to construct the polymorphic allocator
+                                    std::pmr::polymorphic_allocator<int> polyAlloc{&mbr};
+                                    
+                                    std::pmr::list<int> mPmrList{polyAlloc};
+                                    for(size_t idx{}; idx < total_nodes; ++idx)
+                                    {
+                                        mPmrList.push_back(idx);
+                                    }
+                                };
+                                
+    auto pmr_alloc_buffer = [total_nodes]
+                                {
+                                     std::array<std::byte, total_nodes * 32> buffer{};
+                                    //create the memory_resource of type monotonic_buffer_resource
+                                    std::pmr::monotonic_buffer_resource mbr{buffer.data(), buffer.size()};
+                                    //use it to construct the polymorphic allocator
+                                    std::pmr::polymorphic_allocator<int> polyAlloc{&mbr};
+                                    
+                                    std::pmr::list<int> mPmrList{polyAlloc};
+                                    for(size_t idx{}; idx < total_nodes; ++idx)
+                                    {
+                                        mPmrList.push_back(idx);
+                                    }
+                                };
+                                
+    std::cout<<"--------------------------------std::optional examples"<<std::endl;
+                                
+    std::optional<std::unique_ptr<int>> optUPtrInt = AllocateUPtr(8);
+    if(optUPtrInt) //optUPtrInt.has_value()
+    {
+        std::cout<<"std::option value "<<**optUPtrInt<<" "<<*optUPtrInt.value()<<std::endl;
+    }
+    
+    int i{99};
+    SetValue(i);
+    SetValue(nullptr); 
+    
+    std::cout<<"--------------------------------std::string_view examples"<<std::endl;
+    std::string str{"string example"};
+    std::string_view strV{"string_view example with char underlying type"};
+    
+    std::cout<<str[7]<<" "<<strV[7]<<std::endl;
+    
+    str[7] = '7';
+    //strV[7] = '7';    //compile time error: assignemnt of read only location
+    int res = strV.find("with");
+    int res2 = strV.rfind("ing");
+    std::cout<<"string_view find and rfind "<<res<<" "<<res2<<std::endl;
+    
+    std::cout<<"--------------------------------std::variant examples"<<std::endl;
+    
+    std::variant<int, char, std::string, std::string_view, double> variantInst{std::string("string")};
+    std::cout<<"variant field "<<std::get<std::string>(variantInst)<<" and index "<<variantInst.index()<<std::endl;
+    
+    variantInst.emplace<char>('z');
+    std::cout<<"variant.emplace<type> "<<std::get<1>(variantInst)<<" "<<variantInst.index()<<std::endl;
+    
+    variantInst.emplace<4>(3.14159);
+    std::cout<<"variant.emplace<index> "<<std::get<double>(variantInst)<<" "<<variantInst.index()<<std::endl;
+    
+    auto newVariant = variantInst;
+    newVariant.emplace<int>(2);
+    std::vector<std::variant<int, char, std::string, std::string_view, double>> vecVariants{variantInst, newVariant};
+    
+    for(auto&& vari : vecVariants)
+        std::visit([](auto&& active_variant_field){std::cout<<"->visit variant "<<active_variant_field<<std::endl;}, vari);
+        
+    for(auto&& vari : vecVariants)
+    {
+        //a struct with 3 overloaded operator()'s. The appropiate overload is chosen depending on variant's active field
+        std::visit(CallableWrapper{ [](const auto& elem){std::cout<<"CallableWrapper: "<<elem<<std::endl;},
+                                    [](int arg){std::cout<<"CallableWrapper int: "<<arg<<" "<<++arg<<std::endl;},
+                                    [](double arg){std::cout<<"CallableWrapper double: "<<arg+M_PI<<std::endl;}
+                                  },                                                                 
+                    vari);
+    }
+        
+    std::cout<<"--------------------------------weak_from_this() examples"<<std::endl;    
+    std::shared_ptr<MyClass> sptr = std::make_shared<MyClass>();
+    sptr->ShMethod();
+    sptr->WkMethod();
+    
+    std::cout<<"--------------------------------shared_ptr::operator[] examples"<<std::endl;
+    std::shared_ptr<int[]> spVec{new int[5]{1,2,3,4,5}};
+    
+    spVec[0] = -1;
+    ++spVec[2];
+    --spVec[3];
+    
+    std::shared_ptr<char[]> spChar;
+    
+    spChar = std::shared_ptr<char[]>(new char[3]);
+    spChar[0] = 'e';
+    spChar[1] = 'k';
+    spChar[2] = 'd';
+    
+    for(size_t idx{}; idx < 5; ++idx)
+    {
+       std::cout<<spVec[idx]<<" ";
+    }
+    
+    std::cout<<std::endl<<"--------------------------------std::tuple examples"<<std::endl;
+    //template type deduction on instantiation
+    std::tuple myTup{std::string("str"), 1, true, 2.7182};
+    //template type deduction on return statement
+    std::tuple result = GetTuple();
+    
+    auto makeFromTuple = std::tuple(1, 2.2, 'a');
+    Example ex = std::make_from_tuple<Example>(makeFromTuple);
+    
+    std::cout<<"struct inst members after make_fom_tuple "<<ex.mi<<" "<<ex.md<<" "<<ex.mc<<std::endl;
+    
+    auto add_lambda = [](auto first, auto second) { return first + second; };
+    std::cout<<"std apply with lambda and std pair "<<std::apply(add_lambda, std::pair(2.0f, 3.0f))<<std::endl;
+
     return 0;
 }

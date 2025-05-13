@@ -8,6 +8,36 @@
 
 using namespace std;
 
+class Example
+{
+	public:
+	void lambdaCaptureByValue()
+	{
+	    // Capture this pointer by value, which is a copy of the this pointer, not of the object itself. 
+	    // If the object was destroyed/deleted via the original this, before lambda call, the copy is a dangling pointer.  
+	    [=] //or [this], as they are equivalent
+	    {
+	        x += 5;
+	    }();
+	    
+	    std::cout<<x<<std::endl;
+	}
+	
+	void lambdaCaptureByRef()
+	{
+	    // Capture *this by reference. It is a reference of the object the this pointer points to.
+	    [&] //or [&this], as they are equivalent
+	    {
+	        x += 10;
+	    }();
+	    
+	    std::cout<<x<<std::endl;
+	}
+
+	private:
+	int x{};
+};
+
 //use std::function as param type for a function which calls a lambda, as auto cannot be used for functions' parameters
 void func(const function<const char* (bool)> &fn, bool arg)
 {

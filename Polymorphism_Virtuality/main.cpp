@@ -60,14 +60,14 @@ int main()
 	Base& dynamicCastBaseFromRoot = dynamic_cast<Base&>(rootDerivedRef);
 	dynamicCastBaseFromRoot.method();
 
-	cout<<endl<<"Polymorphism and virtuality"<<endl;
+	cout<<endl<<"Dynamic polymorphism and virtuality"<<endl;
 	cout<<"     1. Overriding: The method can have distinct implementations within the inheritance chain but must preserve the:"<<endl;
 	cout<<"     	- same name,"<<endl;
 	cout<<"     	- same return type,"<<endl;
 	cout<<"     	- same parameters types and same number of parameters"<<endl;
 	cout<<"     	- same constness."<<endl<<endl;
 
-	cout<<"     2. Polymorphism is the ability of a method call to be resolved to the most Derived implementation of that method. Polymorphism is "<<endl;
+	cout<<"     2. Dynamic polymorphism is the ability of a method call to be resolved to the most Derived implementation of that method. Polymorphism is "<<endl;
     cout<<"     achieved as follows:"<<endl;
 	cout<<"			- the method is declared as <<virtual>> in the most Base class"<<endl;
 	cout<<"     	- the method is overriden in Derived classes, so it has different implementations in the inheritance chain. "<<endl;

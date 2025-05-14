@@ -69,7 +69,7 @@ int main()
 
 	cout<<"     2. Dynamic polymorphism is the ability of a method call to be resolved to the most Derived implementation of that method. Polymorphism is "<<endl;
     cout<<"     achieved as follows:"<<endl;
-	cout<<"			- the method is declared as <<virtual>> in the most Base class"<<endl;
+	cout<<"		- the method is declared as <<virtual>> in the most Base class"<<endl;
 	cout<<"     	- the method is overriden in Derived classes, so it has different implementations in the inheritance chain. "<<endl;
 	cout<<"     	- a pointer or reference to Base class points/refer to a Derived class and the virtual method is invoked via this pointer/ref."<<endl;
 	cout<<"		Thus, it is leveraged the pointer type compatibility between Base and Derived, that does not imply object slicing. If Derived were"<<endl;

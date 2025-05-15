@@ -40,11 +40,11 @@ void virtualityUnderTheHood()
     	cout<<"     	invoked method. So it happens with virtual methods, only that the pointer/reference to Base class needs to be casted to the Derived"<<endl;
     	cout<<"     	pointer/reference."<<endl<<endl;
 
-	cout<<"		Having said that, given the vptr is placed in the public part, it can be directly accessed by the pointer/reference to Base. Next to that,"<<endl;
-	cout<<"		if the pointer/reference is used to invoke a virtual method, the call takes places via the vptr, which directly accesses the pointers to"<<endl;
-	cout<<"		the virtual methods (No pointer indirection vptr->vtable occurrs due to efficiency reasons). With the corresponding index for the given"<<endl;
-	cout<<"		method's signature being known, a virtual method call would look like below"<<endl; 
-    	cout<<" 	Derived d; "<<endl;
+	cout<<"	        Having said that, given the vptr is placed in the public part, it can be directly accessed by the pointer/reference to Base. Next to that,"<<endl;
+	cout<<"	        if the pointer/reference is used to invoke a virtual method, the call takes places via the vptr, which directly accesses the pointers to"<<endl;
+	cout<<"	        the virtual methods (No pointer indirection vptr->vtable occurrs due to efficiency reasons). With the corresponding index for the given"<<endl;
+	cout<<"	        method's signature being known, a virtual method call would look like below"<<endl; 
+    	cout<<"         Derived d; "<<endl;
 	cout<<" 	Base& refBase{d);"<<endl;
 	cout<<" 	refBase.virtualMethod()    ---> at compile time might look like:  (refBase.vptr[index])(static_cast<Derived&>(refBase))"<<endl;
 

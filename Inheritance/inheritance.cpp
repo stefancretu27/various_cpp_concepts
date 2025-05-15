@@ -13,10 +13,29 @@ string Base::another_name;
 
 int main()
 {
+	cout<<endl<<"Insights on special methods of a class. Rule of 0/3/5 discussion:"<<endl;
+        cout<<"     1. The compiler generates implicit implementation for 6 methods for a class"<<endl;
+        cout<<"     	- default c-tor<<endl;
+	cout<<"     	- default destructor"<<endl;
+	cout<<"     	- default copy semantics (copy c-tor and copy assignment operator)"<<endl;
+	cout<<"     	- default move semantics (move c-tor and move semantics)"<<endl<<endl;
+	cout<<"     2. The move semantics implicit implementation genereation is suppressed when either d-tor or copy semantics is provided, as it assumes that the resources owership should be"<<endl;
+	cout<<"     manually handled if their cleanup or copy (or both) is explicitly handled. Also, is suppressed when any of the data members are not movable"<<endl<<endl;
+	cout<<"     3. The explicit implementation of either copy semantics, d-tor or c-tor (eevntually with parameters) doesn't suppress the implicit generation of the other 2 categories. An example can be"<<endl;
+	cout<<"     a raw pointer data member: it can be explicitly deallocated in d-tor while default constructed (uninitialized) and (shallow) copied. Also, it can be deep copied while default constructed "<<endl;
+        cout<<"     (uninitialized, garbage) and destructed (not freed, memory leak). Clearly, it can be initialized and allocated while shallow copied and default destructed (not freed)."<<endl;
+	cout<<"	    	3.1. The copy semantics implicit implementation generation is suppressed when any of the data members are not copyable. However, if an explicit implementation for c-tor is provided,"<<endl;
+	cout<<"     even a c-tor with parameters, then the implicit copy semantics and d-tor implementations are still generated, as declaring a constructor (even a non-default one) does not imply that"<,endl;
+	cout<<"     copying or destruction needs to be customized. These are independent operations in the eyes of the compiler."<<endl<<endl;
+	cout<<"         3.2. The implicit c-tor and copy semantics are still generated when declaring a destructor, as the latter does not inherently change the semantics of construction or copying. Concretely, "<<endl;
+	cout<<"     the compiler assumes that unless you explicitly say otherwise, the default constructor and copy operations are still valid and safe to generate."<<endl;
+	cout<<"         3.3. The implicit c-tor and d-tor are still available when copy semantics is explicitly provided, because the copy constructor and copy assignment operator are not logically tied to the"<<endl;
+	cout<<"     default constructor or destructor, in terms of behavior or ownership semantics."<<endl<<endl;
+	
 	cout<<endl<<"Insights on inheritance"<<endl;
-    cout<<"     1. Derived class does not inherit friend functions and classes of the Base class. Therefore, there is impossible to override a friend function"<<endl<<endl;
-    cout<<"     2. A Derived class inherits the following from the Base class:"<<endl;
-    cout<<"     	- Constructors, including Copy C-tor"<<endl;
+        cout<<"     1. Derived class does not inherit friend functions and classes of the Base class. Therefore, there is impossible to override a friend function"<<endl<<endl;
+        cout<<"     2. A Derived class inherits the following from the Base class:"<<endl;
+        cout<<"     	- Constructors, including Copy C-tor"<<endl;
 	cout<<"     	- Destructor"<<endl;
 	cout<<"     	- Copy assignment operator"<<endl;
 	cout<<"     	- all public and protected methods"<<endl;
@@ -29,9 +48,9 @@ int main()
 	cout<<"		4. Derived class d-tor automatically calls the Base d-tor, as the destruction also takes place in phases: first is destroyed the Derived part, then the Base part."<<endl<<endl;
 	
 	cout<<"     5. Derived class implemented c-tor and copy c-tor automatically call Base class default c-tor, as a new object must be created. If no default c-tor is implemented"<<endl;
-    cout<<"     the implicitly generated one is called. If a c-tor is implemented, then the default one must be provided, if it is envisaged to be automatically called by Derived c-tors."<<endl;
+        cout<<"     the implicitly generated one is called. If a c-tor is implemented, then the default one must be provided, if it is envisaged to be automatically called by Derived c-tors."<<endl;
 	cout<<"		However, Derived c-tors can explicitly call, in their member initializer list, the c-tors which are implemented in Base class, that are overloads of the default c-tor."<<endl;
-    cout<<"     To be noted that Derived implemented c-tors do not automatically call c-tors overloads from Base, hence the need for explicit call in the member initializer list."<<endl<<endl;
+        cout<<"     To be noted that Derived implemented c-tors do not automatically call c-tors overloads from Base, hence the need for explicit call in the member initializer list."<<endl<<endl;
 	cout<<"     6. Derived implemented copy assignment has to explicitly invoke Base copy assignment, otherwise none will be called. Also, default c-tor of Base class is not"<<endl;
 	cout<<"		called, as the object assigned to has already been constructed."<<endl<<endl;
 	
@@ -92,11 +111,11 @@ int main()
 
 
 	cout<<endl<<"Conclusions on Derived class inheriting from Base class implemented based on rule of 5"<<endl;
-    cout<<"     1. A std::move call on a Derived object firstly looks in the Derived class to find appropriate move c-tor or move assignment. If not found, then it looks for"<<endl;
+         cout<<"     1. A std::move call on a Derived object firstly looks in the Derived class to find appropriate move c-tor or move assignment. If not found, then it looks for"<<endl;
 	cout<<"     copy c-tor or copy assignment in Derived class. If also not found, then it move up in the inheritance chain to looks for move semantics, then for copy semantics"<<endl<<endl;
 	
 	cout<<"     2. If the Derived class follows rule of 0, it inherits all copy and move semantics from the Base class, that follows rule of 5. Only that the copy and the move"<<endl;
-    cout<<"     operations are performed between Base parts of the Derived objects. "<<endl<<endl;
+        cout<<"     operations are performed between Base parts of the Derived objects. "<<endl<<endl;
     
 	cout<<"     3. Move semantics implemented in Derived class must explicitly invoke move semantics from Base class, in its implementation. Otherwise, Base class default c-tor is "<<endl;
 	cout<<"		called instead. In other words, move c-tor and move assignment operator from Base class are not implicitly called by move c-tor and move assignment operator in  "<<endl;
@@ -115,17 +134,17 @@ int main()
 	cout<<"static string declared as protected member of Base, accessed via Base:: "<<Base::getAnotherName()<<endl;
 
 	cout<<endl<<"Conclusions on static members and methods:"<<endl;
-    cout<<"     1. Static members belong to class and not to instances, so they must be explicitly instantiated in a .cpp in order for them to be assigned to a global memory."<<endl;
+        cout<<"     1. Static members belong to class and not to instances, so they must be explicitly instantiated in a .cpp in order for them to be assigned to a global memory."<<endl;
 	cout<<"     Static members can be const and are accessible in static and non-static methods."<<endl<<endl;
 	
 	cout<<"     2. Static methods cannot be const. Also, they only can access static members, since they lack *this pointer, due to they are not bound to any instance of the class."<<endl;
-    cout<<"     Thus, they are accessible via scope resolution operator, but also can be accessed via in instance, though it would eb counter intuitive"<<endl<<endl;
+        cout<<"     Thus, they are accessible via scope resolution operator, but also can be accessed via in instance, though it would eb counter intuitive"<<endl<<endl;
 
 	cout<<"     3. A Derived class of a Base class that has static members, does not inherit the static members, but it has access to the same static member. Thus, a static member"<<endl;
-    cout<<"     of a Base class is a shared resource of all classes that inherit from it, not only shared amongst its instances."<<endl<<endl;
+        cout<<"     of a Base class is a shared resource of all classes that inherit from it, not only shared amongst its instances."<<endl<<endl;
 
 	cout<<"     4. A Derived class inherits all static methods from Base class. Furthermore, the Derived class can override Base class inherited static methods. That said, the same "<<endl;
-    cout<<"     rules for methods' inheritances and override do apply for non static methods and for static methods in the same way."<<endl<<endl;
+        cout<<"     rules for methods' inheritances and override do apply for non static methods and for static methods in the same way."<<endl<<endl;
     
 
 	return 0;

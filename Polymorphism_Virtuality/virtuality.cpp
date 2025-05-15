@@ -48,7 +48,7 @@ void virtualityUnderTheHood()
 	cout<<" 	Base& refBase{d);"<<endl;
 	cout<<" 	refBase.virtualMethod()    ---> at compile time might look like:  (refBase.vptr[index])(static_cast<Derived&>(refBase))"<<endl;
 
-	cout<<"Vtables for class hierarchy Root->Base->DerivedImpl obtained with 'g++ -fdump-lang-class file.cpp'"<<endl;
+	cout<<"Vtables for class hierarchy Root->Base->DerivedImpl obtained with 'g++ -fdump-class-hierarchy file.cpp'"<<endl;
 	cout<<"Class Root"<<endl;
    	cout<<"size=8 align=8"<<endl;
    	cout<<"base size=8 base align=8"<<endl;

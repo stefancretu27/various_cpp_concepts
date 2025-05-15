@@ -4,16 +4,23 @@ void virtualityUnderTheHood()
 {
     using namespace std;
 
-    cout<<"How virtuality works under the hood: Vptr and vtable"<<endl;
-	cout<<"     1.  A class that declares a virtual function, for the first time in the inheritance chain, gets a public non-static pointer referred to "<<endl;
-	cout<<" 	as vptr, thus becoming larger by a pointer. That said, the vptr is allocated per object. Thereafter, the vptr points to a static array of "<<endl;
-	cout<<" 	pointers to the functions declared as virtual. This array is referred to as the vtable. As all class instances require access to the same "<<endl;
+        cout<<"How virtuality works under the hood: Vptr and vtable"<<endl;
+	cout<<"         1. A class that declares a virtual function, for the first time in the inheritance chain, gets a public non-static pointer referred to "<<endl;
+	cout<<" 	as vptr, thus becoming larger by a pointer. That said, the vptr is allocated per object. Thereafter, the vptr points to a statically allocated array/struct"<<endl;
+	cout<<" 	pf pointers to the functions declared as virtual. This array/struct is referred to as the vtable. As all class instances require access to the same "<<endl;
 	cout<<" 	methods, the vtable is generated one per class at compile time, as it is known how many virtual methods a class has when it is compiled."<<endl;
 	cout<<" 	When a class that derives from a Base that has at least one virtual method, it inherits the vptr and the vtable. If an inherited virtual "<<endl;
 	cout<<" 	method is overriden in  the Derived class, its entry in the Derived class vtable is updated. Otherwise, the entries remain the same. Thus,"<<endl;
 	cout<<" 	at runtime, when a virtual method is invoked,  the vptr is dereferenced to access the vtable and the apropriate entry for the virtual"<<endl;
-    	cout<<" 	method is found and the call is resolved to it."<<endl<<endl; 
-	
+    	cout<<" 	method is found and the call is resolved to it. The vtable can be perceived as a struct encapsulating raw pointers to virtual methods."<<endl<<endl; 
+
+	struct VTable 
+	{
+	    void (*func1)();                   // Function with no parameters
+	    int (*func2)(int);                 // Function taking int, returning int
+	    void (*func3)(double, const char*); // Function taking double and const char*
+	};
+
 	cout<<" 	2. Late binding is used to resolve method call at runtime. Binding is the process that converts variables and functions into addresses. "<<endl;
 	cout<<" 	For pointers, it always takes place at runtime, and is referred to as late/dynamic binding. So, even though the vtable is generated at "<<endl;
 	cout<<" 	compile time, the addresses of the functions are only known at runtime."<<endl;
@@ -23,23 +30,23 @@ void virtualityUnderTheHood()
 	cout<<" 	has (namely, the length of the statically allocated array of pointers to  functions), but it cannot be distinguished to which implementation"<<endl;
 	cout<<" 	a mapping is done, because it is performed at runtime, via late binding. The index is fixed in the inheritance chain."<<endl<<endl;
 
-	cout<<"     3.  When a pointer/reference to Base class points/refers to a Derived object, it can only access the methods and members from the Base part"<<endl;
-	cout<<" 	of the Derived object. In detail, it is known each class defines a namespace within the encapsulation takes place. If a class inherritance"<<endl;
+	cout<<"         3. When a pointer/reference to Base class points/refers to a Derived object, it can only access the methods and members from the Base part"<<endl;
+	cout<<" 	of the Derived object. In detail, it is known each class defines a namespace the encapsulation takes place within. If a class inherritance"<<endl;
 	cout<<" 	tree is regarded as a nesting of namespaces, the outmost namespace, associated with the most Base class, cannot access data and functions"<<endl;
-	cout<<" 	in the namespaces it nests. Moreover, the assignment of a Derived objectto a Base pointer/reference is augmented by the compiler as a "<<endl;
+	cout<<" 	in the namespaces it nests. Moreover, the assignment of a Derived object to a Base pointer/reference is augmented by the compiler as a "<<endl;
 	cout<<" 	static cast: Base* bPtr = static_cast<Base*>(new Derived()). "<<endl;
-	cout<<" 	Next to that, it is also known that each method's name is mangled at compile time such that its first parameter is the *this pointer, which"<<endl;
+	cout<<" 	Next to that, it is also known that each method's name is mangled, at compile time, such that its first parameter is the *this pointer, which"<<endl;
 	cout<<" 	is inferred from the calling object, so it is known for which object the given method is called and which values do the members bear in the"<<endl;
     	cout<<"     	invoked method. So it happens with virtual methods, only that the pointer/reference to Base class needs to be casted to the Derived"<<endl;
     	cout<<"     	pointer/reference."<<endl<<endl;
 
-	cout<<"		Having said that, given the vptr is placed in the public part, it can by directly accessed by the pointer/reference to Base. Next to that,"<<endl;
+	cout<<"		Having said that, given the vptr is placed in the public part, it can be directly accessed by the pointer/reference to Base. Next to that,"<<endl;
 	cout<<"		if the pointer/reference is used to invoke a virtual method, the call takes places via the vptr, which directly accesses the pointers to"<<endl;
 	cout<<"		the virtual methods (No pointer indirection vptr->vtable occurrs due to efficiency reasons). With the corresponding index for the given"<<endl;
 	cout<<"		method's signature being known, a virtual method call would look like below"<<endl; 
     	cout<<" 	Derived d; "<<endl;
 	cout<<" 	Base& refBase{d);"<<endl;
-	cout<<" 	refBase.virtualMethod()    ---> at compile time might look like:  (*refBase.vptr[index])(static_cast<Derived&>(refBase))"<<endl;
+	cout<<" 	refBase.virtualMethod()    ---> at compile time might look like:  (refBase.vptr[index])(static_cast<Derived&>(refBase))"<<endl;
 
 	cout<<"Vtables for class hierarchy Root->Base->DerivedImpl obtained with 'g++ -fdump-lang-class file.cpp'"<<endl;
 	cout<<"Class Root"<<endl;

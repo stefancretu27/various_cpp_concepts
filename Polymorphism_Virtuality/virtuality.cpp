@@ -106,9 +106,9 @@ void virtualityUnderTheHood()
 	cout<<" 	type_id, dynamic_cast."<<endl;
 	cout<<" 	Then, if the dtor is virtual, it gets two entries. In an abstract class, its entries are 0, as the dtor does not require implementation,"<<endl;
 	cout<<" 	because the class cannot be instantiated. In non-abstarct class, the 2 entries have the same signature. The first one is called complete"<<endl;
-	cout<<" 	object dtor and is called for statically allocated objects' destruction, whereas the second one is called deleting destructor and it "<<endl;
-	cout<<" 	performs delete on the dynamically allocated object, by internally invoking delete(). The selection of which dtor is called is done via a"<<endl;
-	cout<<" 	hidden boolean parameter passed through a register, with the true value selecting the execution of the delete() operator."<<endl;
+	cout<<" 	object dtor and is called for statically allocated objects' destruction, whereas the second one is called scalar deleting destructor and it "<<endl;
+	cout<<" 	performs delete on the dynamically allocated object, by internally invoking delete(), after calling the complete d-tor. The selection of which dtor"<<endl;
+	cout<<" 	is called is done via a hidden boolean parameter passed through a register, with the true value selecting the execution of the delete() operator."<<endl;
 	cout<<" 	Thereafter, a pure virtual method is specially marked as pure_virtual as it is not invokable. In the classes that implement it, the entry"<<endl;
     	cout<<" 	is overriden with the method's signature."<<endl<<endl; 
 
@@ -128,7 +128,7 @@ void virtualityUnderTheHood()
 	cout<<" 	the corresponding entry in the vtable is updated with the override. If all Base classes have a virtual method with similar name, in the"<<endl;
 	cout<<" 	vtables of the next Base classes (all, but first), the entries of this virtual method are populated with the address of the override from"<<endl;
 	cout<<" 	the vtable corresponding to first Base class. This is normal, as there is only one implementation, and all vtables practically share it."<<endl;
-	cout<<" 	Similarily it happens with the virtual dtor: both entries for it are added ot the first table, regardless the first Base class has a virtual"<<endl;
+	cout<<" 	Similarily it happens with the virtual dtor: both entries for it are added to the first table, regardless the first Base class has a virtual"<<endl;
 	cout<<" 	dtor or not, as it would suffice for at least one of the Base classes to define a virtual dtor. Then, in the vtable part corresponding"<<endl;
 	cout<<" 	to the Base class(es) with virtual dtor, two extra entries are added, each containing offset to the dtor entry from the first Base vtable."<<endl;
 

@@ -67,7 +67,7 @@ int main()
 	cout<<"     	- same parameters types and same number of parameters"<<endl;
 	cout<<"     	- same constness."<<endl<<endl;
 
-	cout<<"     2. Dynamic polymorphism is the ability of a method call to be resolved to the most derived implementation of that method."<<endl;
+	cout<<"     2. Dynamic polymorphism is the ability of a method call to be resolved to an override implementation of that method, residing in the closest derived type to the pointed/referred type."<<endl;
     	cout<<"     Dynamic polymorphism is achieved as follows:"<<endl;
 	cout<<"	        - the method is declared as <<virtual>> in the most Base class"<<endl;
 	cout<<"     	- the method is overriden in Derived classes, so it has different implementations in the inheritance chain. "<<endl;

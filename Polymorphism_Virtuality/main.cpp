@@ -129,13 +129,13 @@ int main()
 	cout<<" 	1. Subsequently to multiple inheritance, a Derived instance can be pointed to/refered to by a pointer/reference to any if its Base classes. "<<endl;
 	cout<<" 	Here, such a pointer/reference can access the virtual methods afferent to its Base class type. If any of these methods are overriden by"<<endl;
 	cout<<" 	Derived, the overrides are invoked. In addition, upon assignment a static_cast to the appropriate Base is performed on Derived such that"<<endl;
-    cout<<" 	the pointer/reference can access its corresponding Base part in the Derived's memory model. That said, the Base(n) reference to Derived"<<endl;
+        cout<<" 	the pointer/reference can access its corresponding Base part in the Derived's memory model. That said, the Base(n) reference to Derived"<<endl;
 	cout<<" 	can only access methods from Base(n) part and from Derived part, not from Base(n-1) or Base(n+1)"<<endl; 
 
 	cout<<" 	2. The virtual inheritance is used in case of multiple inheritance from (at least two) classes that share a common top base, known as diamond"<<endl;
 	cout<<" 	problem. The class that multiple inherits, let's say Bottom, will have a part corresponding to each Base class, as it happens with regular"<<endl;
-	cout<<" 	multiple inheritance. Netx to that, as at least 2 Base classes inherit from the same Top class, when a Bottom object is constructed, then"<<endl;
-    cout<<" 	in the ctor/dtor call hierarchy the Top class would be constructed/destroyed twice (or more). This is not desirable, and is solved if the"<<endl;
+	cout<<" 	multiple inheritance. Next to that, as at least 2 Base classes inherit from the same Top class, when a Bottom object is constructed, then"<<endl;
+        cout<<" 	in the ctor/dtor call hierarchy the Top class would be constructed/destroyed twice (or more). This is not desirable, and is solved if the"<<endl;
 	cout<<" 	Base classes do virtual inherit from Top class. In that way, at runtime, when the Bottom instance is built, it is checked whether the Top"<<endl;
 	cout<<" 	part has already been constructed/destroyed."<<endl; 
 

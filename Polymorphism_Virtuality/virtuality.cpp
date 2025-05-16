@@ -219,6 +219,7 @@ void virtualityUnderTheHood()
 
 	cout<<"    4.   Furthermore, each section in the vtable of the Bottom class corresponding to each of it's base classes contains the offset to the top (index -2), values"<<endl;
 	cout<<" 	that start from 0 and decrease by 16, and the RTTI (index -1) which is the type of Bottom class, for each entry, that is subsequently used by type_info and dynamic_cast."<<endl;
+	cout<<" 	dynamic_cast uses pointer airthmetic to adjust the pointer/ref to point/reference the indicated subobject (as template parameter) in the allocated memory, if any."<<endl;
 
 	cout<<"Vtable for BottomClass"<<std::endl;
 	cout<<"BottomClass::_ZTV11BottomClass: 30 entries"<<std::endl;
@@ -252,5 +253,25 @@ void virtualityUnderTheHood()
 	cout<<"216   (int (*)(...))BottomClass::_ZTv0_n24_N11BottomClassD0Ev"<<std::endl;
 	cout<<"224   (int (*)(...))BottomClass::_ZTv0_n32_NK11BottomClass9printNameEv"<<std::endl;
 	cout<<"232   (int (*)(...))CommonBase::doCommonBaseWork"<<std::endl;
+
+	CommonBase* commonBasePtr = new BottomClass("CommonBase", 2, 3.14159, 'c');
+
+	//Using pointer to top common base that points to Bottom for which dynamic_cast works to cast to any of the base types
+	RightClass* rightClassPtr = dynamic_cast<RightClass*>(commonBasePtr);
+	MiddleClass* middleClassPtr = dynamic_cast<MiddleClass*>(commonBasePtr);
+	LeftClass* leftClassPtr = dynamic_cast<LeftClass*>(commonBasePtr);
+	BottomClass* bottomClassPtr = dynamic_cast<BottomClass*>(commonBasePtr);
+	std::cout<<" RightClass "<<(rightClassPtr != nullptr);
+	std::cout<<" MiddleClass "<<(middleClassPtr != nullptr);
+	std::cout<<" LeftClass "<<(leftClassPtr != nullptr);
+	std::cout<<" BottomClass "<<(bottomClassPtr != nullptr)<<std::endl;
+	// The below 2 conversions fail is a pointer to MiddleClass interprets the allocated memory as MiddleClass, which doesn't have BottomClass or LeftClass
+	std::cout<<" BottomClass "<<(dynamic_cast<BottomClass*>(middleClassPtr) != nullptr )<<std::endl;
+	std::cout<<" LeftClass "<<(dynamic_cast<LeftClass*>(middleClassPtr) != nullptr)<<std::endl;
+	//error: cannot convert from pointer to base class ‘CommonBase’ to pointer to derived class ‘BottomClass’ because the base is virtual
+	//std::cout<<" BottomClass "<<(static_cast<BottomClass*>(commonBasePtr) != nullptr)<<std::endl;
+	
+	delete commonBasePtr;
+	commonBasePtr = nullptr;
 
 }

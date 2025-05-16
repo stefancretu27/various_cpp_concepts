@@ -37,7 +37,7 @@ using namespace std;
 *	as well as for timed locking attempts. For these reasons the unique_lock is used in conjunction with conditions variables, as they have to unlock and lock the mutex for checking the status of the 
 *	condition variable (notification received).
 *
-*	8. Locking options for lock_guard and unique_lock:
+*	8. Locking options for unique_lock:
 *		8.1 defer_lock - allows construction of an unique_lock that wraps a given mutex, but does not lock it. An explicit subsequent call to lock is required, which allows for acquiring of multiple locks 
 *	using deadlock avoidance algorithm. It is used as option for unique_lock which allows for RAII lock-unlock approach, when dealing with 2 or more mutexes. Since lock_guard attempts to take ownership 
 *	of the mutex immediately, defer_lock cannot be used in conjunction with lock_guard. The lock() call is made thereafter on the unique_lock objects, that wrapped the mutexes with defer_lock option.

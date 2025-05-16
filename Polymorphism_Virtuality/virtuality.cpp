@@ -268,6 +268,12 @@ void virtualityUnderTheHood()
 	std::cout<<" LeftClass "<<(dynamic_cast<LeftClass*>(middleClassPtr) != nullptr)<<std::endl;
 	//error: cannot convert from pointer to base class ‘CommonBase’ to pointer to derived class ‘BottomClass’ because the base is virtual
 	//std::cout<<" BottomClass "<<(static_cast<BottomClass*>(commonBasePtr) != nullptr)<<std::endl;
+
+	//error: cannot convert from pointer to base class ‘CommonBase’ to pointer to derived class ‘BottomClass’ because the base is virtual
+    	// rightClassPtr = static_cast<RightClass*>(commonBasePtr);
+    	// middleClassPtr = static_cast<MiddleClass*>(commonBasePtr);
+    	// leftClassPtr = static_cast<LeftClass*>(commonBasePtr);
+    	// bottomClassPtr = static_cast<BottomClass*>(commonBasePtr);
 	
 	delete commonBasePtr;
 	commonBasePtr = nullptr;

@@ -97,7 +97,7 @@ void virtualityUnderTheHood()
 	cout<<"40    (int (*)(...))DerivedImpl::virtualMethod"<<endl;
 
 
-	cout<<"     4. As it can be seen above, each vtable starts with an empty entry. It is called offset-to-top and is an entry in the table reserved."<<endl;
+	cout<<"     4.  As it can be seen above, each vtable starts with an empty entry. It is called offset-to-top and is an entry in the table reserved."<<endl;
 	cout<<"     	This entry is indexed with negative index -2, to store the offset to the corresponding Base class."<<endl;
 	cout<<" 	In a liniar class hierarchy, that does not involve multiple inheritance, the offset is 0. (vtable[-2] = 0)"<<endl;
 	cout<<" 	This offset is non zero for Derived classes that have multiple Base classes. (more details below)"<<endl;
@@ -132,7 +132,7 @@ void virtualityUnderTheHood()
 	cout<<" 	dtor or not, as it would suffice for at least one of the Base classes to define a virtual dtor. Then, in the vtable part corresponding"<<endl;
 	cout<<" 	to the Base class(es) with virtual dtor, two extra entries are added, each containing offset to the dtor entry from the first Base vtable."<<endl;
 
-	cout<<" 	Each subsequent vtable to the first one contains a value for the offset to the top. This value is used to compute the addresses of methods"<<endl;
+	cout<<"     3.  Each subsequent vtable to the first one contains a value for the offset to the top. This value is used to compute the addresses of methods"<<endl;
 	cout<<" 	shared by the vtables in the memory layout of Derived and is a negative integer. Also, this negative index represents the amount of bytes"<<endl;
 	cout<<" 	that need to be shifted in order to point to the start of the object in memory (the first vtable), hence the name offset to top."<<endl;
 	cout<<" 	Furthermore, this value is used when performing upcasting from pointer/ref to Derived to pointer/ref to one of the Base classes, but first,"<<endl;
@@ -198,49 +198,22 @@ void virtualityUnderTheHood()
 	cout<<" 	128   (int (*)(...))Derived::_ZThn32_N7Derived9printNameEv"<<endl;
 	cout<<" 	136   (int (*)(...))Base3::printChar"<<endl;
 
-	cout<<" 	Vtable for Bottom"<<endl;
-	cout<<" 	Bottom::_ZTV6Bottom: 24 entries"<<endl;
-	cout<<" 	0     64"<<endl;
-	cout<<" 	8     (int (*)(...))0"<<endl;
-	cout<<" 	16    (int (*)(...))(& _ZTI6Bottom)"<<endl;
-	cout<<" 	24    (int (*)(...))Bottom::printName"<<endl;
-	cout<<" 	32    (int (*)(...))Left::printEuler"<<endl;
-	cout<<" 	40    (int (*)(...))Bottom::~Bottom"<<endl;
-	cout<<" 	48    (int (*)(...))Bottom::~Bottom"<<endl;
-	cout<<" 	56    (int (*)(...))Bottom::printString"<<endl;
-	cout<<" 	64    48"<<endl;
-	cout<<" 	72    (int (*)(...))-16"<<endl;
-	cout<<" 	80    (int (*)(...))(& _ZTI6Bottom)"<<endl;
-	cout<<" 	88    (int (*)(...))Bottom::_ZThn16_N6Bottom9printNameEv"<<endl;
-	cout<<" 	96    (int (*)(...))Right::printChar"<<endl;
-	cout<<" 	104   (int (*)(...))Bottom::_ZThn16_N6BottomD1Ev"<<endl;
-	cout<<" 	112   (int (*)(...))Bottom::_ZThn16_N6BottomD0Ev"<<endl;
-	cout<<" 	120   0"<<endl;
-	cout<<" 	128   0"<<endl;
-	cout<<" 	136   18446744073709551552"<<endl;
-	cout<<" 	144   18446744073709551552"<<endl;
-	cout<<" 	152   (int (*)(...))-64"<<endl;
-	cout<<" 	160   (int (*)(...))(& _ZTI6Bottom)"<<endl;
-	cout<<" 	168   (int (*)(...))Bottom::_ZTv0_n24_N6BottomD1Ev"<<endl;
-	cout<<" 	176   (int (*)(...))Bottom::_ZTv0_n24_N6BottomD0Ev"<<endl;
-	cout<<" 	184   (int (*)(...))Bottom::_ZTv0_n32_N6Bottom9printNameEv"<<endl;
-	cout<<" 	192   (int (*)(...))Top::printInt"<<endl;
-	cout<<" 	200   (int (*)(...))TopRoot::doNothing"<<endl;
 
-	cout<<"     3.  A class that has multiple Base classes which virtually inherit froma common top base class, has its object memory split into 2 regions:"<<endl;
+        cout<<"How virtuality works under the hood: virtual inheritance"<<endl;
+	cout<<"     1.  A class that has multiple Base classes which virtually inherit froma common top base class, has its object memory split into 2 regions:"<<endl;
 	cout<<" 	invariant and variant. In the first section reside the parts that have fixed offsets, which correspond to Bottom and its direct Base classes."<<endl;
 	cout<<" 	In the variants section reside Top base classes from which at least two Base classes inherit (that are virtual Base classes). This section"<<endl;
 	cout<<" 	is placed after the invariant one, including in the vtable layout. In the vtable, this region contains virtual methods inherited from Top class"<<endl;
 	cout<<" 	but not subsequently overriden. That said, as it happens with regular multiple inheritance, the first vptr and vtable of Bottom correspond"<<endl;
 	cout<<" 	to the first Base class."<<endl;
 
-	cout<<"     The vtable of the first Base class of Bottom can be used to access the data members of Top virtual base class, using negative indexing."<<endl;
+	cout<<"     2.  The vtable of the first Base class of Bottom can be used to access the data members of Top virtual base class, using negative indexing."<<endl;
 	cout<<" 	invariant and variant. In the first section reside the parts that have fixed offsets, which correspond to Bottom and its direct Base classes."<<endl;
 	cout<<" 	In the variant section reside Top base classes from which at least two Base classes inherit (that are virtual Base classes). This section"<<endl;
 	cout<<" 	is placed after the invariant one, including in the vtable layout. In the vtable, this region contains virtual methods inherited from Top class"<<endl;
 	cout<<" 	but not subsequently overriden."<<endl;
 
-	cout<<"     When it comes to the virtual dtor inherited from Top class, in the Bottom object memory diagram, the 2 entries are generated in the vtable"<<endl;
+	cout<<"    3.   When it comes to the virtual dtor inherited from Top class, in the Bottom object memory diagram, the 2 entries are generated in the vtable"<<endl;
 	cout<<" 	corresponding to the first Base class. The next vtables, including the one corresponding to Top class, contain the 2 entries for the virtual"<<endl;
 	cout<<" 	dtor, with the afferent values being offsets to the entries of dtors from the vtable of the first Base class."<<endl;
 

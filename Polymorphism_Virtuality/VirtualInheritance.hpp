@@ -17,7 +17,7 @@ class CommonBase
         std::cout<<" CommonBase "<<std::endl;
     }
 
-    void doCommonBaseWork()
+    virtual void doCommonBaseWork()
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }

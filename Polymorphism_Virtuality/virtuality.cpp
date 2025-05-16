@@ -207,11 +207,9 @@ void virtualityUnderTheHood()
 	cout<<" 	but not subsequently overriden. That said, as it happens with regular multiple inheritance, the first vptr and vtable of Bottom correspond"<<endl;
 	cout<<" 	to the first Base class."<<endl;
 
-	cout<<"     2.  The vtable of the first Base class of Bottom can be used to access the data members of top common base virtual base class, using negative indexing."<<endl;
-	cout<<" 	invariant and variant. In the first section reside the parts that have fixed offsets, which correspond to Bottom and its direct Base classes."<<endl;
-	cout<<" 	In the variant section reside Top base classes from which at least two Base classes inherit (that are virtual Base classes). This section"<<endl;
-	cout<<" 	is placed after the invariant one, including in the vtable layout. In the vtable, this region contains virtual methods inherited from Top class"<<endl;
-	cout<<" 	but not subsequently overriden."<<endl;
+	cout<<"    2.   As it happens in the cose of non-virtual multiple inheritance, the first entry in the vtable is associated with the first direct Base class."<<endl;
+	cout<<" 	Here are aded entries for the virtual methods inherited from this direct Base class, either overriden or not,  and for those virtual methods overriden"<<endl;
+	cout<<" 	from the top common base class. Also, in this section are added the 2 entries for the virtual d-tor corresponding to Bottom class."<<endl;
 
 	cout<<"    3.   When it comes to the virtual dtor inherited from top common base class, in the Bottom object memory diagram, the 2 entries are generated in the vtable"<<endl;
 	cout<<" 	corresponding to the first Base class. The next vtables, including the one corresponding to Top class, contain the 2 entries for the virtual"<<endl;

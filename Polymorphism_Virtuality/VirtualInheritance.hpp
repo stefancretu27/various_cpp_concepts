@@ -1,77 +1,119 @@
 #pragma once
 
 #include <iostream>
-#include <string>
+#include <thread>
+#include <chrono>
 
-class TopRoot
+class CommonBase
 {
     public:
-    virtual ~TopRoot() = default;
-    virtual void printName() {std::cout<<"Top"<<std::endl;};
-    //virtual void printInt() = 0;
-    virtual void doNothing(){};
+    CommonBase() = default;
+    CommonBase(const std::string& class_name) : m_class_name{class_name}
+    {};
 
+    virtual ~CommonBase() = default;
+    virtual void printName() const
+    {
+        std::cout<<" CommonBase "<<std::endl;
+    }
+
+    void doCommonBaseWork()
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
+
+    private:
+    const std::string m_class_name;
 };
 
-class Top: public TopRoot
+class LeftClass : virtual public CommonBase
 {
     public:
-    Top() = default;
-    virtual ~Top() = default;
-    virtual void printName(){std::cout<<"Top"<<std::endl;};
-    virtual void printInt(){std::cout<<i<<std::endl;};
+    LeftClass(int i) : m_i{i}
+    {};
 
-    protected:
-    int i{8};
+    virtual ~LeftClass() = default;
+    virtual void printName() const override
+    {
+        std::cout<<" LeftClass "<<std::endl;
+    }
+
+    virtual double sum(int ii)
+    {
+        return m_i+ii;
+    }
+
+    void doLeftClassWork()
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(101));
+    }
+
+    private:
+    int m_i;
 };
 
 
-class Left: virtual public Top
+class MiddleClass : virtual public CommonBase
 {
     public:
-    Left() = default;
-    virtual void printName(){std::cout<<"Left"<<std::endl;};
-    virtual void printEuler(){std::cout<<euler<<std::endl;};
+    MiddleClass(double d) :  m_d{d}
+    {};
 
-    protected:
-    double euler{2.7182};
+    virtual ~MiddleClass() = default;
+    virtual void printName() const override
+    {
+        std::cout<<" MiddleClass "<<std::endl;
+    }
+
+    virtual double computeD(double dd)
+    {
+        return dd*m_d;
+    }
+
+    void doMiddleClassWork()
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(331));
+    }
+
+    private:
+    double m_d;
 };
 
-class Right: virtual public Top
+class RightClass : virtual public CommonBase
 {
     public:
-    Right() = default;
-    virtual void printName(){std::cout<<"Right"<<std::endl;};
-    virtual void printChar(){std::cout<<c<<std::endl;};
-    void printString(){std::cout<<std::string(3, c)<<std::endl;};
+    RightClass(char c) : m_c{c}
+    {};
 
-    protected:
-    char c{'c'};
+    virtual ~RightClass() = default;
+    virtual void printName() const override
+    {
+        std::cout<<" RightClass "<<std::endl;
+    }
+
+    virtual void doRightClassWork()
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(49));
+    }
+
+    private:
+    char m_c;
 };
 
-class Bottom: public Left, public Right
+class BottomClass : public LeftClass, MiddleClass, RightClass
 {
     public:
-    Bottom() = default;
-    virtual void printName() override {std::cout<<"Bottom"<<std::endl;};
-    //override method from 2nd Base class
-    void printEuler() override {std::cout<<"Negative Euler: "<<euler*(-1)<<std::endl;};
-    //does not override as it is virtual and the inherited one is non-virtual
-    virtual void printString() {std::cout<<name<<std::endl;}; 
+    BottomClass(const std::string& class_name, int i, double d, char c) : CommonBase{class_name}, LeftClass{i}, MiddleClass{d}, RightClass{c}
+    {};
 
-    protected:
-    std::string name{"name"};
-};
+    virtual ~BottomClass() = default;
+    virtual void printName() const override
+    {
+        std::cout<<" BottomClass "<<std::endl;
+    }
 
-class MoreBottom: public Bottom
-{
-    public:
-    MoreBottom() = default;
-    virtual void printName() override {std::cout<<"MoreBottom"<<std::endl;};
-    //override method from 2nd Base class
-    void printEuler() override {std::cout<<"Negative Euler: "<<euler*(2)<<std::endl;};
-    //does not override as it is virtual and the inherited one is non-virtual
-    void printString() override {std::cout<<"string"<<std::endl;}; 
-
-
+    void doBottomClassWork()
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(528));
+    }
 };

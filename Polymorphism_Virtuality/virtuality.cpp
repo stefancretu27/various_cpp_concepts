@@ -200,21 +200,57 @@ void virtualityUnderTheHood()
 
 
         cout<<"How virtuality works under the hood: virtual inheritance"<<endl;
-	cout<<"     1.  A class that has multiple Base classes which virtually inherit froma common top base class, has its object memory split into 2 regions:"<<endl;
+	cout<<"     1.  A class that has multiple Base classes which virtually inherit from a common top base class, has its object memory split into 2 regions:"<<endl;
 	cout<<" 	invariant and variant. In the first section reside the parts that have fixed offsets, which correspond to Bottom and its direct Base classes."<<endl;
-	cout<<" 	In the variants section reside Top base classes from which at least two Base classes inherit (that are virtual Base classes). This section"<<endl;
+	cout<<" 	In the variant section resides top common base classes from which at least two Base classes inherit (that are virtual Base classes). This section"<<endl;
 	cout<<" 	is placed after the invariant one, including in the vtable layout. In the vtable, this region contains virtual methods inherited from Top class"<<endl;
 	cout<<" 	but not subsequently overriden. That said, as it happens with regular multiple inheritance, the first vptr and vtable of Bottom correspond"<<endl;
 	cout<<" 	to the first Base class."<<endl;
 
-	cout<<"     2.  The vtable of the first Base class of Bottom can be used to access the data members of Top virtual base class, using negative indexing."<<endl;
+	cout<<"     2.  The vtable of the first Base class of Bottom can be used to access the data members of top common base virtual base class, using negative indexing."<<endl;
 	cout<<" 	invariant and variant. In the first section reside the parts that have fixed offsets, which correspond to Bottom and its direct Base classes."<<endl;
 	cout<<" 	In the variant section reside Top base classes from which at least two Base classes inherit (that are virtual Base classes). This section"<<endl;
 	cout<<" 	is placed after the invariant one, including in the vtable layout. In the vtable, this region contains virtual methods inherited from Top class"<<endl;
 	cout<<" 	but not subsequently overriden."<<endl;
 
-	cout<<"    3.   When it comes to the virtual dtor inherited from Top class, in the Bottom object memory diagram, the 2 entries are generated in the vtable"<<endl;
+	cout<<"    3.   When it comes to the virtual dtor inherited from top common base class, in the Bottom object memory diagram, the 2 entries are generated in the vtable"<<endl;
 	cout<<" 	corresponding to the first Base class. The next vtables, including the one corresponding to Top class, contain the 2 entries for the virtual"<<endl;
 	cout<<" 	dtor, with the afferent values being offsets to the entries of dtors from the vtable of the first Base class."<<endl;
+
+	cout<<"    4.   Furthermore, each section in the vtable of the Bottom class corresponding to each of it's base classes contains the offset to the top (index -2), values"<<endl;
+	cout<<" 	that start from 0 and decrease by 16, and the RTTI (index -1) which is the type of Bottom class, for each entry, that is subsequently used by type_info and dynamic_cast."<<endl;
+
+	cout<<"Vtable for BottomClass"<<std::endl;
+	cout<<"BottomClass::_ZTV11BottomClass: 30 entries"<<std::endl;
+	cout<<"0     48"<<std::endl;
+	cout<<"8     (int (*)(...))0"<<std::endl;
+	cout<<"16    (int (*)(...))(& _ZTI11BottomClass)"<<std::endl;
+	cout<<"24    (int (*)(...))BottomClass::~BottomClass"<<std::endl;
+	cout<<"32    (int (*)(...))BottomClass::~BottomClass"<<std::endl;
+	cout<<"40    (int (*)(...))BottomClass::printName"<<std::endl;
+	cout<<"48    (int (*)(...))LeftClass::sum"<<std::endl;
+	cout<<"56    32"<<std::endl;
+	cout<<"64    (int (*)(...))-16"<<std::endl;
+	cout<<"72    (int (*)(...))(& _ZTI11BottomClass)"<<std::endl;
+	cout<<"80    (int (*)(...))BottomClass::_ZThn16_N11BottomClassD1Ev"<<std::endl;
+	cout<<"88    (int (*)(...))BottomClass::_ZThn16_N11BottomClassD0Ev"<<std::endl;
+	cout<<"96    (int (*)(...))BottomClass::_ZThn16_NK11BottomClass9printNameEv"<<std::endl;
+	cout<<"104   (int (*)(...))MiddleClass::computeD"<<std::endl;
+	cout<<"112   16"<<std::endl;
+	cout<<"120   (int (*)(...))-32"<<std::endl;
+	cout<<"128   (int (*)(...))(& _ZTI11BottomClass)"<<std::endl;
+	cout<<"136   (int (*)(...))BottomClass::_ZThn32_N11BottomClassD1Ev"<<std::endl;
+	cout<<"144   (int (*)(...))BottomClass::_ZThn32_N11BottomClassD0Ev"<<std::endl;
+	cout<<"152   (int (*)(...))BottomClass::_ZThn32_NK11BottomClass9printNameEv"<<std::endl;
+	cout<<"160   (int (*)(...))RightClass::doRightClassWork"<<std::endl;
+	cout<<"168   0"<<std::endl;
+	cout<<"176   18446744073709551568"<<std::endl;
+	cout<<"184   18446744073709551568"<<std::endl;
+	cout<<"192   (int (*)(...))-48"<<std::endl;
+	cout<<"200   (int (*)(...))(& _ZTI11BottomClass)"<<std::endl;
+	cout<<"208   (int (*)(...))BottomClass::_ZTv0_n24_N11BottomClassD1Ev"<<std::endl;
+	cout<<"216   (int (*)(...))BottomClass::_ZTv0_n24_N11BottomClassD0Ev"<<std::endl;
+	cout<<"224   (int (*)(...))BottomClass::_ZTv0_n32_NK11BottomClass9printNameEv"<<std::endl;
+	cout<<"232   (int (*)(...))CommonBase::doCommonBaseWork"<<std::endl;
 
 }

@@ -266,16 +266,25 @@ void virtualityUnderTheHood()
 	// The below 2 conversions fail is a pointer to MiddleClass interprets the allocated memory as MiddleClass, which doesn't have BottomClass or LeftClass
 	std::cout<<" BottomClass "<<(dynamic_cast<BottomClass*>(middleClassPtr) != nullptr )<<std::endl;
 	std::cout<<" LeftClass "<<(dynamic_cast<LeftClass*>(middleClassPtr) != nullptr)<<std::endl;
-	//error: cannot convert from pointer to base class ‘CommonBase’ to pointer to derived class ‘BottomClass’ because the base is virtual
-	//std::cout<<" BottomClass "<<(static_cast<BottomClass*>(commonBasePtr) != nullptr)<<std::endl;
 
 	//error: cannot convert from pointer to base class ‘CommonBase’ to pointer to derived class ‘BottomClass’ because the base is virtual
     	// rightClassPtr = static_cast<RightClass*>(commonBasePtr);
     	// middleClassPtr = static_cast<MiddleClass*>(commonBasePtr);
     	// leftClassPtr = static_cast<LeftClass*>(commonBasePtr);
     	// bottomClassPtr = static_cast<BottomClass*>(commonBasePtr);
+
+	//successful casts: side cast from a pointer to one of direct bases of Bottom, to any other direct base + static_cast from direct base
+    	RightClass* rClassPtr = new BottomClass("CommonBase", 2, 3.14159, 'c');
+    	MiddleClass* mClassPtr = dynamic_cast<MiddleClass*>(rClassPtr);
+    	LeftClass* lClassPtr = dynamic_cast<LeftClass*>(rClassPtr);
+    	commonBasePtr = dynamic_cast<CommonBase*>(rClassPtr);
+    	commonBasePtr = static_cast<CommonBase*>(rClassPtr);
+    	std::cout<<(mClassPtr !=  nullptr)<<" "<<(lClassPtr !=  nullptr)<<" "<<(commonBasePtr!=nullptr)<<std::endl;
 	
 	delete commonBasePtr;
 	commonBasePtr = nullptr;
+
+	delete rClassPtr;
+	rClassPtr = nullptr;
 
 }

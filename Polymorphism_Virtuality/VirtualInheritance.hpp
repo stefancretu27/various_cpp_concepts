@@ -100,7 +100,7 @@ class RightClass : virtual public CommonBase
     char m_c;
 };
 
-class BottomClass : public LeftClass, MiddleClass, RightClass
+class BottomClass : public LeftClass, public MiddleClass, public RightClass
 {
     public:
     BottomClass(const std::string& class_name, int i, double d, char c) : CommonBase{class_name}, LeftClass{i}, MiddleClass{d}, RightClass{c}
